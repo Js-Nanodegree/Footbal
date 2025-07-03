@@ -6,9 +6,17 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { View, Text, StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { Provider } from 'react-redux';
+// @ts-ignore: redux-persist/integration/react не имеет явных типов
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './src/shared/api/store';
+
+const SplashScreen = () => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+    <Text>Загрузка...</Text>
+  </View>
+);
 
 const isStorybook = process.env.USE_STORYBOOK === 'true';
 
@@ -25,16 +33,20 @@ if ( isStorybook )
   AppEntry = StorybookUIRoot;
 }
 
-function App() {
+const App = () =>
+{
   const isDarkMode = useColorScheme() === 'dark';
-
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppEntry />
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={<SplashScreen />} persistor={persistor}>
+        <View style={styles.container}>
+          <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+          <AppEntry />
+        </View>
+      </PersistGate>
+    </Provider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

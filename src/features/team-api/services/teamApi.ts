@@ -13,12 +13,26 @@ const api = axios.create( {
     },
 } );
 
-export async function fetchTeams( page: number = 1, pageSize: number = 20 ): Promise<Team[]>
+export interface FetchTeamsResult
+{
+    count: number;
+    teams: Team[];
+    links?: {
+        next?: string;
+        prev?: string;
+    };
+}
+
+export async function fetchTeams( offset: number = 0, limit: number = 20 ): Promise<FetchTeamsResult>
 {
     const res = await api.get( `/teams`, {
-        params: { page, limit: pageSize },
+        params: { offset, limit },
     } );
-    return res.data.teams;
+    return {
+        count: res.data.count,
+        teams: res.data.teams,
+        links: res.data.links,
+    };
 }
 
 export async function fetchTeamDetails( teamId: number ): Promise<Team>
