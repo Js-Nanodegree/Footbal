@@ -44,6 +44,29 @@ export class TMPApiAxios
             {
                 console.error( '[API ERROR]', error );
                 // if (Sentry) Sentry.captureException(error);
+                if ( error.response )
+                {
+                    const status = error.response.status;
+                    let customMessage = '';
+                    switch ( status )
+                    {
+                        case 400:
+                            customMessage = 'Некорректный запрос (400)';
+                            break;
+                        case 403:
+                            customMessage = 'Доступ запрещён (403)';
+                            break;
+                        case 404:
+                            customMessage = 'Не найдено (404)';
+                            break;
+                        case 429:
+                            customMessage = 'Слишком много запросов (429). Попробуйте позже.';
+                            break;
+                        default:
+                            customMessage = error.message || 'Ошибка API';
+                    }
+                    return Promise.reject( new Error( customMessage ) );
+                }
                 // Refresh token пример (упрощённо)
                 if ( error.response && error.response.status === 401 )
                 {
