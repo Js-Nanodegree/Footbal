@@ -2,13 +2,8 @@ import { Team } from '../types/team';
 import { Player } from '../types/player';
 import { Match } from '../types/match';
 import { z } from 'zod';
-import { FOOTBALL_API_KEY } from '@env';
-
-// Базовый URL football-data.org
-const BASE_URL = 'https://api.football-data.org/v4';
-
-// Ключ API импортируется из .env через @env
-const API_KEY = FOOTBALL_API_KEY || '';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { tmpApiAxios } from '../clients/tmpApiAxios'; // Импорт singleton-инстанса
 
 // Zod-схемы для валидации (можно расширять)
 export const TeamSchema = z.object({
@@ -26,10 +21,65 @@ export const MatchSchema = z.object({
   utcDate: z.string(),
 });
 
+// MatchesResponseSchema: соответствует реальному ответу API getTeamMatches
 export const MatchesResponseSchema = z.object({
-  count: z.number(),
-  matches: z.array(MatchSchema),
+  filters: z.unknown(), // фильтры (можно описать подробнее при необходимости)
+  resultSet: z.unknown(), // метаинформация о выдаче
+  matches: z.array(
+    z.object( {
+      area: z.object( {
+        id: z.number(),
+        name: z.string(),
+        code: z.string().optional(),
+        flag: z.string().optional(),
+      } ),
+      competition: z.object( {
+        id: z.number(),
+        name: z.string(),
+        code: z.string().optional(),
+        type: z.string().optional(),
+        emblem: z.string().optional(),
+      } ),
+      season: z.object( {
+        id: z.number(),
+        startDate: z.string(),
+        endDate: z.string(),
+        currentMatchday: z.number().nullable(),
+        winner: z.unknown().nullable(),
+      } ),
+      id: z.number(),
+      utcDate: z.string(),
+      status: z.string(),
+      matchday: z.number().nullable(),
+      stage: z.string().nullable(),
+      group: z.string().nullable(),
+      lastUpdated: z.string(),
+      homeTeam: z.object( {
+        id: z.number(),
+        name: z.string(),
+        shortName: z.string().optional(),
+        tla: z.string().optional(),
+        crest: z.string().optional(),
+      } ),
+      awayTeam: z.object( {
+        id: z.number(),
+        name: z.string(),
+        shortName: z.string().optional(),
+        tla: z.string().optional(),
+        crest: z.string().optional(),
+      } ),
+      score: z.object( {
+        winner: z.string().nullable(),
+        duration: z.string().nullable(),
+        fullTime: z.object( { home: z.number().nullable(), away: z.number().nullable() } ),
+        halfTime: z.object( { home: z.number().nullable(), away: z.number().nullable() } ),
+      } ),
+      odds: z.object( { msg: z.string().optional() } ).optional(),
+      referees: z.array( z.unknown() ),
+    } )
+  ),
 });
+// Эпизация: структура ответа getTeamMatches включает filters, resultSet и массив матчей (matches) с полной типизацией каждого поля согласно football-data.org API.
 
 // Централизованный обработчик ошибок
 function handleApiError(error: unknown): never {
@@ -43,46 +93,94 @@ function handleApiError(error: unknown): never {
 }
 
 export class TeamApiService {
-  static async getTeams(page = 1, pageSize = 20): Promise<Team[]> {
+  static async getTeams(
+    page = 1,
+    pageSize = 20,
+    client: 'fetch' | 'axios' = 'fetch',
+    axiosOptions?: AxiosRequestConfig
+  ): Promise<Team[]>
+  {
+    const url = `/teams?limit=${ pageSize }&offset=${ ( page - 1 ) * pageSize }`;
     try {
-      const res = await fetch(`${BASE_URL}/teams?limit=${pageSize}&offset=${(page-1)*pageSize}`, {
-        headers: { 'X-Auth-Token': API_KEY },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const parsed = TeamsResponseSchema.parse(data);
-      return parsed.teams as Team[];
+      if ( client === 'axios' )
+      {
+        const data = await tmpApiAxios.request( {
+          url,
+          method: 'get',
+          ...( axiosOptions || {} ),
+        } );
+        const parsed = TeamsResponseSchema.parse( data );
+        return parsed.teams as Team[];
+      } else
+      {
+        const res = await fetch( url, { headers: { 'X-Auth-Token': API_KEY } } );
+        if ( !res.ok ) throw new Error( `HTTP ${ res.status }` );
+        const data = await res.json();
+        const parsed = TeamsResponseSchema.parse( data );
+        return parsed.teams as Team[];
+      }
     } catch (error) {
       handleApiError(error);
     }
   }
 
-  static async getTeamDetails(teamId: number): Promise<Team> {
+  static async getTeamDetails(
+    teamId: number,
+    client: 'fetch' | 'axios' = 'fetch',
+    axiosOptions?: AxiosRequestConfig
+  ): Promise<Team>
+  {
+    const url = `/teams/${ teamId }`;
     try {
-      const res = await fetch(`${BASE_URL}/teams/${teamId}`, {
-        headers: { 'X-Auth-Token': API_KEY },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      return TeamSchema.parse(data) as Team;
+      if ( client === 'axios' )
+      {
+        const data = await tmpApiAxios.request( {
+          url,
+          method: 'get',
+          ...( axiosOptions || {} ),
+        } );
+        return TeamSchema.parse( data ) as Team;
+      } else
+      {
+        const res = await fetch( url, { headers: { 'X-Auth-Token': API_KEY } } );
+        if ( !res.ok ) throw new Error( `HTTP ${ res.status }` );
+        const data = await res.json();
+        return TeamSchema.parse( data ) as Team;
+      }
     } catch (error) {
       handleApiError(error);
     }
   }
 
-  static async getTeamMatches(teamId: number): Promise<Match[]> {
+  static async getTeamMatches(
+    teamId: number,
+    client: 'fetch' | 'axios' = 'fetch',
+    axiosOptions?: AxiosRequestConfig
+  ): Promise<Match[]>
+  {
+    const url = `/teams/${ teamId }/matches`;
     try {
-      const res = await fetch(`${BASE_URL}/teams/${teamId}/matches`, {
-        headers: { 'X-Auth-Token': API_KEY },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const parsed = MatchesResponseSchema.parse(data);
-      return parsed.matches as Match[];
+      if ( client === 'axios' )
+      {
+        const data = await tmpApiAxios.request( {
+          url,
+          method: 'get',
+          ...( axiosOptions || {} ),
+        } );
+        const parsed = MatchesResponseSchema.parse( data );
+        return parsed.matches as Match[];
+      } else
+      {
+        const res = await fetch( url, { headers: { 'X-Auth-Token': API_KEY } } );
+        if ( !res.ok ) throw new Error( `HTTP ${ res.status }` );
+        const data = await res.json();
+        const parsed = MatchesResponseSchema.parse( data );
+        return parsed.matches as Match[];
+      }
     } catch (error) {
       handleApiError(error);
     }
   }
 }
 
-// Контекст: Сервис TeamApiService инкапсулирует работу с API football-data.org, типизирует и валидирует ответы, централизует обработку ошибок. 
+// Контекст: Сервис TeamApiService инкапсулирует работу с API football-data.org, поддерживает fetch и axios, позволяет настраивать baseURL, headers и опции через tmpApiAxios. 
