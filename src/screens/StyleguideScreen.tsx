@@ -16,6 +16,7 @@ import ErrorState from '../shared/ui/error-state/ErrorState';
 import FABScrollToTop from '../shared/ui/FABScrollToTop/FABScrollToTop';
 import CollapsibleHeader from '../shared/ui/CollapsibleHeader/CollapsibleHeader';
 import { useNavigation } from '@react-navigation/native';
+import { ErrorNotificationDemo } from 'src/shared/ui/error-state/ErrorNotificationDemo';
 
 type StyleguideSection = {
     title: string;
@@ -157,6 +158,12 @@ const styleguideSections: StyleguideSection[] = [
         title: 'CollapsibleHeader',
         data: [ [
             { label: 'Default', element: <CollapsibleHeader team={{ name: 'Chelsea', crest: 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg', venue: 'Stamford Bridge', area: { name: 'England' } }} /> },
+        ] ],
+    },
+    {
+        title: 'CollapsibleHeader',
+        data: [ [
+            { label: 'Default', element: <ErrorNotificationDemo /> },
         ] ],
     },
 ];
