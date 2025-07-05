@@ -2,4 +2,6 @@
 
 [2025-07-04] feat: Завершена инициализация проекта FOOTBAL (структура, линтинг, тесты, Storybook, context.md, README, pre-commit хуки, запуск dev-сервера).
 
-[2024-06-18] feat: Централизация цветов/стилей для Button, Badge, ScoreBlock, поддержка темизации через colorMap, фиксация решений в Memory Bank (creative-uiux.md) 
+[2024-06-18] feat: Централизация цветов/стилей для Button, Badge, ScoreBlock, поддержка темизации через colorMap, фиксация решений в Memory Bank (creative-uiux.md)
+
+[2024-06-18] feat: Добавлен Loader (Spinner) — colorMap, типы, компонент, тесты, context.md, готов к showcase в Style Guide. 

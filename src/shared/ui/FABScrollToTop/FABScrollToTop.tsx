@@ -22,12 +22,12 @@ const FABScrollToTop: React.FC<FABScrollToTopProps> = ({ onPress }) => {
   return (
     <Animated.View style={[styles.fab, { transform: [{ scale: scaleAnim }] }]}> 
       <TouchableOpacity onPress={handlePress} activeOpacity={0.8} style={styles.touchable}>
-        <LottieView
+        {/* <LottieView
           source={require('../../../assets/lottie/football-spin.json')}
           autoPlay
           loop
           style={{ width: 35, height: 35 }}
-        />
+        /> */}
       </TouchableOpacity>
     </Animated.View>
   );

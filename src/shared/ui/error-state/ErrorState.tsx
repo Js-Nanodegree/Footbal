@@ -15,12 +15,12 @@ const ErrorState: React.FC<ErrorStateProps> = ( {
     onRetry,
 } ) => (
     <View style={styles.container}>
-        <LottieView
+        {/* <LottieView
             source={require( '../../../assets/lottie/penalty-miss.json' )}
             autoPlay
             loop={false}
             style={{ width: 180, height: 180 }}
-        />
+        /> */}
         <Typography variant="h3" weight="bold" style={{ marginTop: 12 }}>
             {message}
         </Typography>

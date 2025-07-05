@@ -1,56 +1,87 @@
-import axios from 'axios';
 import { Team } from '../types/team';
 import { Player } from '../types/player';
 import { Match } from '../types/match';
+import { z } from 'zod';
 
-const API_BASE = 'https://api.football-data.org/v4';
-const API_TOKEN = process.env.FOOTBALL_DATA_API_KEY || '';
+// Базовый URL football-data.org
+const BASE_URL = 'https://api.football-data.org/v4';
 
-const api = axios.create( {
-    baseURL: API_BASE,
-    headers: {
-        'X-Auth-Token': API_TOKEN,
-    },
-} );
+// Ключ API должен быть в .env как FOOTBALL_API_KEY
+const API_KEY = process.env.FOOTBALL_API_KEY || '';
 
-export interface FetchTeamsResult
-{
-    count: number;
-    teams: Team[];
-    links?: {
-        next?: string;
-        prev?: string;
-    };
+// Zod-схемы для валидации (можно расширять)
+export const TeamSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const TeamsResponseSchema = z.object({
+  count: z.number(),
+  teams: z.array(TeamSchema),
+});
+
+export const MatchSchema = z.object({
+  id: z.number(),
+  utcDate: z.string(),
+});
+
+export const MatchesResponseSchema = z.object({
+  count: z.number(),
+  matches: z.array(MatchSchema),
+});
+
+// Централизованный обработчик ошибок
+function handleApiError(error: unknown): never {
+  if (error instanceof z.ZodError) {
+    throw new Error('Ошибка валидации данных API');
+  }
+  if (error instanceof Error) {
+    throw new Error(`API error: ${error.message}`);
+  }
+  throw new Error('Неизвестная ошибка API');
 }
 
-export async function fetchTeams( offset: number = 0, limit: number = 20 ): Promise<FetchTeamsResult>
-{
-    const res = await api.get( `/teams`, {
-        params: { offset, limit },
-    } );
-    return {
-        count: res.data.count,
-        teams: res.data.teams,
-        links: res.data.links,
-    };
+export class TeamApiService {
+  static async getTeams(page = 1, pageSize = 20): Promise<Team[]> {
+    try {
+      const res = await fetch(`${BASE_URL}/teams?limit=${pageSize}&offset=${(page-1)*pageSize}`, {
+        headers: { 'X-Auth-Token': API_KEY },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const parsed = TeamsResponseSchema.parse(data);
+      return parsed.teams as Team[];
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  static async getTeamDetails(teamId: number): Promise<Team> {
+    try {
+      const res = await fetch(`${BASE_URL}/teams/${teamId}`, {
+        headers: { 'X-Auth-Token': API_KEY },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      return TeamSchema.parse(data) as Team;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  static async getTeamMatches(teamId: number): Promise<Match[]> {
+    try {
+      const res = await fetch(`${BASE_URL}/teams/${teamId}/matches`, {
+        headers: { 'X-Auth-Token': API_KEY },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const parsed = MatchesResponseSchema.parse(data);
+      return parsed.matches as Match[];
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
 }
 
-export async function fetchTeamDetails( teamId: number ): Promise<Team>
-{
-    const res = await api.get( `/teams/${ teamId }` );
-    return res.data;
-}
-
-export async function fetchTeamPlayers( teamId: number ): Promise<Player[]>
-{
-    const res = await api.get( `/teams/${ teamId }` );
-    return res.data.squad;
-}
-
-export async function fetchTeamMatches( teamId: number ): Promise<Match[]>
-{
-    const res = await api.get( `/teams/${ teamId }/matches`, {
-        params: { status: 'SCHEDULED' },
-    } );
-    return res.data.matches;
-} 
+// Контекст: Сервис TeamApiService инкапсулирует работу с API football-data.org, типизирует и валидирует ответы, централизует обработку ошибок. 
