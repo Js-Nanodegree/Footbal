@@ -3,15 +3,39 @@ import { NavigationContainer } from '@react-navigation/native';
 import RootNavigator from './src/roads/RootNavigator';
 import { Provider } from 'react-redux';
 import { store } from './src/shared/api/store';
+import { NotifierWrapper } from 'react-native-notifier';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import NetInfo from '@react-native-community/netinfo';
+import { setCache, NETWORK_STATUS_KEY } from './src/shared/memory-bank/mmkvMemoryBank';
+import { useEffect } from 'react';
+
+const NetworkStatusSync: React.FC = () =>
+{
+  useEffect( () =>
+  {
+    const unsubscribe = NetInfo.addEventListener( state =>
+    {
+      setCache( NETWORK_STATUS_KEY, !!state.isConnected );
+    } );
+    return () => unsubscribe();
+  }, [] );
+  return null;
+};
 
 const App = () => (
-  <React.StrictMode>
-    <Provider store={store}>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NotifierWrapper>
+          <NetworkStatusSync />
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </NotifierWrapper>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  </Provider>
 );
 
 export default App;
