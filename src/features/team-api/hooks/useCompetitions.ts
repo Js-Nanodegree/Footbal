@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Competition } from '../types/competition';
 import { CompetitionApiService } from '../services/competitionApi';
-import { getCache, setCache } from '../../shared/db/watermelonMemoryBank';
+import { showErrorNotification } from 'src/shared/utils/showErrorNotification';
 
 interface UseCompetitionsResult {
   competitions: Competition[];
@@ -25,21 +25,13 @@ export function useCompetitions(
   const fetchCompetitions = useCallback(async (forceRefresh = false) => {
     setLoading(true);
     setError(null);
-    try {
-      if (!forceRefresh && firstLoad) {
-        const cached = await getCache<Competition[]>(CACHE_KEY);
-        if (cached && cached.length > 0) {
-          setCompetitions(cached);
-          setLoading(false);
-          setFirstLoad(false);
-          return;
-        }
-      }
+    try
+    {
       const data = await CompetitionApiService.getCompetitions(client, API_KEY, axiosOptions);
-      setCompetitions(data);
-      setCache(CACHE_KEY, data);
+      setCompetitions( data );
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка загрузки турниров');
+      showErrorNotification( e instanceof Error ? e.message : 'Ошибка загрузки турниров' );
     } finally {
       setLoading(false);
       setFirstLoad(false);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Match } from '../types/match';
 import { TeamApiService } from '../services/teamApi';
+import { showErrorNotification } from 'src/shared/utils/showErrorNotification';
 
 interface UseTeamMatchesResult {
   matches: Match[];
@@ -22,6 +23,7 @@ export function useTeamMatches(teamId: number): UseTeamMatchesResult {
       setMatches(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка загрузки матчей');
+      showErrorNotification( e instanceof Error ? e.message : 'Ошибка загрузки матчей' );
     } finally {
       setLoading(false);
     }

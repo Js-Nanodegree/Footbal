@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Team } from '../types/team';
 import { TeamApiService } from '../services/teamApi';
+import { showErrorNotification } from 'src/shared/utils/showErrorNotification';
 
 interface UseTeamsResult {
   teams: Team[];
@@ -30,6 +31,7 @@ export function useTeams(pageSize = 20): UseTeamsResult {
       setHasMore(data.length === pageSize);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка загрузки команд');
+      showErrorNotification( e instanceof Error ? e.message : 'Ошибка загрузки команд' );
     } finally {
       setLoading(false);
     }
