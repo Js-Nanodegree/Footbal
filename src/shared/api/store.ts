@@ -1,6 +1,6 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import teamsReducer from '../../features/team-api/redux/teamSlice';
 import playersReducer from '../../features/team-api/redux/playerSlice';
 import matchesReducer from '../../features/team-api/redux/matchSlice';
@@ -13,7 +13,7 @@ const rootReducer = combineReducers( {
 
 const persistConfig = {
     key: 'root',
-    storage,
+    storage: AsyncStorage,
     whitelist: [ 'teams', 'players', 'matches' ],
 };
 
