@@ -5,6 +5,25 @@ import { z } from 'zod';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { tmpApiAxios } from '../clients/tmpApiAxios'; // Импорт singleton-инстанса
 
+// @ts-ignore
+// eslint-disable-next-line no-var
+declare var process: any;
+
+// Универсальное получение API_KEY для Node.js и React Native:
+let API_KEY = '';
+try
+{
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  API_KEY = require( '@env' ).FOOTBALL_DATA_API_KEY || '';
+} catch ( e )
+{
+  if ( typeof process !== 'undefined' && process.env && process.env.FOOTBALL_DATA_API_KEY )
+  {
+    API_KEY = process.env.FOOTBALL_DATA_API_KEY;
+  }
+}
+
 // Zod-схемы для валидации (можно расширять)
 export const TeamSchema = z.object({
   id: z.number(),
@@ -86,8 +105,9 @@ function handleApiError(error: unknown): never {
   if (error instanceof z.ZodError) {
     throw new Error('Ошибка валидации данных API');
   }
+  // AxiosError с кастомным message
   if (error instanceof Error) {
-    throw new Error(`API error: ${error.message}`);
+    throw new Error( error.message );
   }
   throw new Error('Неизвестная ошибка API');
 }
@@ -168,14 +188,14 @@ export class TeamApiService {
           ...( axiosOptions || {} ),
         } );
         const parsed = MatchesResponseSchema.parse( data );
-        return parsed.matches as Match[];
+        return parsed.matches as unknown as Match[];
       } else
       {
         const res = await fetch( url, { headers: { 'X-Auth-Token': API_KEY } } );
         if ( !res.ok ) throw new Error( `HTTP ${ res.status }` );
         const data = await res.json();
         const parsed = MatchesResponseSchema.parse( data );
-        return parsed.matches as Match[];
+        return parsed.matches as unknown as Match[];
       }
     } catch (error) {
       handleApiError(error);
