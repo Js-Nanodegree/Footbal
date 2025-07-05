@@ -2,12 +2,13 @@ import { Team } from '../types/team';
 import { Player } from '../types/player';
 import { Match } from '../types/match';
 import { z } from 'zod';
+import { FOOTBALL_API_KEY } from '@env';
 
 // Базовый URL football-data.org
 const BASE_URL = 'https://api.football-data.org/v4';
 
-// Ключ API должен быть в .env как FOOTBALL_API_KEY
-const API_KEY = process.env.FOOTBALL_API_KEY || '';
+// Ключ API импортируется из .env через @env
+const API_KEY = FOOTBALL_API_KEY || '';
 
 // Zod-схемы для валидации (можно расширять)
 export const TeamSchema = z.object({
