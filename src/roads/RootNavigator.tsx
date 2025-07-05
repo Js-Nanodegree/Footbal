@@ -1,6 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import CompetitionsScreen from '../screens/CompetitionsScreen';
+import CompetitionDetailsScreen from '../screens/CompetitionDetailsScreen';
+import StandingsScreen from '../screens/StandingsScreen';
 import TeamListScreen from '../screens/TeamListScreen';
 import TeamDetailsScreen from '../screens/TeamDetailsScreen';
 import StyleguideScreen from '../screens/StyleguideScreen';
@@ -9,9 +12,12 @@ import ActionListDemoScreen from '../screens/ActionListDemoScreen';
 import CollapsibleHeaderDemoScreen from '../screens/CollapsibleHeaderDemoScreen';
 import ErrorStateDemoScreen from '../screens/ErrorStateDemoScreen';
 import FABScrollToTopDemoScreen from '../screens/FABScrollToTopDemoScreen';
+import { Competition } from '../features/team-api/types/competition';
 
 export type RootStackParamList = {
     MainTabs: undefined;
+    CompetitionDetails: { competition: Competition };
+    Standings: { competitionId: number };
     TeamDetails: { teamId: number };
     ActionListDemo: undefined;
     CollapsibleHeaderDemo: undefined;
@@ -29,6 +35,7 @@ const MainTabs = () => (
             tabBarLabel: ( { focused } ) =>
             {
                 let label = '';
+                if ( route.name === 'Competitions' ) label = 'Турниры';
                 if ( route.name === 'Teams' ) label = 'Команды';
                 if ( route.name === 'Styleguide' ) label = 'Стайлгайд';
                 return (
@@ -38,7 +45,8 @@ const MainTabs = () => (
             tabBarIcon: ( { focused } ) =>
             {
                 let icon = '';
-                if ( route.name === 'Teams' ) icon = '🏆';
+                if ( route.name === 'Competitions' ) icon = '🏆';
+                if ( route.name === 'Teams' ) icon = '👥';
                 if ( route.name === 'Styleguide' ) icon = '🎨';
                 return <Text style={{ fontSize: 20, color: focused ? '#E94057' : '#B0B0B0' }}>{icon}</Text>;
             },
@@ -59,6 +67,7 @@ const MainTabs = () => (
             },
         } )}
     >
+        <Tab.Screen name="Competitions" component={CompetitionsScreen} />
         <Tab.Screen name="Teams" component={TeamListScreen} />
         <Tab.Screen name="Styleguide" component={StyleguideScreen} />
     </Tab.Navigator>
@@ -67,6 +76,8 @@ const MainTabs = () => (
 const RootNavigator = () => (
     <Stack.Navigator initialRouteName="MainTabs">
         <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
+        <Stack.Screen name="CompetitionDetails" component={CompetitionDetailsScreen} options={{ title: 'Детали турнира' }} />
+        <Stack.Screen name="Standings" component={StandingsScreen} options={{ title: 'Турнирная таблица' }} />
         <Stack.Screen name="TeamDetails" component={TeamDetailsScreen} options={{ title: 'Детали команды' }} />
         <Stack.Screen name="ActionListDemo" component={ActionListDemoScreen} options={{ title: 'Action List Demo' }} />
         <Stack.Screen name="CollapsibleHeaderDemo" component={CollapsibleHeaderDemoScreen} options={{ title: 'Collapsible Header Demo' }} />

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Competition } from '../types/competition';
 import { CompetitionApiService } from '../services/competitionApi';
-import { getCache, setCache } from '../../../memory-bank/watermelonMemoryBank';
+import { getCache, setCache } from '../../shared/db/watermelonMemoryBank';
 
 interface UseCompetitionsResult {
   competitions: Competition[];
