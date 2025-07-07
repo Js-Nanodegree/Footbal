@@ -33,12 +33,14 @@ const LeagueFilterBar: React.FC<LeagueFilterBarProps> = ( { leagues, activeLeagu
                             style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: isActive ? '#FF2D7A' : '#F5F5F5',
+                                backgroundColor: isActive ? '#FF2D7A' : '#fff',
                                 borderRadius: 24,
                                 paddingHorizontal: 18,
                                 paddingVertical: 10,
                                 minWidth: 44,
                                 minHeight: 44,
+                                borderWidth: isActive ? 0 : 2,
+                                borderColor: isActive ? 'transparent' : '#FF2D7A',
                                 shadowColor: isActive ? '#FF2D7A' : undefined,
                                 shadowOpacity: isActive ? 0.08 : 0,
                                 shadowRadius: isActive ? 4 : 0,
@@ -47,13 +49,13 @@ const LeagueFilterBar: React.FC<LeagueFilterBarProps> = ( { leagues, activeLeagu
                             {league.icon && (
                                 <Image
                                     source={{ uri: league.icon }}
-                                    style={{ width: 22, height: 22, marginRight: 8, tintColor: isActive ? '#fff' : '#bbb' }}
+                                    style={{ width: 22, height: 22, marginRight: 8, tintColor: isActive ? '#fff' : '#FF2D7A' }}
                                     resizeMode="contain"
                                 />
                             )}
                             <Text
                                 style={{
-                                    color: isActive ? '#fff' : '#bbb',
+                                    color: isActive ? '#fff' : '#FF2D7A',
                                     fontWeight: 'bold',
                                     fontSize: 16,
                                     letterSpacing: 0.1,

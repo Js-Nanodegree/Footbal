@@ -2,6 +2,7 @@ import { Team } from '../types/team';
 import { Player } from '../types/player';
 import { Match } from '../types/match';
 import { z } from 'zod';
+import { TeamSchema } from '../zod/teamSchema';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { tmpApiAxios } from '../clients/tmpApiAxios'; // Импорт singleton-инстанса
 import { mockTeams } from '../mocks/teams';
@@ -26,11 +27,6 @@ try
 }
 
 // Zod-схемы для валидации (можно расширять)
-export const TeamSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-});
-
 export const TeamsResponseSchema = z.object({
   count: z.number(),
   teams: z.array(TeamSchema),
@@ -141,7 +137,10 @@ export class TeamApiService {
         return parsed.teams as Team[];
       }
     } catch (error) {
-      handleApiError(error);
+      // Логируем ошибку
+      console.error( 'Ошибка получения команд или валидации Zod:', error );
+      // TODO: [2024-06-20] refactor: Разделить обработку ошибок API и ошибок валидации Zod, возвращать моки только при ошибке схемы
+      return mockTeams;
     }
   }
 
@@ -174,7 +173,10 @@ export class TeamApiService {
         return TeamSchema.parse( data ) as Team;
       }
     } catch (error) {
-      handleApiError(error);
+      // Логируем ошибку
+      console.error( 'Ошибка получения деталей команды или валидации Zod:', error );
+      // TODO: [2024-06-20] refactor: Разделить обработку ошибок API и ошибок валидации Zod, возвращать моки только при ошибке схемы
+      return mockTeams[ 0 ];
     }
   }
 
@@ -204,7 +206,10 @@ export class TeamApiService {
         return parsed.matches as unknown as Match[];
       }
     } catch (error) {
-      handleApiError(error);
+      // Логируем ошибку
+      console.error( 'Ошибка получения матчей команды или валидации Zod:', error );
+      // TODO: [2024-06-20] refactor: Разделить обработку ошибок API и ошибок валидации Zod, возвращать моки только при ошибке схемы
+      return [];
     }
   }
 }

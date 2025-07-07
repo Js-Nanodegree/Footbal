@@ -3,12 +3,6 @@ import { render, fireEvent } from '@testing-library/react-native';
 import TeamListSection from '../TeamListSection';
 import { AppContextProvider } from '../../context/AppContext';
 
-const mockTeams = [
-    { id: 1, name: 'Team 1', logo: '', leagueId: 1 },
-    { id: 2, name: 'Team 2', logo: '', leagueId: 1 },
-    { id: 3, name: 'Team 3', logo: '', leagueId: 1 },
-];
-
 jest.mock( '../../mocks/exampleTeams', () => ( {
     exampleTeams: [
         { id: 1, name: 'Team 1', logo: '', leagueId: 1 },

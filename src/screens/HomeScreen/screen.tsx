@@ -2,20 +2,26 @@ import React from 'react';
 import { SectionList, View } from 'react-native';
 import { useHomeScreenSections } from 'src/features/home-screen/hooks/useHomeScreenSections';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Competition } from 'src/features/team-api/types/competition';
+import { Team } from 'src/features/team-api/types/team';
+import { Match } from 'src/features/team-api/types/match';
 
-const HomeScreen = () =>
+interface HomeScreenProps
 {
-  const { sections, loading, error, onRefresh, onPaginate } = useHomeScreenSections();
-  const insets = useSafeAreaInsets();
+  competitions: Competition[];
+  teams: Team[];
+  matches: Match[];
+  loading: boolean;
+  error: string | null;
+  onRefresh: () => void;
+  onPaginate: () => void;
+}
 
-  console.log( 'HomeScreen ререндер' );
-  console.log( 'sections:', sections.map( s => s.title ) );
-  sections.forEach( ( section, idx ) =>
-  {
-    console.log( `Section[${ idx }]:`, section.title, 'data.length:', section.data?.length );
-  } );
-  console.log( 'loading:', loading );
-  console.log( 'error:', error );
+const HomeScreen = ( { competitions, teams, matches, loading, error, onRefresh, onPaginate }: HomeScreenProps ) =>
+{
+  const sectionsData = useHomeScreenSections( { competitions, teams, matches, loading, error, onRefresh, onPaginate } );
+  const { sections } = sectionsData;
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={{ flex: 1 }}>
@@ -28,22 +34,13 @@ const HomeScreen = () =>
         }
         renderItem={( { item, section } ) =>
         {
-          console.log( 'renderItem', section.title, item );
           return section.title === 'Все матчи'
             ? section.renderItem( { item } )
             : section.renderItem();
         }}
-        refreshing={loading.matches}
-        onRefresh={() =>
-        {
-          console.log( 'onRefresh triggered' );
-          onRefresh();
-        }}
-        onEndReached={() =>
-        {
-          console.log( 'onEndReached triggered' );
-          onPaginate();
-        }}
+        refreshing={loading}
+        onRefresh={onRefresh}
+        onEndReached={onPaginate}
         contentContainerStyle={{
           paddingTop: insets.top,
           paddingBottom: insets.bottom,

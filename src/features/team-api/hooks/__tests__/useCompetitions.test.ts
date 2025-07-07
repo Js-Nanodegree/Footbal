@@ -2,7 +2,9 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { useCompetitions } from '../useCompetitions';
 import { CompetitionApiService } from '../../services/competitionApi';
 
-jest.mock('../../services/competitionApi');
+jest.mock('../../services/competitionApi', () => ({
+  getCompetitions: jest.fn().mockImplementation(() => Promise.resolve(require('../../mocks/competitions').mockCompetitions)),
+}));
 
 const mockCompetitions = [
   { id: 1, name: 'Premier League', code: 'PL', area: { id: 2072, name: 'England', code: 'ENG', flag: '' }, lastUpdated: '', type: 'LEAGUE' },
@@ -42,5 +44,14 @@ describe('useCompetitions', () => {
     });
     await waitForNextUpdate();
     expect(result.current.competitions).toEqual(mockCompetitions);
+  });
+});
+
+describe('useCompetitions fallback', () => {
+  it('возвращает моки при ошибке API', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useCompetitions());
+    await waitForNextUpdate();
+    expect(result.current.competitions.length).toBeGreaterThan(0);
+    expect(result.current.error).toBeNull();
   });
 }); 

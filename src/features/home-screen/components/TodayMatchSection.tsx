@@ -2,62 +2,62 @@ import React from 'react';
 import { View, Button, Alert, StyleSheet } from 'react-native';
 import TodayMatchLink from 'src/screens/HomeScreen/TodayMatchLink';
 import Spacer from 'src/shared/ui/Spacer';
-import { exampleMatches } from '../mocks/exampleMatches';
 import { useAppContext } from '../context';
 import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
 import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import Typography from 'src/shared/ui/typography/Typography';
-import { exampleLeagues } from '../mocks/exampleLeagues';
-import { exampleTeams } from '../mocks/exampleTeams';
 import Animated from 'react-native-reanimated';
 import { useFadeTransition } from 'src/shared/hooks/useFadeTransition';
+import { Match } from 'src/features/team-api/types/match';
+import { useNavigation } from '@react-navigation/native';
 
 const SECTION_SPACING = 20;
 
-const TodayMatchSection = React.memo(() => {
-  const { selectedLeagueId, selectedTeamId, loading, error } = useAppContext();
-  // Фильтруем только live-матчи по выбранной лиге и команде
-  const matches =
-    exampleMatches?.filter((m) => {
-      if (!m.isLive) return false;
-      if (selectedLeagueId && m?.leagueId !== selectedLeagueId) return false;
-      if (selectedTeamId && m?.homeTeamId !== selectedTeamId && m?.awayTeamId !== selectedTeamId)
-        return false;
-      return true;
-    }) || [];
-  const leagueName = selectedLeagueId
-    ? exampleLeagues.find( ( l ) => l.id === selectedLeagueId )?.name || ''
-    : '';
-  const teamName = selectedTeamId
-    ? exampleTeams.find( ( t ) => t.id === selectedTeamId )?.name || ''
-    : '';
+const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Match[]; error?: string | null } ) =>
+{
+  const { loading, selectedLeagueId } = useAppContext();
+  const navigation = useNavigation();
 
-  const loadingStyle = useFadeTransition( !!loading.matches );
-  const errorStyle = useFadeTransition( !!error && !loading.matches );
-  const emptyStyle = useFadeTransition( !loading.matches && !error && matches.length === 0 );
-  const contentStyle = useFadeTransition( !loading.matches && !error && matches.length > 0 );
+  const loadingStyle = useFadeTransition(!!loading?.matches);
+  const errorStyle = useFadeTransition(!!error && !loading?.matches);
+  const emptyStyle = useFadeTransition(!loading?.matches && !error && matches.length === 0);
+  const contentStyle = useFadeTransition(!loading?.matches && !error && matches.length > 0);
+
+  const handleAllPress = () =>
+  {
+    navigation.navigate( 'FinishedMatches', { leagueId: selectedLeagueId } );
+  };
+
+  // Преобразуем матчи к нужному формату для TodayMatchLink
+  const todayMatches = matches.map( ( m ) => ( {
+    id: m.id,
+    homeTeam: { name: m.homeTeam?.name, logo: m.homeTeam?.crestUrl || '' },
+    awayTeam: { name: m.awayTeam?.name, logo: m.awayTeam?.crestUrl || '' },
+    time: m.utcDate ? m.utcDate.split( 'T' )[ 1 ]?.slice( 0, 5 ) : '',
+    date: m.utcDate ? m.utcDate.split( 'T' )[ 0 ] : '',
+  } ) );
 
   return (
     <View style={styles.root}>
       {/* LOADING */}
-      <Animated.View style={[ StyleSheet.absoluteFill, loadingStyle ]} pointerEvents={loading.matches ? 'auto' : 'none'}>
-        {loading.matches && (
+      <Animated.View style={[StyleSheet.absoluteFill, loadingStyle]} pointerEvents={loading?.matches ? 'auto' : 'none'}>
+        {loading?.matches && (
           <View style={styles.cardBg}>
-            {[ ...Array( 3 ) ].map( ( _, i ) => (
+            {[...Array(3)].map((_, i) => (
               <TodayMatchCardSkeleton key={i} />
-            ) )}
+            ))}
           </View>
         )}
       </Animated.View>
       {/* ERROR */}
-      <Animated.View style={[ StyleSheet.absoluteFill, errorStyle ]} pointerEvents={error && !loading.matches ? 'auto' : 'none'}>
-        {error && !loading.matches && <ErrorState message={error} />}
+      <Animated.View style={[StyleSheet.absoluteFill, errorStyle]} pointerEvents={error && !loading?.matches ? 'auto' : 'none'}>
+        {error && !loading?.matches && <ErrorState message={error} />}
       </Animated.View>
       {/* EMPTY */}
-      <Animated.View style={[ StyleSheet.absoluteFill, emptyStyle ]} pointerEvents={!loading.matches && !error && matches.length === 0 ? 'auto' : 'none'}>
-        {!loading.matches && !error && matches.length === 0 && (
+      <Animated.View style={[StyleSheet.absoluteFill, emptyStyle]} pointerEvents={!loading?.matches && !error && matches.length === 0 ? 'auto' : 'none'}>
+        {!loading?.matches && !error && matches.length === 0 && (
           <View style={styles.cardBg}>
-            <TodayMatchLink todayMatches={matches} onPress={() => { }} />
+            <TodayMatchLink todayMatches={todayMatches} onPress={handleAllPress} />
             <View style={styles.emptyBox}>
               <Typography variant="body" font="Inter" style={{ color: '#FF8800', marginBottom: 16 }}>
                 На текущий момент нет матчей
@@ -74,19 +74,19 @@ const TodayMatchSection = React.memo(() => {
         )}
       </Animated.View>
       {/* CONTENT */}
-      <Animated.View style={[ StyleSheet.absoluteFill, contentStyle ]} pointerEvents={!loading.matches && !error && matches.length > 0 ? 'auto' : 'none'}>
-        {!loading.matches && !error && matches.length > 0 && (
+      <Animated.View style={[StyleSheet.absoluteFill, contentStyle]} pointerEvents={!loading?.matches && !error && matches.length > 0 ? 'auto' : 'none'}>
+        {!loading?.matches && !error && matches.length > 0 && (
           <View style={styles.cardBg}>
-            <TodayMatchLink todayMatches={matches} onPress={() => { }} />
+            <TodayMatchLink todayMatches={todayMatches} onPress={handleAllPress} />
             <Spacer size={SECTION_SPACING} />
           </View>
         )}
       </Animated.View>
     </View>
   );
-} );
+});
 
-const styles = StyleSheet.create( {
+const styles = StyleSheet.create({
   root: {
     minHeight: 70,
     position: 'relative',
@@ -106,9 +106,10 @@ const styles = StyleSheet.create( {
     borderColor: 'transparent',
   },
   emptyBox: {
-    padding: 64,
+    padding: 32,
+    minHeight: 250,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     borderTopLeftRadius: 50,
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,

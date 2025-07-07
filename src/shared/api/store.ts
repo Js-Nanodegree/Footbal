@@ -5,18 +5,20 @@ import teamsReducer from '../../features/team-api/redux/teamSlice';
 import playersReducer from '../../features/team-api/redux/playerSlice';
 import matchesReducer from '../../features/team-api/redux/matchSlice';
 import teamPastMatchesReducer from '../../features/team-api/redux/teamPastMatchesSlice';
+import homeScreenReducer from '../../features/home-screen/redux/homeScreenSlice';
 
 const rootReducer = combineReducers( {
     teams: teamsReducer,
     players: playersReducer,
     matches: matchesReducer,
     teamPastMatches: teamPastMatchesReducer,
+    homeScreen: homeScreenReducer,
 } );
 
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    whitelist: [ 'teams', 'players', 'matches', 'teamPastMatches' ],
+    whitelist: [ 'teams', 'players', 'matches', 'teamPastMatches', 'homeScreen' ],
 };
 
 const persistedReducer = persistReducer( persistConfig, rootReducer );

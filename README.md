@@ -108,3 +108,17 @@ To learn more about React Native, take a look at the following resources:
 **Документация и стандарты:**
 - [ADR: UI/UX-архитектура](memory-bank/creative/adr-uiux-architecture.md)
 - [Креативная фаза UI/UX](memory-bank/creative/creative-uiux.md)
+
+## Использование Zod
+
+- Всегда импортируйте { z } из 'zod' в каждом файле, где используются схемы.
+- Убедитесь, что в package.json только одна версия zod.
+- Не используйте локальные копии или алиасы для zod.
+- Если возникает ошибка 'Cannot read property object of undefined', проверьте импорт и установку zod.
+- В проекте есть unit-тест src/features/team-api/zod/zodImport.test.ts, который проверяет корректность импорта zod.
+
+## Fallback-логика и моки
+- При ошибках API или валидации схемы используются моки (mockTeams, mockMatches, mockCompetitions, mockStandings).
+- UI всегда отображает данные, даже если API недоступен.
+- Причины fallback логируются.
+- Есть unit-тесты на возврат моков.

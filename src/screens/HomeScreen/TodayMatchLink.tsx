@@ -37,7 +37,7 @@ const TodayMatchLink: React.FC<TodayMatchLinkProps> = ( { onPress, todayMatches 
                     {count > 0 ? `${ count } ${ pluralizeGame( count ) }` : 'Нет матчей'}
                 </Typography>
             </View>
-            <Pressable>
+            <Pressable onPress={onPress}>
                 <Typography variant="caption" font="Inter" numberOfLines={2} style={[ styles.count, {
                     fontSize: 14,
                     fontWeight: '700',

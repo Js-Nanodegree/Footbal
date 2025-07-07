@@ -21,21 +21,20 @@ export function useTeams(pageSize = 20): UseTeamsResult {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
 
-  async function fetchTeams( reset = false )
-  {
+  async function fetchTeams(reset = false) {
     setLoading(true);
     setError(null);
     try {
       const data = await TeamApiService.getTeams(reset ? 1 : page, pageSize);
       console.log('TeamApiService.getTeams result in hook:', data);
-      setTeams(prev => reset ? data : [...prev, ...data]);
+      setTeams((prev) => (reset ? data : [...prev, ...data]));
       setHasMore(data.length === pageSize);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка загрузки команд');
-      showErrorNotification( e instanceof Error ? e.message : 'Ошибка загрузки команд' );
+      showErrorNotification(e instanceof Error ? e.message : 'Ошибка загрузки команд');
       // Возвращаем моки при ошибке
-      setTeams( mockTeams );
-      setHasMore( false );
+      setTeams(mockTeams);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
@@ -48,7 +47,7 @@ export function useTeams(pageSize = 20): UseTeamsResult {
   }, [page]);
 
   const loadNextPage = () => {
-    if (!loading && hasMore) setPage(p => p + 1);
+    if (!loading && hasMore) setPage((p) => p + 1);
   };
 
   const refresh = () => {
@@ -58,4 +57,4 @@ export function useTeams(pageSize = 20): UseTeamsResult {
   };
 
   return { teams, loading, error, page, hasMore, loadNextPage, refresh };
-} 
+}

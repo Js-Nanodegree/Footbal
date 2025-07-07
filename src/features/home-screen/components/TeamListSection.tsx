@@ -7,7 +7,8 @@ import SkeletonTeamAvatar from 'src/shared/ui/team-list/SkeletonTeamAvatar';
 import TeamList from 'src/shared/ui/team-list/TeamList';
 import Typography from 'src/shared/ui/typography/Typography';
 import { useAppContext } from '../context';
-import { exampleTeams } from '../mocks/exampleTeams';
+import { Team } from 'src/features/team-api/types/team';
+import { colors } from 'src/shared/ui/theme/colors';
 
 const SECTION_SPACING = 20;
 
@@ -24,22 +25,9 @@ function useFadeTransition( visible: boolean )
 }
 
 const TeamListSection = React.memo(
-  ( {
-    teamIds,
-    loading,
-    error,
-  }: {
-    teamIds: number[];
-    loading?: boolean;
-    error?: string | null;
-  } ) =>
+  ( { teams, loading, error }: { teams: Team[]; loading?: boolean; error?: string | null } ) =>
   {
-    const { selectedLeagueId, setSelectedTeamIds, selectedTeamIds } = useAppContext();
-    // Фильтруем команды по выбранной лиге
-    const teams = teamIds
-      .map( ( id ) => exampleTeams.find( ( t ) => t.id === id ) )
-      .filter( ( t ): t is NonNullable<typeof t> => Boolean( t ) )
-      .filter( ( t ) => selectedLeagueId == null || t.leagueId === selectedLeagueId );
+    const { selectedTeamIds, setSelectedTeamIds } = useAppContext();
 
     const handleTeamSelect = ( id: number | 'tv' ) =>
     {
@@ -54,15 +42,13 @@ const TeamListSection = React.memo(
     const contentStyle = useFadeTransition( !loading && !error && teams.length > 0 );
 
     // Анимация высоты
-    const height = useSharedValue( selectedTeamIds.length === 0 ? 150 :225 );
+    const height = useSharedValue( selectedTeamIds.length === 0 ? 150 : 225 );
 
     React.useEffect( () =>
     {
       height.value = withTiming( selectedTeamIds.length === 0 ? 150 : 225, { duration: 320 } );
     }, [ selectedTeamIds.length ] );
     const animatedRootStyle = useAnimatedStyle( () => ( { height: height.value } ) );
-
-    console.log( 'selectedTeamIds', selectedTeamIds );
 
     return (
       <Animated.View style={[ styles.root, animatedRootStyle ]}>
@@ -96,19 +82,36 @@ const TeamListSection = React.memo(
           style={[ StyleSheet.absoluteFill, emptyStyle ]}
           pointerEvents={!loading && !error && teams.length === 0 ? 'auto' : 'none'}
         >
+          <>
           {!loading && !error && teams.length === 0 && (
-            <>
-              <Spacer size={SECTION_SPACING} />
-              <View style={{ marginLeft: 16, marginTop: 8 }}>
-                <Typography variant="body" font="Inter" style={{ marginLeft: 16, marginBottom: 8 }}>
+              <View
+                style={{
+                  padding: 32,
+                  backgroundColor: colors.white,
+                  borderRadius: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
+                }}
+              >
+                <Typography
+                  variant="body"
+                  font="Oswald"
+                  style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
+                >
                   Нет команд для отображения
                 </Typography>
-                <Typography variant="body" font="Inter" style={{ marginLeft: 16, marginBottom: 8 }}>
-
+                <Typography
+                  variant="body"
+                  font="Oswald"
+                  style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
+                >
+                  Попробуйте изменить лигу или команду
                 </Typography>
               </View>
-            </>
-          )}
+            )}
+            <Spacer size={SECTION_SPACING} />
+          </>
         </Animated.View>
         {/* CONTENT */}
         <Animated.View
@@ -117,7 +120,7 @@ const TeamListSection = React.memo(
         >
           {!loading && !error && teams.length > 0 && (
             <>
-              <Typography variant="h1" weight="bold" font="Oswald" style={{ marginLeft: 16 }}>
+              <Typography variant="h1" weight="bold" font="Oswald" style={{ marginLeft: 16, fontSize: 24, color: '#222', fontWeight: '600' }}>
                 Выбор команды
               </Typography>
               <TeamList
@@ -129,7 +132,6 @@ const TeamListSection = React.memo(
             </>
           )}
         </Animated.View>
-        {/* <Spacer size={SECTION_SPACING} /> */}
       </Animated.View>
     );
   },

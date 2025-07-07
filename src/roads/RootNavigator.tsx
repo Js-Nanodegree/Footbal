@@ -16,6 +16,7 @@ import TeamPastMatchesScreen from '../screens/TeamPastMatchesScreen';
 import { Competition } from '../features/team-api/types/competition';
 import NetworkStatusBar from '../shared/ui/tab-bar/NetworkStatusBar';
 import HomeScreen from 'src/screens/HomeScreen';
+import FinishedMatchesScreen from 'src/features/home-screen/components/FinishedMatchesScreen';
 
 export type RootStackParamList = {
     MainTabs: undefined;
@@ -27,6 +28,7 @@ export type RootStackParamList = {
     CollapsibleHeaderDemo: undefined;
     ErrorStateDemo: undefined;
     FABScrollToTopDemo: undefined;
+    FinishedMatches: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -83,6 +85,7 @@ const MainTabs = () => (
 const RootNavigator = () => (
     <Stack.Navigator initialRouteName="MainTabs">
         <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
+        <Stack.Screen name="FinishedMatches" component={FinishedMatchesScreen} options={{ title: 'Завершённые матчи', headerShown: false }} />
         {/* <Stack.Screen name="CompetitionDetails" component={CompetitionDetailsScreen} options={{ title: 'Детали турнира', headerShown: false }} />
         <Stack.Screen name="Standings" component={StandingsScreen} options={{ title: 'Турнирная таблица', headerShown: false }} />
         <Stack.Screen name="TeamDetails" component={TeamDetailsScreen} options={{ title: 'Детали команды', headerShown: false }} />

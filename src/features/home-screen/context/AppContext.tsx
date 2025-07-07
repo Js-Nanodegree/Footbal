@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Alert } from 'react-native';
+import React, { createContext, useContext, useCallback, ReactNode } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedLeagueId, setSelectedTeamIds } from '../redux/homeScreenSlice';
 
 /**
  * AppContext хранит состояние фильтров, выбранной лиги, выбранных команд, лоадеров для HomeScreen.
@@ -23,42 +24,41 @@ const AppContext = createContext<AppContextValue | undefined>( undefined );
 
 export const AppContextProvider = ( { children }: { children: ReactNode } ) =>
 {
-    const [ selectedLeagueId, setSelectedLeagueIdState ] = useState<number | null>( null );
-    const [ selectedTeamIds, setSelectedTeamIdsState ] = useState<number[]>( [] );
-    const [ loading, setLoadingState ] = useState( { matches: false, teams: false, leagues: false } );
+    const dispatch = useDispatch();
+    const selectedLeagueId = useSelector((state: any) => state.homeScreen.selectedLeagueId);
+    const selectedTeamIds = useSelector((state: any) => state.homeScreen.selectedTeamIds);
+    const [ loading, setLoadingState ] = React.useState( { matches: false, teams: false, leagues: false } );
 
-    // setSelectedLeagueId — только стейт
-    const setSelectedLeagueId = useCallback( ( id: number | null ) =>
+    const setSelectedLeagueIdCb = useCallback( ( id: number | null ) =>
     {
-        setSelectedLeagueIdState( id );
-    }, [] );
+        dispatch(setSelectedLeagueId(id));
+    }, [dispatch] );
 
-    // setSelectedTeamIds — только стейт
-    const setSelectedTeamIds = useCallback( ( idOrArray: number | string | ( number | string )[] ) =>
+    const setSelectedTeamIdsCb = useCallback( ( idOrArray: number | string | ( number | string )[] ) =>
     {
         if ( Array.isArray( idOrArray ) )
         {
-            setSelectedTeamIdsState( idOrArray.map( Number ) );
+            dispatch(setSelectedTeamIds(idOrArray.map(Number)));
         }
         else
         {
             const idNum = Number( idOrArray );
-            setSelectedTeamIdsState( prev =>
-            {
-                const exists = prev.includes( idNum );
-                return exists ? prev.filter( tid => tid !== idNum ) : [ ...prev, idNum ];
-            } );
+            dispatch((dispatch: any, getState: any) => {
+                const prev = getState().homeScreen.selectedTeamIds;
+                const exists = prev.includes(idNum);
+                const newIds = exists ? prev.filter((tid: number) => tid !== idNum) : [...prev, idNum];
+                dispatch(setSelectedTeamIds(newIds));
+            });
         }
-    }, [] );
+    }, [dispatch] );
 
-    // Обновление loading по частям
     const setLoading = useCallback( ( l: Partial<AppContextValue[ 'loading' ]> ) =>
     {
         setLoadingState( prev => ( { ...prev, ...l } ) );
     }, [] );
 
     return (
-        <AppContext.Provider value={{ selectedLeagueId, setSelectedLeagueId, selectedTeamIds, setSelectedTeamIds, loading, setLoading }}>
+        <AppContext.Provider value={{ selectedLeagueId, setSelectedLeagueId: setSelectedLeagueIdCb, selectedTeamIds, setSelectedTeamIds: setSelectedTeamIdsCb, loading, setLoading }}>
             {children}
         </AppContext.Provider>
     );

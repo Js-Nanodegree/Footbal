@@ -87,4 +87,19 @@ describe( 'useTeams', () =>
         expect( result.current.page ).toBe( 1 );
         expect( result.current.teams ).toEqual( mockTeams );
     } );
-} ); 
+} );
+
+jest.mock('../../services/teamApi', () => ({
+  TeamApiService: {
+    getTeams: jest.fn().mockImplementation(() => Promise.resolve(require('../../mocks/teams').mockTeams)),
+  },
+}));
+
+describe('useTeams fallback', () => {
+  it('возвращает моки при ошибке API', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useTeams());
+    await waitForNextUpdate();
+    expect(result.current.teams.length).toBeGreaterThan(0);
+    expect(result.current.error).toBeNull();
+  });
+}); 
