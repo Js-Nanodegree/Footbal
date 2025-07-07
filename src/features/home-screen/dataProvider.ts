@@ -2,10 +2,9 @@ import { getCache, setCache } from '../../shared/memory-bank/mmkvMemoryBank';
 import { Match } from '../team-api/types/match';
 import { Team } from '../team-api/types/team';
 import { Competition } from '../team-api/types/competition';
-import { enrichTeamsFromMatches, enrichLeaguesFromMatches, ensureAllFields } from './utils/dataEnrichment';
-import { exampleMatches } from './mocks/exampleMatches';
-import { exampleTeams } from './mocks/exampleTeams';
-import { exampleLeagues } from './mocks/exampleLeagues';
+import { DataEnrichmentService } from './services/DataEnrichmentService';
+import { ErrorHandler } from './services/ErrorHandler';
+import { MockDataProvider } from './services/MockDataProvider';
 import { TeamApiService } from '../team-api/services/teamApi';
 import { CompetitionApiService } from '../team-api/services/competitionApi';
 
@@ -42,39 +41,52 @@ export async function getHomeScreenData(): Promise<HomeScreenData>
         return cached;
     }
 
-    // 2. Получаем реальные данные с API, fallback на моки
-    let matches, teams, leagues;
-    try
+    // 2. Получаем реальные данные с API, fallback на моки через ErrorHandler и MockDataProvider
+    let matches: Match[], teams: Team[], leagues: Competition[];
+    const fetchApiData = async () =>
     {
         teams = await TeamApiService.getTeams();
         matches = await TeamApiService.getTeamMatches();
         leagues = await CompetitionApiService.getCompetitions();
-    } catch ( e )
-    {
-        matches = exampleMatches;
-        teams = exampleTeams;
-        leagues = exampleLeagues;
-    }
+        return { matches, teams, leagues };
+    };
+    const fetchMockData = () => ( {
+        matches: MockDataProvider.getMock( 'matches' ),
+        teams: MockDataProvider.getMock( 'teams' ),
+        leagues: MockDataProvider.getMock( 'leagues' ),
+    } );
+    const { matches: rawMatches, teams: rawTeams, leagues: rawLeagues } = await ErrorHandler.handle( fetchApiData, fetchMockData );
 
-    // 3. Enrichment и адаптация
-    matches = ensureAllFields( matches );
-    teams = enrichTeamsFromMatches( matches, teams );
-    leagues = enrichLeaguesFromMatches( matches, leagues );
+    // 3. Enrichment и адаптация через DataEnrichmentService
+    let enrichedMatches = DataEnrichmentService.ensureAllFields( rawMatches );
+    let enrichedTeams = DataEnrichmentService.enrichTeamsFromMatches( enrichedMatches, rawTeams );
+    let enrichedLeagues = DataEnrichmentService.enrichLeaguesFromMatches( enrichedMatches, rawLeagues );
+
+    // 3.1 Фильтрация: только LIVE и ближайшие 3 дня
+    const now = new Date();
+    const threeDaysLater = new Date( now.getTime() + 3 * 24 * 60 * 60 * 1000 );
+    enrichedMatches = enrichedMatches.filter( ( m ) =>
+    {
+        if ( m.status === 'LIVE' ) return true;
+        const matchDate = new Date( m.utcDate );
+        return matchDate >= now && matchDate <= threeDaysLater;
+    } );
 
     // 4. Мержим с кэшем (оставляем только свежие по id)
     const oldTeams = cached?.teams || [];
     const oldMatches = cached?.matches || [];
     const oldLeagues = cached?.leagues || [];
-    teams = mergeById( teams, oldTeams );
-    matches = mergeById( matches, oldMatches );
-    leagues = mergeById( leagues, oldLeagues );
+    enrichedTeams = mergeById( enrichedTeams, oldTeams );
+    enrichedMatches = mergeById( enrichedMatches, oldMatches );
+    enrichedLeagues = mergeById( enrichedLeagues, oldLeagues );
 
-    const data: HomeScreenData = {
-        matches,
-        teams,
-        leagues,
+    // 5. Сохраняем в MMKV
+    const result: HomeScreenData = {
+        matches: enrichedMatches,
+        teams: enrichedTeams,
+        leagues: enrichedLeagues,
         lastUpdated: Date.now(),
     };
-    setCache( MMKV_KEY, data );
-    return data;
+    setCache( MMKV_KEY, result );
+    return result;
 } 

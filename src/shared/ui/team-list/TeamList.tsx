@@ -7,18 +7,16 @@ import ManCityLogo from '../team-logos/ManCityLogo';
 import PalaceLogo from '../team-logos/PalaceLogo';
 import Typography from '../typography/Typography';
 import { useRippleScaleAnimation } from './hooks/useRippleScaleAnimation';
+import { Team } from 'src/features/team-api/types/team';
 
-export interface Team {
-  id: number | 'tv';
-  name: string;
-  logo: string;
-}
+// Тип для элемента списка (команда или TV)
+type TeamListItemType = Team & { logo?: string } | { id: 'tv'; name: string; logo: string };
 
 /**
  * @param onTeamSelect - вызывается при выборе команды (id: number)
  */
 interface TeamListProps {
-  teams: Team[];
+  teams: TeamListItemType[];
   initialSelectedIds?: number[];
   onTeamSelect?: (id: number | 'tv') => void;
   playingTeamIds?: number[]; // id играющих команд
@@ -33,10 +31,10 @@ const logoMap: Record<string, React.FC<{ size?: number }>> = {
   tv: TvIcon,
 };
 
-const getLogoComponent = (logo: string) => logoMap[logo] || MuLogo;
+const getLogoComponent = ( logo?: string ) => logo && logoMap[ logo ] ? logoMap[ logo ] : MuLogo;
 
 const TeamListItem: React.FC<{
-  item: Team;
+  item: TeamListItemType;
   isActive: boolean;
   disabled: boolean;
   onSelect?: () => void;
@@ -44,6 +42,7 @@ const TeamListItem: React.FC<{
   style?: any;
   onPress?: () => void;
 }> = ({ item, isActive, disabled, onSelect, onDeselect, style, onPress }) => {
+  // Для TV используем иконку, для команды — crestUrl или fallback
   const Logo = getLogoComponent(item.logo);
   const [visible, setVisible] = useState(true);
   const { scale, opacity, rippleScale, rippleOpacity, animateIn, animateOut, isAnimating } =
@@ -163,7 +162,7 @@ const TeamList: React.FC<TeamListProps> = ({
   }, [teams, playingTeamIds]);
 
   // Добавляем кнопку ТВ в начало списка
-  const teamsWithTv: Team[] = React.useMemo(
+  const teamsWithTv: TeamListItemType[] = React.useMemo(
     () => [{ id: 'tv', name: 'TV', logo: 'tv' }, ...sortedTeams],
     [sortedTeams],
   );
@@ -181,7 +180,8 @@ const TeamList: React.FC<TeamListProps> = ({
 
   // FlatList выбранных
   const renderSelected = useCallback(
-    ({ item, index }: { item: Team; index: number }) => {
+    ( { item, index }: { item: TeamListItemType; index: number } ) =>
+    {
       if (!item || !item.id) return null;
       return (
         <TeamListItem
@@ -202,7 +202,8 @@ const TeamList: React.FC<TeamListProps> = ({
 
   // FlatList невыбранных
   const renderUnselected = useCallback(
-    ({ item, index }: { item: Team; index: number }) => {
+    ( { item, index }: { item: TeamListItemType; index: number } ) =>
+    {
       if (!item || !item.id) return null;
       // Для TV делаем отдельный обработчик
       const isTv = String(item.id) === 'tv';

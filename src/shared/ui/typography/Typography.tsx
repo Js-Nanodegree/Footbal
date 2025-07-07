@@ -1,3 +1,4 @@
+// Typography: универсальный компонент для текста, поддерживает все варианты, веса, шрифты, цвета из theme/colors и colorMap. Accessibility через пропсы (TextProps). Нет дублирующего кода. Использовать только его для текста в проекте.
 import React from 'react';
 import { Text, TextProps, StyleSheet, View, ViewStyle, DimensionValue } from 'react-native';
 import { colors } from '../theme/colors';

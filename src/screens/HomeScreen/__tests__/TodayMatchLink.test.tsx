@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import TodayMatchLink from '../TodayMatchLink';
+import TodayMatchLink from '../../../features/home-screen/components/TodayMatchLink';
 
 describe( 'TodayMatchLink', () =>
 {

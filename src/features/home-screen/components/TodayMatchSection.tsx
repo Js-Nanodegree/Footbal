@@ -1,15 +1,19 @@
-import React from 'react';
-import { View, Button, Alert, StyleSheet } from 'react-native';
-import TodayMatchLink from 'src/screens/HomeScreen/TodayMatchLink';
-import Spacer from 'src/shared/ui/Spacer';
-import { useAppContext } from '../context';
-import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
-import ErrorState from 'src/shared/ui/error-state/ErrorState';
-import Typography from 'src/shared/ui/typography/Typography';
-import Animated from 'react-native-reanimated';
-import { useFadeTransition } from 'src/shared/hooks/useFadeTransition';
-import { Match } from 'src/features/team-api/types/match';
+// TodayMatchSection: секция актуальных матчей, с поддержкой лоадеров, ошибок, пустого состояния, локализации и единого стиля
 import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import TodayMatchLink from 'src/features/home-screen/components/TodayMatchLink';
+import { Match } from 'src/features/team-api/types/match';
+import { useFadeTransition } from 'src/shared/hooks/useFadeTransition';
+import Spacer from 'src/shared/ui/Spacer';
+import ErrorState from 'src/shared/ui/error-state/ErrorState';
+import { colors } from 'src/shared/ui/theme/colors';
+import { shadows } from 'src/shared/ui/theme/shadows';
+import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
+import Typography from 'src/shared/ui/typography/Typography';
+import { useAppContext } from '../context';
+// import { t } from '@lingui/macro'; // TODO: подключить lingui.js и заменить строки на t()
 
 const SECTION_SPACING = 20;
 
@@ -29,7 +33,13 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
   };
 
   // Преобразуем матчи к нужному формату для TodayMatchLink
-  const todayMatches = matches.map( ( m ) => ( {
+  const todayMatches: {
+    id: number;
+    homeTeam: { name: string; logo: string };
+    awayTeam: { name: string; logo: string };
+    time: string;
+    date: string;
+  }[] = matches.map( ( m ) => ( {
     id: m.id,
     homeTeam: { name: m.homeTeam?.name, logo: m.homeTeam?.crestUrl || '' },
     awayTeam: { name: m.awayTeam?.name, logo: m.awayTeam?.crestUrl || '' },
@@ -38,11 +48,11 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
   } ) );
 
   return (
-    <View style={styles.root}>
+    <View style={styles.root} testID="today-match-section" accessibilityLabel="today-match-section">
       {/* LOADING */}
       <Animated.View style={[StyleSheet.absoluteFill, loadingStyle]} pointerEvents={loading?.matches ? 'auto' : 'none'}>
         {loading?.matches && (
-          <View style={styles.cardBg}>
+          <View style={[ styles.cardBg, shadows.section ]}>
             {[...Array(3)].map((_, i) => (
               <TodayMatchCardSkeleton key={i} />
             ))}
@@ -56,17 +66,19 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
       {/* EMPTY */}
       <Animated.View style={[StyleSheet.absoluteFill, emptyStyle]} pointerEvents={!loading?.matches && !error && matches.length === 0 ? 'auto' : 'none'}>
         {!loading?.matches && !error && matches.length === 0 && (
-          <View style={styles.cardBg}>
-            <TodayMatchLink todayMatches={todayMatches} onPress={handleAllPress} />
+          <View style={[ styles.cardBg, shadows.section ]}>
+            <TodayMatchLink todayMatches={todayMatches} onPress={handleAllPress} testID="today-match-link-empty" accessibilityLabel="today-match-link-empty" />
             <View style={styles.emptyBox}>
-              <Typography variant="body" font="Inter" style={{ color: '#FF8800', marginBottom: 16 }}>
+              <Typography variant="body" font="Inter" style={{ color: colors.primary, marginBottom: 16 }}>
+                {/* TODO: {t`На текущий момент нет матчей`} */}
                 На текущий момент нет матчей
               </Typography>
               <Typography
                 variant="body"
                 font="Inter"
-                style={{ color: '#888', marginBottom: 16, textAlign: 'center' }}
+                style={{ color: colors.textSecondary, marginBottom: 16, textAlign: 'center' }}
               >
+                {/* TODO: {t`Попробуйте изменить лигу или команду`} */}
                 Попробуйте изменить лигу или команду
               </Typography>
             </View>
@@ -76,8 +88,8 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
       {/* CONTENT */}
       <Animated.View style={[StyleSheet.absoluteFill, contentStyle]} pointerEvents={!loading?.matches && !error && matches.length > 0 ? 'auto' : 'none'}>
         {!loading?.matches && !error && matches.length > 0 && (
-          <View style={styles.cardBg}>
-            <TodayMatchLink todayMatches={todayMatches} onPress={handleAllPress} />
+          <View style={[ styles.cardBg, shadows.section ]}>
+            <TodayMatchLink todayMatches={todayMatches} onPress={handleAllPress} testID="today-match-link-content" accessibilityLabel="today-match-link-content" />
             <Spacer size={SECTION_SPACING} />
           </View>
         )}
@@ -92,18 +104,13 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   cardBg: {
-    backgroundColor: 'white',
+    backgroundColor: colors.card,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
     paddingTop: 15,
-    shadowColor: 'black',
-    shadowOffset: { width: 1.5, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: 'transparent',
+    borderColor: colors.transparent,
   },
   emptyBox: {
     padding: 32,

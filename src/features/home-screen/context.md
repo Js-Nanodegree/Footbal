@@ -1,4 +1,4 @@
-# HomeScreen Data Layer — Архитектура
+# HomeScreen Data Layer — Архитектура (обновлено)
 
 ## Назначение
 
@@ -8,18 +8,33 @@
 
 ## Архитектура (Folder by Feature)
 
-- **dataProvider.ts** — сервис получения данных:
-  - 1) Читает из MMKV (быстро, оффлайн, TTL 24ч)
-  - 2) Если нет/устарело — возвращает моки (exampleMatches, exampleTeams, exampleLeagues)
-  - 3) Применяет enrichment (достраивает команды/лиги, обязательные поля)
-  - 4) Сохраняет новые enriched данные в MMKV
-- **utils/dataEnrichment.ts** — enrichment-утилиты:
+- **api/** — только API-клиенты и endpoints
+- **components/** — UI-компоненты (TeamListSection, MatchSwiperSection и т.д.)
+- **context/** — контекст, провайдеры, AppContext.tsx
+- **hooks/** — useHomeScreenSections, useMatchById и т.д.
+- **mocks/** — exampleMatches, exampleTeams, exampleLeagues
+- **redux/** — homeScreenSlice, async thunks
+- **services/** — бизнес-логика, обработка ошибок, моки, enrichment:
+  - `DataEnrichmentService.ts` — enrichment, фильтрация, сортировка, поиск, edge-cases
+  - `ErrorHandler.ts` — универсальный обработчик ошибок (handle)
+  - `MockDataProvider.ts` — централизованный сервис для мок-данных
+- **tests/** — unit-тесты, интеграционные тесты
+- **utils/** — вспомогательные приватные функции (если нужны)
+- **context.md** — описание архитектуры и связей
+
+---
+
+## Ключевые сервисы
+
+- **DataEnrichmentService**
   - enrichTeamsFromMatches, enrichLeaguesFromMatches, ensureAllFields
-- **redux/homeScreenSlice.ts** — Redux slice:
-  - fetchHomeScreenData диспатчит централизованно enriched данные
-  - UI всегда работает с валидными, согласованными данными
-- **mocks/** — генерация мок-данных для fallback и тестов
-- **dataEnrichment.test.ts, dataProvider.test.ts** — unit-тесты покрытия enrichment и слоя данных
+  - filterMatches, sortMatches, searchMatches
+  - Гарантирует валидность и полноту данных, покрывает edge-cases
+- **ErrorHandler**
+  - handle(fn, fallback): универсальная обработка ошибок, fallback на моки, логирование
+- **MockDataProvider**
+  - getMock(type): выдача мок-данных по типу (matches, teams, leagues)
+  - Гарантирует типизацию и расширяемость моков
 
 ---
 
@@ -29,28 +44,42 @@
 2. fetchHomeScreenData вызывает getHomeScreenData (dataProvider)
 3. dataProvider:
    - Читает из MMKV (если не устарело)
-   - Иначе — enrichment моков, запись в MMKV
+   - Иначе — ErrorHandler.handle(fetchApi, fetchMock): enrichment моков, запись в MMKV
+   - enrichment и адаптация через DataEnrichmentService
 4. UI всегда мгновенно показывает валидные enriched данные (даже без сети)
 
 ---
 
 ## Преимущества
+- Модульность (folder by feature)
 - Мгновенный старт (MMKV)
 - Оффлайн-режим и кэширование
 - Нет дублей, все поля заполнены (enrichment)
-- Лёгкая поддержка и расширение (Folder by Feature)
+- Лёгкая поддержка и расширение (сервисы, тесты)
 - Покрытие тестами (unit)
 
 ---
 
 ## Тесты
-- `utils/dataEnrichment.test.ts` — enrichment-утилиты
+- `services/DataEnrichmentService.test.ts` — enrichment-утилиты
+- `services/MockDataProvider.test.ts` — выдача моков, edge-cases
+- `services/ErrorHandler.test.ts` — fallback, обработка ошибок
 - `dataProvider.test.ts` — слой данных, fallback, кэш
 
 ---
 
 ## TODO/Расширение
 - Подключение real API (заменить моки)
-- Доработка enrichment (фильтрация, сортировка)
+- Доработка enrichment (фильтрация, сортировка, поиск)
 - Расширение структуры (live TTL, история)
-- E2E-тесты UI 
+- E2E-тесты UI
+- Провести аудит других features на повторяющуюся логику и вынести в shared/services
+
+---
+
+## Принципы
+- Все бизнес- и enrichment-логика — только в сервисах
+- UI и redux работают только с валидными enriched данными
+- Все повторяющиеся функции — в сервисах или shared/utils
+- Тесты рядом с кодом feature
+- Документация всегда актуальна (context.md) 

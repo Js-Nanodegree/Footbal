@@ -1,4 +1,4 @@
-import { rest } from 'msw/node';
+import { rest } from 'msw';
 
 const allMatches = [
     { id: 101, homeTeam: 'Arsenal', awayTeam: 'Chelsea', status: 'LIVE', date: '2024-06-20', tournament: 'EPL' },

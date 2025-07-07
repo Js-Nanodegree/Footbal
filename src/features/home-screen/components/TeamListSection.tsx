@@ -1,14 +1,16 @@
 import React from 'react';
-import { Alert, Button, FlatList, StyleSheet, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Team } from 'src/features/team-api/types/team';
 import Spacer from 'src/shared/ui/Spacer';
 import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import SkeletonTeamAvatar from 'src/shared/ui/team-list/SkeletonTeamAvatar';
 import TeamList from 'src/shared/ui/team-list/TeamList';
+import { colors } from 'src/shared/ui/theme/colors';
+import { shadows } from 'src/shared/ui/theme/shadows';
 import Typography from 'src/shared/ui/typography/Typography';
 import { useAppContext } from '../context';
-import { Team } from 'src/features/team-api/types/team';
-import { colors } from 'src/shared/ui/theme/colors';
+// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 const SECTION_SPACING = 20;
 
@@ -29,11 +31,11 @@ const TeamListSection = React.memo(
   {
     const { selectedTeamIds, setSelectedTeamIds } = useAppContext();
 
-    const handleTeamSelect = ( id: number | 'tv' ) =>
+    const handleTeamSelect = React.useCallback( ( id: number | 'tv' ) =>
     {
       if ( id === 'tv' ) return; // обработка TV отдельно через onTvPress
       setSelectedTeamIds( id );
-    };
+    }, [ setSelectedTeamIds ] );
 
     // Fade стили для состояний
     const loadingStyle = useFadeTransition( !!loading );
@@ -43,22 +45,24 @@ const TeamListSection = React.memo(
 
     // Анимация высоты
     const height = useSharedValue( selectedTeamIds.length === 0 ? 150 : 225 );
-
     React.useEffect( () =>
     {
       height.value = withTiming( selectedTeamIds.length === 0 ? 150 : 225, { duration: 320 } );
     }, [ selectedTeamIds.length ] );
     const animatedRootStyle = useAnimatedStyle( () => ( { height: height.value } ) );
 
+    // Формируем массив с logo для TeamList
+    const teamsWithLogo = React.useMemo(() => teams.map(team => ({ ...team, logo: team.crestUrl || '' })), [teams]);
+
     return (
-      <Animated.View style={[ styles.root, animatedRootStyle ]}>
+      <Animated.View style={[ styles.root, animatedRootStyle, shadows.section ]} testID="team-list-section">
         {/* LOADING */}
         <Animated.View
           style={[ StyleSheet.absoluteFill, loadingStyle ]}
           pointerEvents={loading ? 'auto' : 'none'}
         >
           {loading && (
-            <View style={{ paddingVertical: 8, minHeight: 150 }}>
+            <View style={{ paddingVertical: 8, minHeight: 150, backgroundColor: colors.card }}>
               <FlatList
                 data={[ ...Array( 8 ) ]}
                 horizontal
@@ -66,6 +70,7 @@ const TeamListSection = React.memo(
                 renderItem={() => <SkeletonTeamAvatar />}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingLeft: 8, paddingRight: 8 }}
+                testID="team-list-skeleton"
               />
             </View>
           )}
@@ -87,18 +92,21 @@ const TeamListSection = React.memo(
               <View
                 style={{
                   padding: 32,
-                  backgroundColor: colors.white,
+                  backgroundColor: colors.card,
                   borderRadius: 36,
                   alignItems: 'center',
                   justifyContent: 'center',
                   flex: 1,
                 }}
+                testID="team-list-empty"
+                accessibilityLabel="empty-team-list"
               >
                 <Typography
                   variant="body"
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
+                  {/* TODO: {t`Нет команд для отображения`} */}
                   Нет команд для отображения
                 </Typography>
                 <Typography
@@ -106,6 +114,7 @@ const TeamListSection = React.memo(
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
+                  {/* TODO: {t`Попробуйте изменить лигу или команду`} */}
                   Попробуйте изменить лигу или команду
                 </Typography>
               </View>
@@ -120,14 +129,17 @@ const TeamListSection = React.memo(
         >
           {!loading && !error && teams.length > 0 && (
             <>
-              <Typography variant="h1" weight="bold" font="Oswald" style={{ marginLeft: 16, fontSize: 24, color: '#222', fontWeight: '600' }}>
+              <Typography variant="h1" weight="bold" font="Oswald" style={{ marginLeft: 16, fontSize: 24, color: colors.text, fontWeight: '600' }}>
+                {/* TODO: {t`Выбор команды`} */}
                 Выбор команды
               </Typography>
               <TeamList
-                teams={teams}
+                teams={teamsWithLogo}
                 initialSelectedIds={selectedTeamIds}
                 onTeamSelect={handleTeamSelect}
                 onTvPress={() => Alert.alert( 'Переход к ТВ-матчам или трансляциям' )}
+                testID="team-list"
+                accessibilityLabel="team-list"
               />
             </>
           )}
@@ -140,6 +152,7 @@ const TeamListSection = React.memo(
 const styles = StyleSheet.create( {
   root: {
     position: 'relative',
+    backgroundColor: colors.transparent,
   },
 });
 

@@ -1,10 +1,14 @@
+// MatchSwiperSection: секция свайпера live-матчей, поддержка лоадеров, ошибок, пустого состояния, fade transition, accessibility
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import MatchSwiper from 'src/features/match-swiper/MatchSwiper';
 import SkeletonSwiper from 'src/features/match-swiper/SkeletonSwiper';
-import Spacer from 'src/shared/ui/Spacer';
-import Animated from 'react-native-reanimated';
 import { useFadeTransition } from 'src/shared/hooks/useFadeTransition';
+import Spacer from 'src/shared/ui/Spacer';
+import { colors } from 'src/shared/ui/theme/colors';
+import { shadows } from 'src/shared/ui/theme/shadows';
+// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 const SECTION_SPACING = 20;
 
@@ -23,17 +27,17 @@ const MatchSwiperSection = React.memo( ( { matches, loading, error }: MatchSwipe
 
     return (
         <>
-            <View style={styles.root}>
+            <View style={[styles.root, shadows.section]} testID="match-swiper-section">
                 {/* LOADING */}
                 <Animated.View style={[ StyleSheet.absoluteFill, loadingStyle ]} pointerEvents={loading ? 'auto' : 'none'}>
                     {loading && (
-                        <SkeletonSwiper msg="Загрузка live-матчей..." />
+                        <SkeletonSwiper msg={/* TODO: {t`Загрузка live-матчей...`} */ 'Загрузка live-матчей...'} />
                     )}
                 </Animated.View>
                 {/* ERROR/EMPTY */}
                 <Animated.View style={[ StyleSheet.absoluteFill, errorStyle ]} pointerEvents={error || !matches || matches.length === 0 ? 'auto' : 'none'}>
                     {( error || !matches || matches.length === 0 ) && (
-                        <SkeletonSwiper msg="Извините, на текущий момент live-матчей нет." />
+                        <SkeletonSwiper msg={/* TODO: {t`Извините, на текущий момент live-матчей нет.`} */ 'Извините, на текущий момент live-матчей нет.'} />
                     )}
                 </Animated.View>
                 {/* CONTENT */}
@@ -52,6 +56,7 @@ const styles = StyleSheet.create( {
     root: {
         minHeight: 230,
         position: 'relative',
+        backgroundColor: colors.transparent,
     },
 } );
 

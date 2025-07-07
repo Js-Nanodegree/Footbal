@@ -11,6 +11,11 @@ interface ErrorBoundaryState
     hasError: boolean;
 }
 
+if ( __DEV__ )
+{
+    require( './reactotronConfig' );
+}
+
 class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     constructor( props: ErrorBoundaryProps )
     {

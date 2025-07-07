@@ -1,14 +1,18 @@
+// FinishedMatchesScreen: экран завершённых матчей, поддержка единого стиля, локализации, типографики, accessibility
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { View, FlatList, TouchableOpacity } from 'react-native';
-import FinishedMatchesSection from './FinishedMatchesSection';
-import { useHomeScreenSections } from '../hooks/useHomeScreenSections';
-import { Match } from 'src/features/team-api/types/match';
-import Typography from 'src/shared/ui/typography/Typography';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { AppContextProvider } from '../context';
-import { useSelector } from 'react-redux';
-import ChevronRightIcon from 'src/shared/ui/icons/ChevronRightIcon';
+import { FlatList, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import { Match } from 'src/features/team-api/types/match';
+import ChevronRightIcon from 'src/shared/ui/icons/ChevronRightIcon';
+import { colors } from 'src/shared/ui/theme/colors';
+import { shadows } from 'src/shared/ui/theme/shadows';
+import Typography from 'src/shared/ui/typography/Typography';
+import { AppContextProvider } from '../context';
+import { useHomeScreenSections } from '../hooks/useHomeScreenSections';
+import FinishedMatchesSection from './FinishedMatchesSection';
+// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 const FinishedMatchesScreenInner = () => {
   const navigation = useNavigation();
@@ -64,8 +68,11 @@ const FinishedMatchesScreenInner = () => {
         flex: 1,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
-              backgroundColor: '#fff',
+        backgroundColor: colors.card,
+        ...shadows.section,
       }}
+      testID="finished-matches-screen"
+      accessibilityLabel="finished-matches-screen"
     >
       <View
         style={{
@@ -75,16 +82,21 @@ const FinishedMatchesScreenInner = () => {
           paddingBottom: 8,
           paddingHorizontal: 8,
         }}
+        testID="finished-matches-header"
+        accessibilityLabel="finished-matches-header"
       >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={{ padding: 8, marginRight: 8 }}
+          testID="back-button"
+          accessibilityLabel="back-button"
         >
           <View style={{ transform: [{ rotate: '180deg' }] }}>
-            <ChevronRightIcon size={28} color={'#222'} />
+            <ChevronRightIcon size={28} color={colors.text} />
           </View>
         </TouchableOpacity>
-              <Typography variant="h1" font="Oswald" weight="bold" style={{ fontSize: 24, color: '#222', fontWeight: '600' }}>
+        <Typography variant="h1" font="Oswald" weight="bold" style={{ fontSize: 24, color: colors.text, fontWeight: '600' }}>
+          {/* TODO: {t`Завершённые матчи`} */}
           Завершённые матчи
         </Typography>
       </View>
@@ -92,15 +104,19 @@ const FinishedMatchesScreenInner = () => {
         data={filteredMatches}
         keyExtractor={(item) => String(item.id)}
         renderItem={renderItem}
-              ListEmptyComponent={
-                  <View style={{ flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
-                      <Typography style={{ textAlign: 'center', color: '#222', fontSize: 16 }}>
-                          Извините, но в вашем приложении ещё не синхронизировано.
-                      </Typography>
-                  </View>
-              }
-              contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
-              style={{ flex: 1, backgroundColor: '#fff' }}
+        ListEmptyComponent={
+          <View style={{ flex: 1, backgroundColor: colors.card, justifyContent: 'center', alignItems: 'center', minHeight: 300, ...shadows.section }}>
+            <Typography style={{ textAlign: 'center', color: colors.text, fontSize: 16 }}>
+              {/* TODO: {t`Извините, но в вашем приложении ещё не синхронизировано.`} */}
+              Извините, но в вашем приложении ещё не синхронизировано.
+            </Typography>
+          </View>
+        }
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
+        style={{ flex: 1, backgroundColor: colors.card }}
+        testID="finished-matches-list"
+        accessibilityLabel="finished-matches-list"
+        ItemSeparatorComponent={renderSeparator}
       />
     </View>
   );

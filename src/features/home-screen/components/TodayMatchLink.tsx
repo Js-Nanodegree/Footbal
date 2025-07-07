@@ -1,7 +1,10 @@
+// TodayMatchLink: ссылка на все актуальные матчи, поддержка единого стиля, локализации, accessibility
 import React from 'react';
-import { TouchableOpacity, StyleSheet, View, Pressable } from 'react-native';
-import ChevronRightIcon from 'src/shared/ui/icons/ChevronRightIcon';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { colors } from 'src/shared/ui/theme/colors';
+import { shadows } from 'src/shared/ui/theme/shadows';
 import Typography from 'src/shared/ui/typography/Typography';
+// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 interface TodayMatchLinkProps
 {
@@ -13,6 +16,8 @@ interface TodayMatchLinkProps
         time: string;
         date: string;
     }>;
+    testID?: string;
+    accessibilityLabel?: string;
 }
 
 function pluralizeGame( count: number ): string
@@ -24,24 +29,27 @@ function pluralizeGame( count: number ): string
     return 'игр';
 }
 
-const TodayMatchLink: React.FC<TodayMatchLinkProps> = ( { onPress, todayMatches } ) =>
+const TodayMatchLink: React.FC<TodayMatchLinkProps> = ( { onPress, todayMatches, testID, accessibilityLabel } ) =>
 {
     const count = todayMatches.length;
     return (
-        <View style={styles.row}>
+        <View style={[ styles.row, shadows.card ]} testID={testID} accessibilityLabel={accessibilityLabel}>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', flex: 1 }}>
                 <Typography variant="h2" weight="bold" font="Oswald" style={[ styles.text, { fontWeight: '700' } ]}>
+                    {/* TODO: {t`Актуальные матчи`} */}
                     Актуальные матчи
                 </Typography>
-                <Typography variant="caption" font="Inter" style={styles.count}>
-                    {count > 0 ? `${ count } ${ pluralizeGame( count ) }` : 'Нет матчей'}
+                <Typography variant="caption" font="Inter" style={[ styles.count, { color: colors.primary } ]}>
+                    {count > 0 ? `${ count } ${ pluralizeGame( count ) }` : /* TODO: {t`Нет матчей`} */ 'Нет матчей'}
                 </Typography>
             </View>
-            <Pressable onPress={onPress}>
+            <Pressable onPress={onPress} testID="today-match-link-pressable" accessibilityLabel="today-match-link-pressable">
                 <Typography variant="caption" font="Inter" numberOfLines={2} style={[ styles.count, {
                     fontSize: 14,
                     fontWeight: '700',
+                    color: colors.primary,
                 } ]}>
+                    {/* TODO: {t`Все`} */}
                     Все
                 </Typography>
             </Pressable>
@@ -57,11 +65,6 @@ const styles = StyleSheet.create( {
         borderRadius: 16,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        shadowColor: '#000',
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 1,
     },
     text: {
         fontSize: 20,
@@ -69,11 +72,10 @@ const styles = StyleSheet.create( {
         fontWeight: '400',
     },
     count: {
-        color: '#FF8800',
-
+        // color задаётся через props
     },
     more: {
-        color: '#E94057',
+        color: colors.primary,
         marginRight: 8,
         fontWeight: 'bold',
     },

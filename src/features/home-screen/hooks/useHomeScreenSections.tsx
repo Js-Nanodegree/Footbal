@@ -4,7 +4,7 @@ import MatchSwiperSection from 'src/features/home-screen/components/MatchSwiperS
 import TeamListSection from 'src/features/home-screen/components/TeamListSection';
 import TodayMatchSection from 'src/features/home-screen/components/TodayMatchSection';
 import Header from 'src/screens/HomeScreen/Header';
-import LeagueFilterBar from 'src/screens/HomeScreen/LeagueFilterBar';
+import LeagueFilterBar from 'src/features/home-screen/components/LeagueFilterBar';
 import { useAppContext } from '../context';
 import Typography from 'src/shared/ui/typography/Typography';
 import { Competition } from 'src/features/team-api/types/competition';

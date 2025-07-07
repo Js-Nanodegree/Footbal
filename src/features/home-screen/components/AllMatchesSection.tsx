@@ -1,9 +1,12 @@
+// AllMatchesSection: секция всех матчей, отображает карточки, лоадеры, ошибки, с поддержкой единого стиля
 import React from 'react';
 import { View } from 'react-native';
-import TodayMatchCard from 'src/shared/ui/today-match-card/TodayMatchCard';
 import Spacer from 'src/shared/ui/Spacer';
+import { colors } from 'src/shared/ui/theme/colors';
+import { shadows } from 'src/shared/ui/theme/shadows';
+import TodayMatchCard from 'src/shared/ui/today-match-card/TodayMatchCard';
 import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
-import ErrorState from 'src/shared/ui/error-state/ErrorState';
+// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 const SECTION_SPACING = 20;
 
@@ -13,7 +16,7 @@ const AllMatchesSection = React.memo(
     if ( error && !loading )
     {
       return (
-        <View style={{ backgroundColor: 'white' }}>
+        <View style={{ backgroundColor: colors.card, ...shadows.section }}>
           {[ ...Array( 5 ) ].map( ( _, i ) => (
             <TodayMatchCardSkeleton key={i} />
           ) )}
@@ -24,7 +27,7 @@ const AllMatchesSection = React.memo(
     if ( loading )
     {
       return (
-        <View style={{ backgroundColor: 'white' }}>
+        <View style={{ backgroundColor: colors.card, ...shadows.section }}>
           {[ ...Array( 5 ) ].map( ( _, i ) => (
             <TodayMatchCardSkeleton key={i} />
           ) )}
@@ -33,14 +36,16 @@ const AllMatchesSection = React.memo(
       );
     }
 
-    // Временно всегда рендерим карточку, даже если данные не идеальны
+    // TODO: строки для lingui.js, если появятся
     return (
-      <View style={{ backgroundColor: 'white' }}>
+      <View style={{ backgroundColor: colors.card, ...shadows.section }}>
         <TodayMatchCard
           homeTeam={match.homeTeam}
           awayTeam={match.awayTeam}
           time={match.time}
           date={match.date}
+          testID="all-match-card"
+          accessibilityLabel={`Матч: ${ match.homeTeam?.name } - ${ match.time } - ${ match.awayTeam?.name }`}
         />
       </View>
     );

@@ -7,6 +7,7 @@ import matchesReducer from '../../features/team-api/redux/matchSlice';
 import teamPastMatchesReducer from '../../features/team-api/redux/teamPastMatchesSlice';
 import homeScreenReducer from '../../features/home-screen/redux/homeScreenSlice';
 
+
 const rootReducer = combineReducers( {
     teams: teamsReducer,
     players: playersReducer,

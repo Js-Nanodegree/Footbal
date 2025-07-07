@@ -1,4 +1,4 @@
-import { rest } from 'msw/node';
+import { rest } from 'msw';
 
 export const teamsHandlers = [
   // Получить список команд

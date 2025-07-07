@@ -1,11 +1,10 @@
-import { Team } from '../types/team';
-import { Player } from '../types/player';
-import { Match } from '../types/match';
+import { AxiosRequestConfig } from 'axios';
 import { z } from 'zod';
-import { TeamSchema } from '../zod/teamSchema';
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { tmpApiAxios } from '../clients/tmpApiAxios'; // Импорт singleton-инстанса
 import { mockTeams } from '../mocks/teams';
+import { Match } from '../types/match';
+import { Team } from '../types/team';
+import { TeamSchema } from '../zod/teamSchema';
 
 // @ts-ignore
 // eslint-disable-next-line no-var

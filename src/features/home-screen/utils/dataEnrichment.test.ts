@@ -1,11 +1,10 @@
-import { enrichTeamsFromMatches, enrichLeaguesFromMatches, ensureAllFields } from './dataEnrichment';
 import { exampleMatches } from '../mocks/exampleMatches';
-import { exampleTeams } from '../mocks/exampleTeams';
-import { exampleLeagues } from '../mocks/exampleLeagues';
+import { DataEnrichmentService } from '../services/DataEnrichmentService';
 
-describe('dataEnrichment utils', () => {
+describe( 'DataEnrichmentService', () =>
+{
   it('enrichTeamsFromMatches: собирает все команды из матчей', () => {
-    const teams = enrichTeamsFromMatches(exampleMatches, []);
+    const teams = DataEnrichmentService.enrichTeamsFromMatches( exampleMatches, [] );
     expect(teams.length).toBeGreaterThan(0);
     // Все id уникальны
     const ids = teams.map(t => t.id);
@@ -13,7 +12,7 @@ describe('dataEnrichment utils', () => {
   });
 
   it('enrichLeaguesFromMatches: собирает все лиги из матчей', () => {
-    const leagues = enrichLeaguesFromMatches(exampleMatches, []);
+    const leagues = DataEnrichmentService.enrichLeaguesFromMatches( exampleMatches, [] );
     expect(leagues.length).toBeGreaterThan(0);
     // Все id уникальны
     const ids = leagues.map(l => l.id);
@@ -21,7 +20,7 @@ describe('dataEnrichment utils', () => {
   });
 
   it('ensureAllFields: гарантирует обязательные поля', () => {
-    const matches = ensureAllFields(exampleMatches);
+    const matches = DataEnrichmentService.ensureAllFields( exampleMatches );
     matches.forEach(m => {
       expect(m.status).toBeTruthy();
       expect(m.utcDate).toBeTruthy();
