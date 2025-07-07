@@ -1,12 +1,11 @@
-import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, Animated, Pressable, Alert, Text } from 'react-native';
-import Typography from '../typography/Typography';
-import { useTeamListSelection } from '../../../features/team-api/team-list/hooks/useTeamListSelection';
-import MuLogo from '../icons/mu';
-import ManCityLogo from '../team-logos/ManCityLogo';
-import BrentfordLogo from '../team-logos/BrentfordLogo';
-import PalaceLogo from '../team-logos/PalaceLogo';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Animated, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import TvIcon from '../icons/TvIcon';
+import MuLogo from '../icons/mu';
+import BrentfordLogo from '../team-logos/BrentfordLogo';
+import ManCityLogo from '../team-logos/ManCityLogo';
+import PalaceLogo from '../team-logos/PalaceLogo';
+import Typography from '../typography/Typography';
 import { useRippleScaleAnimation } from './hooks/useRippleScaleAnimation';
 
 export interface Team {
@@ -231,9 +230,7 @@ const TeamList: React.FC<TeamListProps> = ({
 
   return (
     <View style={{ flexDirection: 'column', paddingBottom: 4 }}>
-      {/* <Text>initialSelectedIds {JSON.stringify( initialSelectedIds )}</Text> */}
-      {/* <Text>selectedIds {JSON.stringify( selectedIds )}</Text> */}
-      {/* <Text>teams {JSON.stringify( teams )}</Text> */}
+
       {selectedTeams.length > 0 && (
         <FlatList
           data={selectedTeams}
