@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, FlatList, Image, Pressable, StyleSheet, View } from 'react-native';
 import TvIcon from '../icons/TvIcon';
 import MuLogo from '../icons/mu';
 import BrentfordLogo from '../team-logos/BrentfordLogo';
@@ -10,7 +10,7 @@ import { useRippleScaleAnimation } from './hooks/useRippleScaleAnimation';
 import { Team } from 'src/features/team-api/types/team';
 
 // Тип для элемента списка (команда или TV)
-type TeamListItemType = Team & { logo?: string } | { id: 'tv'; name: string; logo: string };
+type TeamListItemType = ( Team & { logo?: string } ) | { id: 'tv'; name: string; logo: string };
 
 /**
  * @param onTeamSelect - вызывается при выборе команды (id: number)
@@ -31,7 +31,7 @@ const logoMap: Record<string, React.FC<{ size?: number }>> = {
   tv: TvIcon,
 };
 
-const getLogoComponent = ( logo?: string ) => logo && logoMap[ logo ] ? logoMap[ logo ] : MuLogo;
+const getLogoComponent = ( logo?: string ) => ( logo && logoMap[ logo ] ? logoMap[ logo ] : MuLogo );
 
 const TeamListItem: React.FC<{
   item: TeamListItemType;
@@ -116,7 +116,7 @@ const TeamListItem: React.FC<{
             },
           ]}
         />
-        <Logo size={40} />
+        <Image source={{ uri: item.logo }} style={{ width: 48, height: 48 }} />
       </Animated.View>
       <Animated.View style={{ opacity }}>
         <Typography
@@ -163,7 +163,7 @@ const TeamList: React.FC<TeamListProps> = ({
 
   // Добавляем кнопку ТВ в начало списка
   const teamsWithTv: TeamListItemType[] = React.useMemo(
-    () => [{ id: 'tv', name: 'TV', logo: 'tv' }, ...sortedTeams],
+    () => sortedTeams,
     [sortedTeams],
   );
   const selectedIds = initialSelectedIds?.map(String) ?? [];
@@ -231,7 +231,6 @@ const TeamList: React.FC<TeamListProps> = ({
 
   return (
     <View style={{ flexDirection: 'column', paddingBottom: 4 }}>
-
       {selectedTeams.length > 0 && (
         <FlatList
           data={selectedTeams}

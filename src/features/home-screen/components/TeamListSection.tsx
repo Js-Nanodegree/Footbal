@@ -14,6 +14,12 @@ import { useAppContext } from '../context';
 
 const SECTION_SPACING = 20;
 
+const log = ( msg: string, data?: any ) =>
+{
+ 
+  console.log( `[Reactotron] ${ msg }`, data );
+};
+
 // Хук для fade-перехода между состояниями
 function useFadeTransition( visible: boolean )
 {
@@ -27,21 +33,22 @@ function useFadeTransition( visible: boolean )
 }
 
 const TeamListSection = React.memo(
-  ( { teams, loading, error }: { teams: Team[]; loading?: boolean; error?: string | null } ) =>
+  ( { teams = [], loading, error }: { teams?: Team[]; loading?: boolean; error?: string | null } ) =>
   {
+    const teamsSafe = Array.isArray( teams ) ? teams : [];
     const { selectedTeamIds, setSelectedTeamIds } = useAppContext();
 
     const handleTeamSelect = React.useCallback( ( id: number | 'tv' ) =>
     {
-      if ( id === 'tv' ) return; // обработка TV отдельно через onTvPress
+      if ( id === 'tv' ) return;
       setSelectedTeamIds( id );
     }, [ setSelectedTeamIds ] );
 
     // Fade стили для состояний
     const loadingStyle = useFadeTransition( !!loading );
     const errorStyle = useFadeTransition( !!error && !loading );
-    const emptyStyle = useFadeTransition( !loading && !error && teams.length === 0 );
-    const contentStyle = useFadeTransition( !loading && !error && teams.length > 0 );
+    const emptyStyle = useFadeTransition( !loading && !error && teamsSafe.length === 0 );
+    const contentStyle = useFadeTransition( !loading && !error && teamsSafe.length > 0 );
 
     // Анимация высоты
     const height = useSharedValue( selectedTeamIds.length === 0 ? 150 : 225 );
@@ -52,7 +59,9 @@ const TeamListSection = React.memo(
     const animatedRootStyle = useAnimatedStyle( () => ( { height: height.value } ) );
 
     // Формируем массив с logo для TeamList
-    const teamsWithLogo = React.useMemo(() => teams.map(team => ({ ...team, logo: team.crestUrl || '' })), [teams]);
+    const teamsWithLogo = React.useMemo( () => teamsSafe.map( team => ( { ...team, logo: ( team as any ).crest || ( team as any ).logo || '' } ) ), [ teamsSafe ] );
+
+  
 
     return (
       <Animated.View style={[ styles.root, animatedRootStyle, shadows.section ]} testID="team-list-section">
@@ -85,10 +94,10 @@ const TeamListSection = React.memo(
         {/* EMPTY */}
         <Animated.View
           style={[ StyleSheet.absoluteFill, emptyStyle ]}
-          pointerEvents={!loading && !error && teams.length === 0 ? 'auto' : 'none'}
+          pointerEvents={!loading && !error && teamsSafe.length === 0 ? 'auto' : 'none'}
         >
           <>
-          {!loading && !error && teams.length === 0 && (
+            {!loading && !error && teamsSafe.length === 0 && (
               <View
                 style={{
                   padding: 32,
@@ -125,9 +134,9 @@ const TeamListSection = React.memo(
         {/* CONTENT */}
         <Animated.View
           style={[ StyleSheet.absoluteFill, contentStyle ]}
-          pointerEvents={!loading && !error && teams.length > 0 ? 'auto' : 'none'}
+          pointerEvents={!loading && !error && teamsSafe.length > 0 ? 'auto' : 'none'}
         >
-          {!loading && !error && teams.length > 0 && (
+          {!loading && !error && teamsSafe.length > 0 && (
             <>
               <Typography variant="h1" weight="bold" font="Oswald" style={{ marginLeft: 16, fontSize: 24, color: colors.text, fontWeight: '600' }}>
                 {/* TODO: {t`Выбор команды`} */}

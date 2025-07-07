@@ -11,8 +11,8 @@ export interface CompetitionSeason {
   id: number;
   startDate: string;
   endDate: string;
-  currentMatchday?: number;
-  winner?: TeamShort;
+  currentMatchday?: number | null;
+  winner?: unknown | null;
 }
 
 // Competition — основная структура соревнования
@@ -20,11 +20,11 @@ export interface Competition {
   id: number;
   area: CompetitionArea;
   name: string;
-  code: string;
-  emblemUrl?: string;
+  code?: string;
+  type?: string;
+  emblem?: string;
   plan?: string;
   currentSeason?: CompetitionSeason;
-  seasons?: CompetitionSeason[];
   numberOfAvailableSeasons?: number;
   lastUpdated: string;
 }
@@ -37,11 +37,10 @@ export interface TeamShort {
 }
 
 // Типы для турниров (Competition) и регионов (Area)
-export interface Area
-{
+export interface Area {
   id: number;
   name: string;
-  code: string;
+  code?: string;
   flag?: string;
 }
 

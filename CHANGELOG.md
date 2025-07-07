@@ -52,4 +52,10 @@
 
 [2024-06-20] docs: Описать fallback-логику и работу с моками в context.md и README.md.
 
-[2024-06-20] test: Покрыть хуки useTeams, useMatches, useCompetitions unit-тестами на возврат моков при ошибке API или валидации. 
+[2024-06-20] test: Покрыть хуки useTeams, useMatches, useCompetitions unit-тестами на возврат моков при ошибке API или валидации.
+
+[2024-07-07] feat: Полная синхронизация team-api с football-data.org v4 (типы, схемы, enrichment, сервисы, тесты, удаление устаревших полей, новые поля crest, emblem, code, type, shortName, tla, referees, score).
+
+[2024-06-20] feat: Добавлен footballApi (RTK Query) с эндпоинтами getTeams, getTeamDetails, getTeamMatches, getCompetitions, getStandings. Интеграция footballApi.reducer и middleware в store.ts (Task: RTK Query интеграция футбольного API).
+
+[2024-06-19] refactor: Полностью удалена устаревшая логика Redux (slices, thunk'и, actions, селекторы), ручные хуки и сервисы для API, zod-схемы, моки и все связанные тесты. Теперь все данные обслуживаются через RTK Query (footballApi). Очищен store и типы. (Аудит и чистка после миграции на RTK Query) 

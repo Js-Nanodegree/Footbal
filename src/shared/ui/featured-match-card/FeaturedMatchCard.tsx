@@ -5,11 +5,16 @@ import Typography from '../typography/Typography';
 
 interface Team
 {
+    crestUrl: string;
     name: string;
     logo: string;
 }
 
 export type FeaturedMatchCardProps = {
+    score: any;
+    competition: any;
+    status: string | undefined;
+    area: any;
     homeTeam: Team;
     awayTeam: Team;
     homeScore: number | string;

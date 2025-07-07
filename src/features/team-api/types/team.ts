@@ -32,7 +32,7 @@ export interface Team {
   name: string;
   shortName?: string;
   tla?: string;
-  crestUrl?: string;
+  crest?: string;
   address?: string;
   phone?: string;
   website?: string;
@@ -45,6 +45,8 @@ export interface Team {
   area?: {
     id: number;
     name: string;
+    code?: string;
+    flag?: string;
   };
   lastUpdated: string;
 } 

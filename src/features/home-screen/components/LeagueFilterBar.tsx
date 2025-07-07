@@ -1,5 +1,5 @@
 // LeagueFilterBar: фильтр по лигам, поддержка единого стиля, локализации, accessibility
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import { colors } from 'src/shared/ui/theme/colors';
 import { shadows } from 'src/shared/ui/theme/shadows';
@@ -22,6 +22,17 @@ interface LeagueFilterBarProps
 
 const LeagueFilterBar: React.FC<LeagueFilterBarProps> = ( { leagues, activeLeagueId, onLeagueChange } ) =>
 {
+    const log = ( msg: string, data?: any ) =>
+    {
+        console.log( `[Reactotron] ${ msg }`, data );
+    };
+
+    useEffect( () =>
+    {
+        log( 'LeagueFilterBar: props', { leagues, activeLeagueId, onLeagueChange } );
+        log( 'LeagueFilterBar: leagues', { count: leagues?.length, leagues } );
+    }, [ leagues, activeLeagueId, onLeagueChange ] );
+
     return (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 8, marginBottom: 12 }} testID="league-filter-bar" accessibilityLabel="league-filter-bar">
             {leagues.map( league =>

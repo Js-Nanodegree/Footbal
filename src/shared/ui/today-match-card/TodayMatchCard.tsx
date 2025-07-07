@@ -1,19 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-import MUSVGS from 'src/shared/ui/icons/mu';
+import LinearGradient from 'react-native-linear-gradient';
 import Typography from 'src/shared/ui/typography/Typography';
 import { colors } from '../theme/colors';
-import LinearGradient from 'react-native-linear-gradient';
 
-interface Team
-{
+interface Team {
   name: string;
   crestUrl: string; // URL из Football-Data.org
 }
 
-interface TodayMatchCardProps
-{
+interface TodayMatchCardProps {
   homeTeam: Team;
   awayTeam: Team;
   time: string;
@@ -71,60 +68,71 @@ const renderRightActions = () => (
   </View>
 );
 
-const TodayMatchCard: React.FC<TodayMatchCardProps> = ( { homeTeam, awayTeam, time, date, onPress } ) => (
-  <View style={styles.cardShadow}>
-    <Swipeable
-      renderLeftActions={renderLeftActions}
-      renderRightActions={renderRightActions}
-      onSwipeableLeftOpen={() =>
-      {
-        // TODO: обработка "Подробнее"
-        // Можно открыть модалку или показать детали
-      }}
-      onSwipeableRightOpen={() =>
-      {
-        // TODO: обработка "Перейти"
-        // Можно перейти на экран компании/матча
-      }}
-    >
-      <Pressable onPress={onPress} style={styles.card}>
-        <LinearGradient
-          colors={[ '#fff', '#f7f7fa' ]}
-          style={StyleSheet.absoluteFill}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
-        <Typography style={styles.teamNameLeft} font="Oswald" weight="bold">
-          {homeTeam.name}
-        </Typography>
-        <View style={{ marginHorizontal: 6 }}>
-          <MUSVGS width="45" height="45" />
-        </View>
-        {/* <Image source={{ uri: homeTeam.crestUrl }} style={styles.logo} resizeMode="contain" /> */}
-        <View style={styles.centerBlock}>
-          <Typography style={styles.time} font="Oswald" weight="bold">
-            {time}
+const TodayMatchCard: React.FC<TodayMatchCardProps> = ({
+  homeTeam,
+  awayTeam,
+  time,
+  date,
+  onPress,
+}) => {
+  console.log(homeTeam, awayTeam);
+  return (
+    <View style={styles.cardShadow}>
+      <Swipeable
+        renderLeftActions={renderLeftActions}
+        renderRightActions={renderRightActions}
+        onSwipeableLeftOpen={() => {
+          // TODO: обработка "Подробнее"
+          // Можно открыть модалку или показать детали
+        }}
+        onSwipeableRightOpen={() => {
+          // TODO: обработка "Перейти"
+          // Можно перейти на экран компании/матча
+        }}
+      >
+        <Pressable onPress={onPress} style={styles.card}>
+          <LinearGradient
+            colors={['#fff', '#f7f7fa']}
+            style={StyleSheet.absoluteFill}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          />
+          <Typography style={styles.teamNameLeft} font="Oswald" weight="bold">
+            {homeTeam.name}
           </Typography>
-          <Typography style={styles.date} font="Oswald" weight="regular">
-            {date}
+          {homeTeam.crest && (
+            <View style={{ marginHorizontal: 6 }}>
+              <Image source={{ uri: homeTeam.crest }} style={styles.logo} />
+            </View>
+          )}
+          {/* <Image source={{ uri: homeTeam.crestUrl }} style={styles.logo} resizeMode="contain" /> */}
+          <View style={styles.centerBlock}>
+            <Typography style={styles.time} font="Oswald" weight="bold">
+              {time}
+            </Typography>
+            <Typography style={styles.date} font="Oswald" weight="regular">
+              {date}
+            </Typography>
+          </View>
+          {awayTeam.crest && (
+            <View style={{ marginHorizontal: 6 }}>
+              <Image source={{ uri: awayTeam.crest }} style={styles.logo} />
+            </View>
+          )}
+          <Typography style={styles.teamNameRight} font="Oswald" weight="bold">
+            {awayTeam.name}
           </Typography>
-        </View>
-        <View style={{ marginHorizontal: 6 }}>
-          <MUSVGS width="45" height="45" />
-        </View>
-        <Typography style={styles.teamNameRight} font="Oswald" weight="bold">
-          {awayTeam.name}
-        </Typography>
-      </Pressable>
-    </Swipeable>
-  </View>
-);
+        </Pressable>
+      </Swipeable>
+    </View>
+  );
+};
 
-const styles = StyleSheet.create( {
+const styles = StyleSheet.create({
   cardShadow: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.10,
+    shadowOpacity: 0.1,
     shadowRadius: 16,
     elevation: 6,
     borderRadius: 24,
@@ -163,8 +171,8 @@ const styles = StyleSheet.create( {
     maxWidth: 90,
   },
   logo: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     marginHorizontal: 3,
   },
   centerBlock: {
@@ -182,6 +190,6 @@ const styles = StyleSheet.create( {
     color: '#888',
     fontWeight: '500',
   },
-} );
+});
 
 export default TodayMatchCard;

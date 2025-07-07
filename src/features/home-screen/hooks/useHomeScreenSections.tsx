@@ -1,15 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import AllMatchesSection from 'src/features/home-screen/components/AllMatchesSection';
+import LeagueFilterBar from 'src/features/home-screen/components/LeagueFilterBar';
 import MatchSwiperSection from 'src/features/home-screen/components/MatchSwiperSection';
 import TeamListSection from 'src/features/home-screen/components/TeamListSection';
 import TodayMatchSection from 'src/features/home-screen/components/TodayMatchSection';
-import Header from 'src/screens/HomeScreen/Header';
-import LeagueFilterBar from 'src/features/home-screen/components/LeagueFilterBar';
-import { useAppContext } from '../context';
-import Typography from 'src/shared/ui/typography/Typography';
 import { Competition } from 'src/features/team-api/types/competition';
-import { Team } from 'src/features/team-api/types/team';
 import { Match } from 'src/features/team-api/types/match';
+import { Team } from 'src/features/team-api/types/team';
+import Header from 'src/screens/HomeScreen/Header';
+import Typography from 'src/shared/ui/typography/Typography';
+import { useAppContext } from '../context';
 
 interface UseHomeScreenSectionsParams
 {
@@ -36,10 +36,8 @@ export function useHomeScreenSections( {
     useAppContext();
   const [ localError, setLocalError ] = useState<string | null>( null );
 
-  // ЛОГИ ДЛЯ ОТЛАДКИ
-
   // Дефолтный выбор лиги при первом рендере
-  React.useEffect( () =>
+  useEffect( () =>
   {
     if (
       ( selectedLeagueId == null || !competitions.some( ( l ) => l.id === selectedLeagueId ) ) &&
@@ -51,74 +49,76 @@ export function useHomeScreenSections( {
   }, [ selectedLeagueId, setSelectedLeagueId, competitions ] );
 
   // Фильтрация enriched команд по выбранной лиге
-  const filteredTeams = useMemo(
-    () =>
-      teams.filter(
-        ( team ) => selectedLeagueId == null || ( team.area && team.area.id === selectedLeagueId ),
-      ),
-    [ selectedLeagueId, teams ],
-  );
+  const filteredTeams = useMemo( () => teams, [ selectedLeagueId, teams ] );
 
   // Фильтрация матчей по выбранной лиге и командам
+  const matchesSafe = Array.isArray( matches ) ? matches : [];
   const filteredMatches = useMemo(
     () =>
-      matches?.filter( ( match ) =>
+      matchesSafe.filter( ( match ) =>
       {
-        if ( selectedLeagueId && match.competition?.id !== selectedLeagueId ) return false;
         if (
           selectedTeamIds.length > 0 &&
           !selectedTeamIds.some(
             ( teamId ) => teamId === match.homeTeam?.id || teamId === match.awayTeam?.id,
           )
         )
+        {
           return false;
+        }
         return true;
       } ) || [],
-    [ selectedLeagueId, selectedTeamIds, matches ],
+    [ selectedLeagueId, selectedTeamIds, matchesSafe ],
   );
 
-  const now = new Date();
-  const actualMatches = useMemo(
-    () =>
-      matches
-        .filter(
-          ( match ) =>
-            match.status === 'SCHEDULED' &&
-            ( selectedLeagueId == null || match.competition?.id === selectedLeagueId ) &&
-            new Date( match.utcDate ) > now,
-        )
-        .sort( ( a, b ) => new Date( a.utcDate ).getTime() - new Date( b.utcDate ).getTime() ),
-    [ matches, selectedLeagueId ],
-  );
-
+  // Возвращаем все матчи без фильтрации по статусу/дате/лиге
   const finishedMatches = useMemo(
     () =>
-      matches
-        .filter(
-          ( match ) =>
-            match.status === 'FINISHED' &&
-            ( selectedLeagueId == null || match.competition?.id === selectedLeagueId ) &&
-            new Date( match.utcDate ) < now,
-        )
-        .sort( ( a, b ) => new Date( b.utcDate ).getTime() - new Date( a.utcDate ).getTime() ),
-    [ matches, selectedLeagueId ],
+      [ ...matchesSafe ].sort( ( a, b ) => new Date( b.utcDate ).getTime() - new Date( a.utcDate ).getTime() ),
+    [ matchesSafe ],
   );
 
-  // Фильтрация LIVE-матчей для MatchSwiper и TodayMatch
-  const swiperMatches = useMemo( () => matches.filter( ( m ) => m.status === 'LIVE' ), [ matches ] );
-  const todayMatches = swiperMatches; // для MVP — совпадает с swiperMatches
-
-  const today = new Date();
-  const todayStr = today.toISOString().slice( 0, 10 ); // 'YYYY-MM-DD'
+  // Фильтрация liveMatches по выбранной лиге
   const liveMatches = useMemo(
     () =>
-      matches.filter(
-        ( match ) =>
-          match.status === 'LIVE' &&
-          ( selectedLeagueId == null || match.competition?.id === selectedLeagueId ) &&
-          match.utcDate?.slice( 0, 10 ) === todayStr,
-      ),
-    [ matches, selectedLeagueId ],
+      matchesSafe.filter( ( match ) => !selectedLeagueId || match.competition?.id === selectedLeagueId ),
+    [ matchesSafe, selectedLeagueId ],
+  );
+
+  // actualMatches и todayMatches теперь используют liveMatches (уже отфильтрованные по лиге и командам)
+  const actualMatches = useMemo(
+    () =>
+      liveMatches.filter( ( match ) =>
+      {
+        if (
+          selectedTeamIds.length > 0 &&
+          !selectedTeamIds.some(
+            ( teamId ) => teamId === match.homeTeam?.id || teamId === match.awayTeam?.id,
+          )
+        )
+        {
+          return false;
+        }
+        return true;
+      } ),
+    [ liveMatches, filteredMatches ],
+  );
+  const todayMatches = useMemo(
+    () =>
+      liveMatches.filter( ( match ) =>
+      {
+        if (
+          selectedTeamIds.length > 0 &&
+          !selectedTeamIds.some(
+            ( teamId ) => teamId === match.homeTeam?.id || teamId === match.awayTeam?.id,
+          )
+        )
+        {
+          return false;
+        }
+        return true;
+      } ),
+    [ liveMatches, filteredMatches ],
   );
 
   // Рендеры секций
@@ -130,15 +130,15 @@ export function useHomeScreenSections( {
           Нет доступных лиг
         </Typography>
       ) : (
-          <LeagueFilterBar
-            leagues={competitions || []}
-            activeLeagueId={selectedLeagueId}
-            onLeagueChange={( id ) =>
-            {
-              setSelectedLeagueId( id );
-              setSelectedTeamIds( [] ); // сбрасываем выбранные команды при смене лиги
-            }}
-          />
+        <LeagueFilterBar
+          leagues={competitions || []}
+          activeLeagueId={selectedLeagueId}
+          onLeagueChange={( id ) =>
+          {
+            setSelectedLeagueId( id );
+            setSelectedTeamIds( [] ); // сбрасываем выбранные команды при смене лиги
+          }}
+        />
       ),
     [ competitions, selectedLeagueId, setSelectedLeagueId, setSelectedTeamIds ],
   );
@@ -169,6 +169,7 @@ export function useHomeScreenSections( {
         },
         time: match.utcDate ? match.utcDate.split( 'T' )[ 1 ]?.slice( 0, 5 ) : '',
         date: match.utcDate ? match.utcDate.split( 'T' )[ 0 ] : '',
+        ...match,
       };
       return <AllMatchesSection match={adaptedMatch} loading={loading} />;
     },
@@ -190,9 +191,7 @@ export function useHomeScreenSections( {
 
     if ( actualMatches.length > 0 )
     {
-      dataState.push(
-        { title: 'Today Match', data: [ 'today-match' ], renderItem: renderTodayMatch }
-      )
+      dataState.push( { title: 'Today Match', data: [ 'today-match' ], renderItem: renderTodayMatch } );
       dataState.push( {
         title: 'Актуальные матчи',
         data: actualMatches,
@@ -200,16 +199,14 @@ export function useHomeScreenSections( {
       } );
     } else
     {
-      dataState.push(
+      dataState.push( {
+        title: 'Today Match',
+        data: [ 'today-match' ],
+        renderItem: () =>
         {
-          title: 'Today Match', data: [ 'today-match' ], renderItem: () =>
-          {
-            return (
-              <TodayMatchSection matches={[]} error={error || localError} />
-            )
-          }
-        }
-      )
+          return <TodayMatchSection matches={[]} error={error || localError} />;
+        },
+      } );
     }
     return dataState;
   }, [

@@ -5,11 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../roads/RootNavigator';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCompetitions } from '../features/team-api/hooks/useCompetitions';
-import { FOOTBALL_DATA_API_KEY } from '@env';
 import { useMMKVNetworkStatus } from '../shared/memory-bank/mmkvMemoryBank';
 import ScreenWrapper from '../shared/ui/ScreenWrapper';
 
-const API_KEY = FOOTBALL_DATA_API_KEY || '';
+let API_KEY = 'bf63b2eaacf54ac0b42620ac5c820ec7';
 
 function CompetitionListItem( { item }: { item: Competition } )
 {

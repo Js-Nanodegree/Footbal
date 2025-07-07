@@ -2,7 +2,7 @@
 export interface StandingTeam {
   id: number;
   name: string;
-  crestUrl?: string;
+  crest?: string;
 }
 
 // StandingTable — строка таблицы
@@ -27,15 +27,13 @@ export interface Standing {
   table: TableEntry[];
 }
 
-export interface TeamStandingInfo
-{
+export interface TeamStandingInfo {
   id: number;
   name: string;
   crest?: string;
 }
 
-export interface TableEntry
-{
+export interface TableEntry {
   position: number;
   team: TeamStandingInfo;
   playedGames: number;

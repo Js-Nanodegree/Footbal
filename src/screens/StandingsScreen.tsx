@@ -32,14 +32,8 @@ function TableEntryItem({ item }: { item: TableEntry }) {
 export default function StandingsScreen() {
   const route = useRoute<RouteProp<{ params: StandingsScreenParams }, 'params'>>();
   const { competitionId } = route.params;
-  let API_KEY = '';
-  try {
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    API_KEY = require('@env').FOOTBALL_DATA_API_KEY || '';
-  } catch (e) {
-    API_KEY = '';
-  }
+  let API_KEY = 'bf63b2eaacf54ac0b42620ac5c820ec7';
+
   const { standings, loading, error, refresh } = useStandings(competitionId, 'axios', API_KEY);
   const table = standings[0]?.table || [];
   const isConnected = useMMKVNetworkStatus();

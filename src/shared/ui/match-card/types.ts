@@ -4,12 +4,20 @@ export interface TeamInfo
     logo: string; // URL логотипа
 }
 
+export interface CompetitionInfo
+{
+    name: string;
+    code: string;
+    emblem: string; // URL эмблемы
+}
+
 export type MatchCardVariant = 'gradient' | 'white' | 'purple';
 
 export interface MatchCardProps
 {
     homeTeam: TeamInfo;
     awayTeam: TeamInfo;
+    competition?: CompetitionInfo;
     homeScore: number | string;
     awayScore: number | string;
     league?: string;

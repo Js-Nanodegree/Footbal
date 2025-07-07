@@ -1,8 +1,8 @@
 // MatchSwiperSection: секция свайпера live-матчей, поддержка лоадеров, ошибок, пустого состояния, fade transition, accessibility
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import MatchSwiper from 'src/features/match-swiper/MatchSwiper';
+import MatchSwiper from 'src/features/match-swiper';
 import SkeletonSwiper from 'src/features/match-swiper/SkeletonSwiper';
 import { useFadeTransition } from 'src/shared/hooks/useFadeTransition';
 import Spacer from 'src/shared/ui/Spacer';
@@ -25,6 +25,17 @@ const MatchSwiperSection = React.memo( ( { matches, loading, error }: MatchSwipe
     const errorStyle = useFadeTransition( !!error || !matches || matches.length === 0 );
     const contentStyle = useFadeTransition( !loading && !error && matches && matches.length > 0 );
 
+    const log = ( msg: string, data?: any ) =>
+    {
+        console.log( `[Reactotron] ${ msg }`, data );
+    };
+
+    useEffect( () =>
+    {
+        log( 'MatchSwiperSection: props', { matches, loading, error } );
+        log( 'MatchSwiperSection: matches', matches );
+    }, [ matches, loading, error ] );
+
     return (
         <>
             <View style={[styles.root, shadows.section]} testID="match-swiper-section">
@@ -43,7 +54,7 @@ const MatchSwiperSection = React.memo( ( { matches, loading, error }: MatchSwipe
                 {/* CONTENT */}
                 <Animated.View style={[ StyleSheet.absoluteFill, contentStyle ]} pointerEvents={!loading && !error && matches && matches.length > 0 ? 'auto' : 'none'}>
                     {!loading && !error && matches && matches.length > 0 && (
-                        <MatchSwiper matches={matches} />
+                        <MatchSwiper />
                     )}
                 </Animated.View>
             </View>

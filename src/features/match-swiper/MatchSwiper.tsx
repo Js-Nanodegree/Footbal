@@ -1,70 +1,84 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { skipToken } from '@reduxjs/toolkit/query';
+import React, { useEffect, useRef, useState } from 'react';
 import
 {
     Alert,
     Animated,
     Dimensions,
+    Image,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
     Pressable,
     StyleSheet,
     Text,
-    View,
-    NativeSyntheticEvent,
-    NativeScrollEvent,
+    View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import { FeaturedMatchCardProps } from '../../shared/ui/featured-match-card/FeaturedMatchCard';
 import { MatchCardProps } from '../../shared/ui/match-card/types';
 import Typography from '../../shared/ui/typography/Typography';
-import { useMatches } from '../team-api/hooks/useMatches';
-import useMatchSwiperAnimation from './hooks/useMatchSwiperAnimation';
-import { useIsFocused } from '@react-navigation/native';
-import SkeletonSwiper from './SkeletonSwiper';
-import ErrorState from 'src/shared/ui/error-state/ErrorState';
+import { useAppContext } from '../home-screen/context/AppContext';
+import { footballApi, statusMatches } from '../team-api/services/footballApi';
 import EmptyState from './EmptyState';
+import SkeletonSwiper from './SkeletonSwiper';
 
 const { width: SCREEN_WIDTH } = Dimensions.get( 'window' );
 const CARD_WIDTH = SCREEN_WIDTH;
-const CARD_SPACING = -40; // чтобы сзади были видны края следующих карточек
 const MAX_CARDS = 15;
 const CARD_VERTICAL_PADDING = Math.round( SCREEN_WIDTH * 0.06 ); // ~6% от ширины экрана
 const CARD_HORIZONTAL_PADDING = Math.round( SCREEN_WIDTH * 0.055 ); // ~5.5% от ширины экрана
 
 // Маппинг FeaturedMatchCardProps -> MatchCardProps (минимальный для отображения)
 const mapFeaturedToMatchCardProps = ( match: FeaturedMatchCardProps ): MatchCardProps => ( {
-    homeTeam: match.homeTeam,
-    awayTeam: match.awayTeam,
-    homeScore: match.homeScore,
-    awayScore: match.awayScore,
-    league: match.league,
-    status: match.isLive ? 'IN_PLAY' : 'SCHEDULED',
+    homeTeam: {
+        name: match.homeTeam?.name || '',
+        logo: typeof ( match.homeTeam as any )?.crest === 'string'
+            ? ( match.homeTeam as any ).crest
+            : ( match.homeTeam?.logo || '' ),
+    },
+    awayTeam: {
+        name: match.awayTeam?.name || '',
+        logo: typeof ( match.awayTeam as any )?.crest === 'string'
+            ? ( match.awayTeam as any ).crest
+            : ( match.awayTeam?.logo || '' ),
+    },
+    homeScore: match.score?.fullTime?.homeTeam ?? '',
+    awayScore: match.score?.fullTime?.awayTeam ?? '',
+    league: match.competition?.name,
+    status: match.status,
     time: match.week,
-    stadium: match.stadium,
-    isLive: match.isLive,
-    badgeText: match.badgeText,
+    stadium: match.area?.name,
+    isLive: match.status === statusMatches.LIVE,
+    badgeText: match.competition?.code,
     variant: 'gradient',
-    backgroundLogo: match.backgroundLogo,
+    backgroundLogo: match.competition?.emblem,
 } );
 
 // Маппинг Match -> MatchCardProps (для redux/моков)
 const mapMatchToMatchCardProps = ( match: any ): MatchCardProps => ( {
     homeTeam: {
         name: match.homeTeam?.name || '',
-        logo: match.homeTeam?.crestUrl || '',
+        logo: typeof ( match.homeTeam as any )?.crest === 'string'
+            ? ( match.homeTeam as any ).crest
+            : ( match.homeTeam?.logo || '' ),
     },
     awayTeam: {
         name: match.awayTeam?.name || '',
-        logo: match.awayTeam?.crestUrl || '',
+        logo: typeof ( match.awayTeam as any )?.crest === 'string'
+            ? ( match.awayTeam as any ).crest
+            : ( match.awayTeam?.logo || '' ),
     },
     homeScore: match.score?.fullTime?.homeTeam ?? '',
     awayScore: match.score?.fullTime?.awayTeam ?? '',
     league: match.competition?.name || '',
     status: match.status,
-    time: match.utcDate,
-    stadium: match.stadium || '',
-    isLive: match.status === 'IN_PLAY',
-    badgeText: match.badgeText || '',
+    time: match.week,
+    stadium: match.area?.name || '',
+    isLive: match.status === statusMatches.LIVE,
+    badgeText: match.competition?.code || '',
     variant: 'gradient',
-    backgroundLogo: match.competition?.emblemUrl || '',
+    backgroundLogo: match.competition?.emblem || '',
 } );
 
 interface MatchSwiperProps
@@ -80,9 +94,33 @@ interface MatchSwiperCardProps extends MatchCardProps
     onPress?: () => void;
 }
 
+const useSvgDownload = () =>
+{
+    const [ svg, setSvg ] = useState<{ [ x: string ]: string }>( {} );
+    return {
+        downloadSvg: async ( url: string, name: string ) =>
+        {
+            const response = await fetch( url );
+            const text = await response.text();
+            setSvg( { ...svg, [ url ]: text } );
+            return svg;
+        },
+        svg,
+    };
+};
+
 const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
 {
     const { index, currentIndex, onPress, ...rest } = props;
+
+    const { downloadSvg, svg } = useSvgDownload();
+
+    React.useEffect( () =>
+    {
+        if ( rest.homeTeam?.logo ) downloadSvg( rest.homeTeam.logo, 'homeTeam' );
+        if ( rest.awayTeam?.logo ) downloadSvg( rest.awayTeam.logo, 'awayTeam' );
+    }, [ rest.homeTeam?.logo, rest.awayTeam?.logo ] );
+
     const scaleAnim = useRef( new Animated.Value( index === currentIndex ? 1 : 0.8 ) ).current;
     useEffect( () =>
     {
@@ -94,10 +132,7 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
     }, [ currentIndex, index ] );
 
     return (
-        <Pressable
-            style={styles.cardPressable}
-            onPress={onPress}
-        >
+        <Pressable style={styles.cardPressable} onPress={onPress}>
             <Animated.View style={[ styles.card, { transform: [ { scale: scaleAnim } ] } ]}>
                 <LinearGradient
                     colors={[ '#E32C2C', '#2C5DE3' ]}
@@ -105,6 +140,14 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFillObject}
                 />
+                {/* Эмблема лиги на фоне */}
+                {rest.backgroundLogo && (
+                    <Image
+                        source={{ uri: rest.backgroundLogo }}
+                        style={styles.leagueBgLogo}
+                        resizeMode="contain"
+                    />
+                )}
                 {/* Верхний блок: лига и неделя */}
                 <View style={styles.leagueBlock}>
                     {rest.league && (
@@ -154,7 +197,7 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
                         styles.scoreRow,
                         {
                             position: 'absolute',
-                            bottom: 100,
+                            bottom: 80,
                             left: 0,
                             right: 0,
                         },
@@ -178,16 +221,18 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
                         {rest.awayScore}
                     </Typography>
                 </View>
-                {/* Названия команд */}
+                {/* Названия и эмблемы команд */}
                 <View
                     style={[
                         styles.teamsRow,
                         {
                             position: 'absolute',
-                            bottom: 40,
+                            bottom: 10,
                             left: 20,
                             width: '35%',
                             justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            flexDirection: 'row',
                         },
                     ]}
                 >
@@ -196,26 +241,39 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
                         weight="bold"
                         font="Oswald"
                         color="#fff"
-                        style={[ styles.teamName, { textAlign: 'right' } ]}
+                        style={[ styles.teamName, { textAlign: 'right', marginLeft: 8 } ]}
                         numberOfLines={1}
                     >
                         {rest.homeTeam?.name}
                     </Typography>
                 </View>
                 <View
-                    style={[ styles.teamsRow, { position: 'absolute', bottom: 40, right: 20, width: '35%' } ]}
+                    style={[
+                        styles.teamsRow,
+                        {
+                            position: 'absolute',
+                            bottom: 20,
+                            right: 20,
+                            width: '35%',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        },
+                    ]}
                 >
-                    <Typography
-                        variant="caption"
-                        weight="bold"
-                        font="Oswald"
-                        color="#fff"
-                        style={[ styles.teamName, { textAlign: 'left' } ]}
-                        numberOfLines={1}
-                    >
-                        {rest.awayTeam?.name}
-                    </Typography>
+                    <View style={{ position: 'absolute', zIndex: 100 }}>
+                        <Typography
+                            variant="caption"
+                            weight="bold"
+                            font="Oswald"
+                            color="#fff"
+                            style={[ styles.teamName, { textAlign: 'left', marginRight: 8 } ]}
+                            numberOfLines={1}
+                        >
+                            {rest.awayTeam?.name}
+                        </Typography>
+                    </View>
                 </View>
+             
                 {/* Бейдж и стадион */}
                 <View
                     style={[
@@ -260,34 +318,53 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
 
 const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches } ) =>
 {
-    // Гарантируем, что matches всегда массив
-    const safeMatches = Array.isArray( matches ) ? matches : [];
+    const { selectedLeagueId } = useAppContext();
     let data: MatchCardProps[] = [];
     let loading = false;
     let error: string | null = null;
 
-    if ( safeMatches.length > 0 )
+    if ( matches && matches.length > 0 )
     {
-        data = safeMatches.slice( 0, MAX_CARDS ).map( mapFeaturedToMatchCardProps );
+        data = matches.slice( 0, MAX_CARDS ).map( mapFeaturedToMatchCardProps );
     } else
     {
-        const matchesHook = useMatches();
-        const safeStoreMatches = Array.isArray( matchesHook.matches ) ? matchesHook.matches : [];
-        // Используем mapMatchToMatchCardProps для redux/моков
+        // Получаем code лиги по selectedLeagueId (если есть)
+        const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
+        const league = competitions?.find( c => c.id === selectedLeagueId );
+        const leagueCode = league?.code || '';
+        // Получаем матчи только если есть selectedLeagueId
+        const { data: rtkMatches, isLoading, error: rtkError } = footballApi.endpoints.getLiveMatches.useQuery(
+            selectedLeagueId ? { competitionId: leagueCode, status: statusMatches.LIVE } : skipToken
+        );
+        const safeStoreMatches = Array.isArray( rtkMatches ) ? rtkMatches : [];
         data = safeStoreMatches
             .filter( ( m: any ) => m && typeof m.homeTeam !== 'undefined' && typeof m.awayTeam !== 'undefined' )
-            .slice( 0, MAX_CARDS )
             .map( mapMatchToMatchCardProps );
-        loading = matchesHook.loading;
-        error = matchesHook.error;
+        loading = isLoading;
+        error = rtkError ? ( typeof rtkError === 'string' ? rtkError : 'Ошибка загрузки матчей' ) : null;
     }
 
     // Скелетон при загрузке
-    if ( loading ) return <View style={styles.container}><SkeletonSwiper /></View>;
+    if ( loading )
+        return (
+            <View style={styles.container}>
+                <SkeletonSwiper />
+            </View>
+        );
     // Ошибка
-    if ( error ) return <View style={styles.container}><ErrorState message={error} /></View>;
+    if ( error )
+        return (
+            <View style={styles.container}>
+                <ErrorState message={error} />
+            </View>
+        );
     // Нет данных
-    if ( !data || data.length === 0 ) return <View style={styles.container}><EmptyState message="Нет матчей" /></View>;
+    if ( !data || data.length === 0 )
+        return (
+            <View style={styles.container}>
+                <EmptyState message="Нет матчей" />
+            </View>
+        );
 
     const [ currentIndex, setCurrentIndex ] = useState( 0 );
     const flatListRef = useRef( null );
@@ -300,8 +377,15 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches } ) =>
     };
 
     const renderItem = ( { item, index }: { item: MatchCardProps; index: number } ) => (
-        <MatchSwiperCard {...item} index={index} currentIndex={currentIndex} onPress={() => Alert.alert( 'Переход на детали матча' )} />
+        <MatchSwiperCard
+            {...item}
+            index={index}
+            currentIndex={currentIndex}
+            onPress={() => Alert.alert( 'Переход на детали матча' )}
+        />
     );
+
+
 
     return (
         <View style={styles.container}>
@@ -468,6 +552,22 @@ const styles = StyleSheet.create( {
         marginTop: 6,
         color: '#fff',
     },
+    teamLogo: {
+        width: 44,
+        height: 44,
+        position: 'absolute',
+        bottom: 12,
+        zIndex: 10,
+        borderRadius: 22,
+    },
+    leagueBgLogo: {
+        position: 'absolute',
+        right: 16,
+        bottom: 16,
+        width: 80,
+        height: 80,
+        opacity: 0.08,
+        zIndex: 1,
+    },
 } );
-
-export default React.memo( MatchSwiper );
+export { default } from './index';

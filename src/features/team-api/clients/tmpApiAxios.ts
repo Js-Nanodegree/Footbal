@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, CancelTokenSource, AxiosResponse, AxiosError, AxiosProgressEvent } from 'axios';
 import axiosRetry from 'axios-retry';
+import reactotron from 'reactotron-react-native';
 // import * as Sentry from '@sentry/react-native'; // если используется Sentry
 
 // Memory cache (примитивный, для примера)
@@ -31,18 +32,24 @@ export class TMPApiAxios
         // Глобальные перехватчики
         this.instance.interceptors.request.use( config =>
         {
-            console.log( '[API REQUEST]', config.method, config.url, config.params );
+            reactotron.log( '[API REQUEST]', config.method, config.url, config.params );
             return config;
         } );
         this.instance.interceptors.response.use(
             response =>
             {
-                console.log( '[API RESPONSE]', response.status, response.config.url );
+                reactotron.log( '[API RESPONSE]', response.status, response.config.url );
                 return response;
             },
             error =>
             {
-                console.error( '[API ERROR]', error );
+                reactotron.log( '[API ERROR]', {
+                    url: error.config?.url,
+                    method: error.config?.method,
+                    status: error.response?.status,
+                    data: error.response?.data,
+                    message: error.message,
+                } );
                 // if (Sentry) Sentry.captureException(error);
                 if ( error.response )
                 {
@@ -176,23 +183,5 @@ export class TMPApiAxios
     }
 }
 
-/**
- * Универсальное получение API_KEY для Node.js и React Native:
- * - В Node.js (тесты, сервер) используется process.env
- * - В React Native — @env через require
- */
-let API_KEY = '';
-try
-{
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    API_KEY = require( '@env' ).FOOTBALL_DATA_API_KEY || '';
-} catch ( e )
-{
-    if ( typeof process !== 'undefined' && process.env && process.env.FOOTBALL_DATA_API_KEY )
-    {
-        API_KEY = process.env.FOOTBALL_DATA_API_KEY;
-    }
-}
 const BASE_URL = 'https://api.football-data.org/v4';
-export const tmpApiAxios = new TMPApiAxios( BASE_URL, { 'X-Auth-Token': API_KEY } ); 
+export const tmpApiAxios = new TMPApiAxios( BASE_URL, { 'X-Auth-Token': 'bf63b2eaacf54ac0b42620ac5c820ec7' } ); 
