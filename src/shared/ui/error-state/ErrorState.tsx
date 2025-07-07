@@ -7,28 +7,38 @@ import Button from '../button/Button';
 interface ErrorStateProps
 {
     message?: string;
+    description?: string;
+    icon?: 'lock' | 'error' | 'network';
+    actionLabel?: string;
     onRetry?: () => void;
 }
 
 const ErrorState: React.FC<ErrorStateProps> = ( {
     message = 'Временная ошибка',
+    description = 'Попробуйте обновить страницу или проверьте соединение',
+    icon = 'error',
+    actionLabel,
     onRetry,
 } ) => (
     <View style={styles.container}>
-        {/* <LottieView
-            source={require( '../../../assets/lottie/penalty-miss.json' )}
-            autoPlay
-            loop={false}
-            style={{ width: 180, height: 180 }}
-        /> */}
+        {/* {icon === 'lock' && (
+            <LottieView
+                source={require( '../../../assets/lottie/penalty-miss.json' )}
+                autoPlay
+                loop={false}
+                style={{ width: 180, height: 180 }}
+            />
+        )} */}
         <Typography variant="h3" weight="bold" style={{ marginTop: 12 }}>
             {message}
         </Typography>
-        <Typography variant="caption" color="#888" style={{ marginTop: 4 }}>
-            Попробуйте обновить страницу или проверьте соединение
-        </Typography>
+        {!!description && (
+            <Typography variant="caption" color="#888" style={{ marginTop: 4 }}>
+                {description}
+            </Typography>
+        )}
         {onRetry && (
-            <Button title="Попробовать снова" onPress={onRetry} style={{ marginTop: 16 }} />
+            <Button title={actionLabel || 'Попробовать снова'} onPress={onRetry} style={{ marginTop: 16 }} />
         )}
     </View>
 );

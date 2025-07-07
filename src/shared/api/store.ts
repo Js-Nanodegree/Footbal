@@ -4,17 +4,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import teamsReducer from '../../features/team-api/redux/teamSlice';
 import playersReducer from '../../features/team-api/redux/playerSlice';
 import matchesReducer from '../../features/team-api/redux/matchSlice';
+import teamPastMatchesReducer from '../../features/team-api/redux/teamPastMatchesSlice';
 
 const rootReducer = combineReducers( {
     teams: teamsReducer,
     players: playersReducer,
     matches: matchesReducer,
+    teamPastMatches: teamPastMatchesReducer,
 } );
 
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    whitelist: [ 'teams', 'players', 'matches' ],
+    whitelist: [ 'teams', 'players', 'matches', 'teamPastMatches' ],
 };
 
 const persistedReducer = persistReducer( persistConfig, rootReducer );
@@ -31,4 +33,8 @@ export const store = configureStore( {
 export const persistor = persistStore( store );
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch; 
+export type AppDispatch = typeof store.dispatch;
+
+// Типобезопасный хук для dispatch
+import { useDispatch } from 'react-redux';
+export const useAppDispatch = () => useDispatch<AppDispatch>(); 

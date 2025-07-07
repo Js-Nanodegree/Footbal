@@ -9,12 +9,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import NetInfo from '@react-native-community/netinfo';
 import { setCache, NETWORK_STATUS_KEY } from './src/shared/memory-bank/mmkvMemoryBank';
 import { useEffect } from 'react';
+import { OverlayProvider } from './src/shared/ui/OverlayContext';
 
 const NetworkStatusSync: React.FC = () =>
 {
   useEffect( () =>
   {
-    const unsubscribe = NetInfo.addEventListener( state =>
+    const unsubscribe = NetInfo.addEventListener( ( state ) =>
     {
       setCache( NETWORK_STATUS_KEY, !!state.isConnected );
     } );
@@ -27,12 +28,14 @@ const App = () => (
   <Provider store={store}>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <NotifierWrapper>
-          <NetworkStatusSync />
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
-        </NotifierWrapper>
+        <OverlayProvider>
+          <NotifierWrapper>
+            <NetworkStatusSync />
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+          </NotifierWrapper>
+        </OverlayProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   </Provider>

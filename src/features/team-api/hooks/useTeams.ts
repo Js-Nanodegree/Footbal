@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Team } from '../types/team';
 import { TeamApiService } from '../services/teamApi';
 import { showErrorNotification } from 'src/shared/utils/showErrorNotification';
+import { mockTeams } from '../mocks/teams';
 
 interface UseTeamsResult {
   teams: Team[];
@@ -20,8 +21,8 @@ export function useTeams(pageSize = 20): UseTeamsResult {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
 
-  async function fetchTeams(reset = false) {
-    console.log('fetchTeams called, page:', page, 'reset:', reset);
+  async function fetchTeams( reset = false )
+  {
     setLoading(true);
     setError(null);
     try {
@@ -32,6 +33,9 @@ export function useTeams(pageSize = 20): UseTeamsResult {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка загрузки команд');
       showErrorNotification( e instanceof Error ? e.message : 'Ошибка загрузки команд' );
+      // Возвращаем моки при ошибке
+      setTeams( mockTeams );
+      setHasMore( false );
     } finally {
       setLoading(false);
     }

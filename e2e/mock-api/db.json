@@ -1,0 +1,10 @@
+{
+  "teams": [
+    { "id": 1, "name": "Arsenal", "section": "A" },
+    { "id": 2, "name": "Barcelona", "section": "B" }
+  ],
+  "matches": [
+    { "id": 101, "homeTeam": "Arsenal", "awayTeam": "Chelsea", "status": "LIVE" },
+    { "id": 102, "homeTeam": "Barcelona", "awayTeam": "Real Madrid", "status": "FINISHED" }
+  ]
+} 

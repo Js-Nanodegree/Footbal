@@ -1,5 +1,5 @@
 import React from 'react';
-import { SectionList, FlatList, View, Text } from 'react-native';
+import { SectionList, FlatList, View, Text, ScrollView } from 'react-native';
 import Input from '../shared/ui/input/Input';
 import Button from '../shared/ui/button/Button';
 import MatchCard from '../shared/ui/match-card/MatchCard';
@@ -17,6 +17,11 @@ import FABScrollToTop from '../shared/ui/FABScrollToTop/FABScrollToTop';
 import CollapsibleHeader from '../shared/ui/CollapsibleHeader/CollapsibleHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ErrorNotificationDemo } from 'src/shared/ui/error-state/ErrorNotificationDemo';
+import { useOverlay } from '../shared/ui/OverlayContext';
+import GlobalModal from '../shared/ui/modals/GlobalModal';
+import SecondModal from '../shared/ui/modals/SecondModal';
+import BottomSheetModal from '../shared/ui/modals/BottomSheetModal';
+import { useToast } from '../shared/ui/modals/useToast';
 
 type StyleguideSection = {
     title: string;
@@ -171,9 +176,85 @@ const styleguideSections: StyleguideSection[] = [
 const StyleguideScreen = () =>
 {
     const navigation = useNavigation();
+    const { showOverlay, hideOverlay } = useOverlay();
+    const toast = useToast();
+
+    const handleShowToast = () =>
+    {
+        toast( 'Это Toast!' );
+    };
+
+    const handleShowBottomSheet = () =>
+    {
+        showOverlay(
+            <BottomSheetModal
+                title="Bottom Sheet"
+                onClose={hideOverlay}
+                height={340}
+                indicatorColor="#E94057"
+            >
+                <View style={{ alignItems: 'center', padding: 12 }}>
+                    <Text style={{ fontSize: 32, marginBottom: 8 }}>📋</Text>
+                    <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 8 }}>Демо BottomSheet</Text>
+                    <Text style={{ color: '#666', marginBottom: 16, textAlign: 'center' }}>
+                        Это пример кастомного контента внутри BottomSheetModal. Можно размещать любые элементы, кнопки, фильтры, списки и т.д.
+                    </Text>
+                    <Button title="Действие" onPress={() => { toast( 'Действие!' ); hideOverlay(); }} />
+                </View>
+            </BottomSheetModal>
+        );
+    };
+
+    const handleShowBottomSheetList = () =>
+    {
+        showOverlay(
+            <BottomSheetModal
+                title="Список в BottomSheet"
+                onClose={hideOverlay}
+                height={420}
+                indicatorColor="#E94057"
+            >
+                <View style={{ maxHeight: 320 }}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 8 }}>Скроллируемый список</Text>
+                    <ScrollView style={{ maxHeight: 260 }}>
+                        {Array.from( { length: 20 } ).map( ( _, i ) => (
+                            <View key={i} style={{ padding: 12, borderBottomWidth: 1, borderColor: '#eee' }}>
+                                <Text>Элемент {i + 1}</Text>
+                            </View>
+                        ) )}
+                    </ScrollView>
+                    <Button title="Закрыть" onPress={hideOverlay} style={{ marginTop: 12 }} />
+                </View>
+            </BottomSheetModal>
+        );
+    };
+
+    const handleShowGlobalModal = () =>
+    {
+        showOverlay(
+            <GlobalModal
+                onClose={hideOverlay}
+                onOpenSecond={() =>
+                {
+                    showOverlay( <SecondModal onClose={hideOverlay} /> );
+                }}
+            />
+        );
+    };
+
+    const handleShowSecondModal = () =>
+    {
+        showOverlay( <SecondModal onClose={hideOverlay} /> );
+    };
+
     const interactiveSection = {
         title: 'Интерактивные примеры',
         data: [ [
+            { label: 'Toast', element: <Button title="Показать Toast" onPress={handleShowToast} /> },
+            { label: 'Bottom Sheet', element: <Button title="Показать BottomSheet" onPress={handleShowBottomSheet} /> },
+            { label: 'Bottom Sheet (список)', element: <Button title="BottomSheet: Список" onPress={handleShowBottomSheetList} /> },
+            { label: 'Global Modal', element: <Button title="Показать GlobalModal" onPress={handleShowGlobalModal} /> },
+            { label: 'Second Modal', element: <Button title="Показать SecondModal" onPress={handleShowSecondModal} /> },
             { label: 'Action List', element: <Button title="Action List Demo" onPress={() => navigation.navigate( 'ActionListDemo' as never )} /> },
             { label: 'Collapsible Header', element: <Button title="Collapsible Header Demo" onPress={() => navigation.navigate( 'CollapsibleHeaderDemo' as never )} /> },
             { label: 'Error State', element: <Button title="Error State Demo" onPress={() => navigation.navigate( 'ErrorStateDemo' as never )} /> },

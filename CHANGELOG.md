@@ -6,4 +6,34 @@
 
 [2024-06-18] feat: Добавлен Loader (Spinner) — colorMap, типы, компонент, тесты, context.md, готов к showcase в Style Guide.
 
-[2024-06-18] refactor: Интегрирован TMPApiAxios в TeamApiService, исправлена типизация прогресса (AxiosProgressEvent), добавлены контекстные комментарии и JSDoc для автогенерации документации. (Интеграция современного HTTP-клиента, подготовка к расширению тестов и production-ready API) 
+[2024-06-18] feat: добавлен кастомный хук useRippleScaleAnimation для анимации появления/исчезновения с ripple и scale, с документацией и API для переиспользования в TeamList и других компонентах.
+
+[2024-06-18] refactor: Интегрирован TMPApiAxios в TeamApiService, исправлена типизация прогресса (AxiosProgressEvent), добавлены контекстные комментарии и JSDoc для автогенерации документации. (Интеграция современного HTTP-клиента, подготовка к расширению тестов и production-ready API)
+
+[2024-06-20] feat: Внедрён паттерн UI/UX-архитектуры (ADR, action item, README, systemPatterns.md, Memory Bank)
+
+[2024-06-19] feat: D. Интеграция SVG-логотипов для топ-команд в TeamList с fallback на placeholder или Image.
+
+[2024-06-18] feat: Завершены задачи по TodayMatch, TeamList, TV-кнопке, отступам, placeholder, анимациям. Начата новая задача: pixel-perfect рефакторинг FeaturedMatchCard.
+
+[2024-06-19] task: Создана задача на pixel-perfect доработку FeaturedMatchCard, работа передана frontend-разработчику. Проведён аудит, требования зафиксированы в taskmd.
+
+[2024-06-18] feat: Добавлен epic и задачи на pixel-perfect карточку матча и свайпер (HomeScreen), зафиксированы все нерешённые проблемы и требования по референсу (UI/UX, анимация, overlay, edge-to-edge, snap-to-center, LIVE, бейдж, overlay, адаптивность).
+
+[2024-06-19] feat: Добавить плавные переходы между состояниями loading → content → empty/error (HomeScreen, секции)
+
+[2024-06-19] feat: Реализовать shimmer-эффект для скелетонов (если не реализовано)
+
+[2024-06-19] feat: В TodayMatchSection и MatchSwiperSection добавить визуальное отображение выбранных фильтров (бейджи с названием лиги/команды)
+
+[2024-06-19] feat: Добавить тени, скругления, плавные градиенты для карточек и секций
+
+[2024-06-19] feat: Для пустого состояния добавить иконку, подробный текст и call-to-action (например, "Попробуйте выбрать другую лигу")
+
+[2024-06-19] refactor: Использовать React.memo и useCallback для всех секций и карточек
+
+[2024-06-19] test: Добавить тесты для состояний loading/empty/error, onPress, фильтрации, переходов
+
+[2024-06-19] docs: Обновить документацию и context.md для секций/фичей
+
+[2024-06-19] feat: Добавить пользовательские сценарии (pull-to-refresh, быстрый переход, call-to-action) 

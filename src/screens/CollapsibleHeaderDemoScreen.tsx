@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { SectionList, View, Text, Animated } from 'react-native';
+import { Animated, Text, View } from 'react-native';
 import CollapsibleHeader from '../shared/ui/CollapsibleHeader/CollapsibleHeader';
 
 const team = {

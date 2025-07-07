@@ -4,6 +4,7 @@ import { Match } from '../types/match';
 import { z } from 'zod';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { tmpApiAxios } from '../clients/tmpApiAxios'; // Импорт singleton-инстанса
+import { mockTeams } from '../mocks/teams';
 
 // @ts-ignore
 // eslint-disable-next-line no-var
@@ -145,11 +146,16 @@ export class TeamApiService {
   }
 
   static async getTeamDetails(
-    teamId: number,
+    teamId?: number,
     client: 'fetch' | 'axios' = 'fetch',
     axiosOptions?: AxiosRequestConfig
   ): Promise<Team>
   {
+    if ( !teamId )
+    {
+      // Возвращаем первый мок, если teamId не передан
+      return mockTeams[ 0 ];
+    }
     const url = `/teams/${ teamId }`;
     try {
       if ( client === 'axios' )

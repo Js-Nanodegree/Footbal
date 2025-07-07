@@ -3,6 +3,9 @@ import { Competition } from '../types/competition';
 import { CompetitionApiService } from '../services/competitionApi';
 import { showErrorNotification } from 'src/shared/utils/showErrorNotification';
 
+// Импортируем моки напрямую
+import { mockCompetitions } from '../services/competitionApi';
+
 interface UseCompetitionsResult {
   competitions: Competition[];
   loading: boolean;
@@ -32,6 +35,8 @@ export function useCompetitions(
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка загрузки турниров');
       showErrorNotification( e instanceof Error ? e.message : 'Ошибка загрузки турниров' );
+      // Возвращаем моки при ошибке
+      setCompetitions( mockCompetitions );
     } finally {
       setLoading(false);
       setFirstLoad(false);

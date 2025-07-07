@@ -5,7 +5,6 @@ import FABScrollToTop from '../shared/ui/FABScrollToTop/FABScrollToTop';
 const sections = [
     { title: 'Секция', data: Array.from( { length: 60 }, ( _, i ) => ( { id: i, name: `Item ${ i + 1 }` } ) ) },
 ];
-
 const FABScrollToTopDemoScreen = () =>
 {
     const listRef = useRef<SectionList<any>>( null );

@@ -1,0 +1,40 @@
+import { Team } from '../types/team';
+
+export const mockTeams: Team[] = [
+    {
+        id: 1,
+        name: 'Arsenal',
+        shortName: 'ARS',
+        tla: 'ARS',
+        crestUrl: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg',
+        area: { id: 2072, name: 'England' },
+        founded: 1886,
+        clubColors: 'Red / White',
+        venue: 'Emirates Stadium',
+        lastUpdated: '2024-06-20T00:00:00Z',
+    },
+    {
+        id: 2,
+        name: 'Barcelona',
+        shortName: 'BAR',
+        tla: 'BAR',
+        crestUrl: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+        area: { id: 2224, name: 'Spain' },
+        founded: 1899,
+        clubColors: 'Blue / Red',
+        venue: 'Camp Nou',
+        lastUpdated: '2024-06-20T00:00:00Z',
+    },
+    {
+        id: 3,
+        name: 'Chelsea',
+        shortName: 'CHE',
+        tla: 'CHE',
+        crestUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg',
+        area: { id: 2072, name: 'England' },
+        founded: 1905,
+        clubColors: 'Blue / White',
+        venue: 'Stamford Bridge',
+        lastUpdated: '2024-06-20T00:00:00Z',
+    },
+]; 

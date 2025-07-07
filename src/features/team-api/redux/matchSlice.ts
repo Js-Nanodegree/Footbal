@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { Match } from '../types/match';
 import { fetchTeamMatches } from '../services/teamApi';
+import { mockMatches } from '../mocks/matches';
 
 interface MatchesState {
   matches: Match[];
@@ -20,7 +21,7 @@ export const fetchMatchesThunk = createAsyncThunk(
     try {
       return await fetchTeamMatches(teamId);
     } catch (e: any) {
-      return rejectWithValue(e.message);
+      return mockMatches;
     }
   }
 );
