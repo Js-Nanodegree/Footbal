@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Image, StyleSheet, Dimensions, Animated, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Typography from '../typography/Typography';
+import { formatDateTime } from 'src/shared/utils/dateFormat';
 
 interface Team
 {
@@ -26,6 +27,7 @@ export type FeaturedMatchCardProps = {
     badgeText?: string;
     stadium?: string;
     backgroundLogo?: string;
+    utcDate?: string; // добавлено для поддержки форматирования даты
 };
 
 const CARD_WIDTH = Math.min( Dimensions.get( 'window' ).width - 32, 360 );
@@ -47,9 +49,10 @@ const FeaturedMatchCard: React.FC<FeaturedMatchCardProps> = ( {
     competition,
     status,
     score,
+    utcDate,
 } ) =>
 {
-    // Анимация появления
+  // Анимация появления
     const scaleAnim = React.useRef( new Animated.Value( 0.92 ) ).current;
     const opacityAnim = React.useRef( new Animated.Value( 0 ) ).current;
     React.useEffect( () =>
@@ -61,7 +64,9 @@ const FeaturedMatchCard: React.FC<FeaturedMatchCardProps> = ( {
     }, [] );
 
     return (
-        <Animated.View style={[ styles.cardWrapper, { transform: [ { scale: scaleAnim } ], opacity: opacityAnim } ]}>
+        <Animated.View
+            style={[ styles.cardWrapper, { transform: [ { scale: scaleAnim } ], opacity: opacityAnim } ]}
+        >
             <LinearGradient
                 colors={[ '#E32C2C', '#2C5DE3' ]}
                 start={{ x: 0, y: 0 }}
@@ -70,11 +75,7 @@ const FeaturedMatchCard: React.FC<FeaturedMatchCardProps> = ( {
             />
             {/* Watermark-эмблема турнира */}
             {competition?.emblem && (
-                <Image
-                    source={{ uri: competition.emblem }}
-                    style={styles.bgLogo}
-                    resizeMode="contain"
-                />
+                <Image source={{ uri: competition.emblem }} style={styles.bgLogo} resizeMode="contain" />
             )}
             <View style={styles.content}>
                 {/* Турнир и эмблема */}
@@ -90,7 +91,9 @@ const FeaturedMatchCard: React.FC<FeaturedMatchCardProps> = ( {
                 <View style={styles.scoreRow}>
                     <Image source={{ uri: homeTeam.logo }} style={styles.teamLogoBig} />
                     <Text style={styles.score}>{homeScore}</Text>
-                    <View style={styles.vsCircle}><Text style={styles.vsText}>vs</Text></View>
+                    <View style={styles.vsCircle}>
+                        <Text style={styles.vsText}>vs</Text>
+                    </View>
                     <Text style={styles.score}>{awayScore}</Text>
                     <Image source={{ uri: awayTeam.logo }} style={styles.teamLogoBig} />
                 </View>
@@ -101,12 +104,14 @@ const FeaturedMatchCard: React.FC<FeaturedMatchCardProps> = ( {
                 </View>
                 {/* Бейдж турнира */}
                 {competition?.code && (
-                    <View style={styles.badge}><Text style={styles.badgeText}>{competition.code}</Text></View>
+                    <View style={styles.badge}>
+                        <Text style={styles.badgeText}>{competition.code}</Text>
+                    </View>
                 )}
                 {/* Страна и дата */}
                 <View style={styles.metaRow}>
                     <Text style={styles.metaText}>{area?.name || '—'}</Text>
-                    <Text style={styles.metaText}>{week || ( score?.utcDate ? String( score.utcDate ).slice( 0, 10 ) : '' )}</Text>
+                    <Text style={styles.metaText}>{formatDateTime( utcDate ? utcDate : week || '' )}</Text>
                 </View>
             </View>
         </Animated.View>
@@ -134,7 +139,7 @@ const styles = StyleSheet.create( {
         bottom: 10,
         width: 110,
         height: 110,
-        opacity: 0.10,
+        opacity: 0.1,
         zIndex: 1,
     },
     content: {
@@ -228,4 +233,4 @@ const styles = StyleSheet.create( {
     },
 } );
 
-export default FeaturedMatchCard; 
+export default FeaturedMatchCard;

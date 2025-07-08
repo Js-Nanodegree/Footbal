@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { DateFormatAdapter } from 'src/features/match-history/adapters';
 import { footballApi, statusMatches } from 'src/features/team-api/services/footballApi';
 import { Match } from 'src/features/team-api/types/match';
@@ -13,49 +13,54 @@ import { AppContextProvider } from '../context';
 import { selectSelectedLeagueId } from '../leagueSlice';
 import FinishedMatchesSection from './FinishedMatchesSection';
 import Header from 'src/shared/ui/header/Header';
-
+import { usePullToRefresh } from 'src/shared/hooks/usePullToRefresh';
 
 const FinishedMatchesScreenInner = () => {
   const navigation = useNavigation();
   const route = useRoute();
   // @ts-ignore
   const { leagueId } = route.params || {};
-  const selectedLeagueId = useSelector( selectSelectedLeagueId );
+  const selectedLeagueId = useSelector(selectSelectedLeagueId);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   // Получаем все соревнования через RTK Query
-  const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
+  const { data: competitions } = footballApi.endpoints.getLeagues.useQuery({});
 
   // Вычисляем competitionId (code)
-  const competitionId = competitions?.find( ( c ) => c.id === ( leagueId || selectedLeagueId ) )?.code || competitions?.[ 0 ]?.code || '';
+  const competitionId =
+    competitions?.find((c) => c.id === (leagueId || selectedLeagueId))?.code ||
+    competitions?.[0]?.code ||
+    '';
 
   // Получаем завершённые матчи через RTK Query
-  const { data, isLoading, isError } = footballApi.endpoints.getLiveMatches.useQuery( {
+  const { data, isLoading, isError } = footballApi.endpoints.getLiveMatches.useQuery({
     competitionId,
     status: statusMatches.FINISHED,
   });
   const matches = data?.matches || [];
 
-  // DEBUG: выводим competitions, competitionId, matches
-  React.useEffect( () =>
-  {
-    console.log( 'competitions', competitions );
-    console.log( 'competitionId', competitionId );
-    console.log( 'matches', matches );
-  }, [ competitions, competitionId, matches ] );
-
   // Вернуть фильтрацию по лиге
-  const filteredMatches = React.useMemo( () =>
-  {
-    if ( !matches ) return [];
-    if ( leagueId )
-    {
-      return matches.filter( ( m: Match ) => m.competition?.id === leagueId );
+  const filteredMatches = React.useMemo(() => {
+    if (!matches) return [];
+    if (leagueId) {
+      return matches.filter((m: Match) => m.competition?.id === leagueId);
     }
     return matches;
-  }, [ matches, leagueId ] );
+  }, [matches, leagueId]);
 
   const insets = useSafeAreaInsets();
+
+  const onRefresh = React.useCallback(() => {
+    dispatch(
+      footballApi.endpoints.getLiveMatches.initiate(
+        { competitionId, status: statusMatches.FINISHED },
+        { forceRefetch: true },
+      ),
+    );
+  }, [dispatch, competitionId]);
+
+  const { refreshControl } = usePullToRefresh({ onRefresh });
 
   // Адаптер для передачи нужных полей
   const renderItem = ({ item }: { item: Match }) => {
@@ -65,45 +70,67 @@ const FinishedMatchesScreenInner = () => {
       id: item.id,
       homeTeam: {
         name: item.homeTeam?.name,
-        crest: ( item.homeTeam as any )?.crest || ( item.homeTeam as any )?.logo || '',
+        crest: (item.homeTeam as any)?.crest || (item.homeTeam as any)?.logo || '',
       },
       awayTeam: {
         name: item.awayTeam?.name,
-        crest: ( item.awayTeam as any )?.crest || ( item.awayTeam as any )?.logo || '',
+        crest: (item.awayTeam as any)?.crest || (item.awayTeam as any)?.logo || '',
       },
-      time: `${ homeScore } : ${ awayScore }`,
-      date: DateFormatAdapter.formatCompactDate( item.utcDate ),
+      time: `${homeScore} : ${awayScore}`,
+      date: DateFormatAdapter.formatCompactDate(item.utcDate),
       score: item.score,
     };
-    return <FinishedMatchesSection match={adaptedMatch} onPress={() => navigation.navigate( 'MatchHistory', { matchId: item.id } )} />;
+    return (
+      <FinishedMatchesSection
+        match={adaptedMatch}
+        onPress={() => {
+          console.log('FinishedMatchesScreen onPress item:', item);
+          navigation.navigate('MatchHistory', {
+            matchId: item.id,
+            homeId: item.homeTeam?.id,
+            awayId: item.awayTeam?.id,
+            venue: 'home',
+          });
+        }}
+      />
+    );
   };
 
-  const renderSeparator = () => <View style={{ height: 16 }} />;
-
-  if ( isLoading )
-  {
+  if (isLoading) {
     return (
-      <View style={[ styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
-        <Typography variant="h2" font="Oswald">{t( 'Загрузка...' )}</Typography>
+      <View style={[styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Typography variant="h2" font="Oswald">
+            {t('Загрузка...')}
+          </Typography>
+        </View>
       </View>
     );
   }
 
-  if ( isError )
-  {
+  if (isError) {
     return (
-      <View style={[ styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
-        <Typography variant="h2" font="Oswald" style={{ color: 'red' }}>{t( 'Ошибка загрузки матчей' )}</Typography>
+      <View style={[styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Typography variant="h2" font="Oswald" style={{ color: 'red' }}>
+            {t('Ошибка загрузки матчей')}
+          </Typography>
+        </View>
       </View>
     );
   }
 
-  if ( !filteredMatches || filteredMatches.length === 0 )
-  {
+  if (!filteredMatches || filteredMatches.length === 0) {
     return (
-      <View style={[ styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
-        <Header title={t( 'Завершённые матчи' )} onBack={() => navigation.goBack()} />
-        <Typography variant="h2" font="Oswald">{t( 'Завершённых матчей нет' )}</Typography>
+      <View style={[styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Typography variant="h2" font="Oswald">
+            {t('Нет доступных матчей')}
+          </Typography>
+        </View>
       </View>
     );
   }
@@ -112,24 +139,30 @@ const FinishedMatchesScreenInner = () => {
     <FlatList
       data={filteredMatches}
       renderItem={renderItem}
-      keyExtractor={( item ) => String( item.id )}
-      contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom, paddingHorizontal: 16 }}
+      keyExtractor={(item) => String(item.id)}
+      contentContainerStyle={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingHorizontal: 16,
+        flexGrow: 1,
+      }}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <Header title={t( 'Завершённые матчи' )} onBack={() => navigation.goBack()} />
+        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
       }
+      refreshControl={refreshControl}
     />
   );
 };
 
-const styles = StyleSheet.create( {
+const styles = StyleSheet.create({
   centered: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
   },
-} );
+});
 
 const FinishedMatchesScreen = () => {
   return (

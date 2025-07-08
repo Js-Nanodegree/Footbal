@@ -1,60 +1,73 @@
-// Экран истории очных матчей: секции собираются через SectionList, используется DateSeasonProvider и DateSeasonSwitcher
+// Экран истории очных матчей: секции собираются через SectionList, все параметры берутся из navigation params, DateSeasonProvider и DateSeasonSwitcher больше не используются
 // [ПРАВИЛО] Тесты для этого экрана писать не обязательно, по решению команды.
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from 'src/roads/RootNavigator';
 import { skipToken } from '@reduxjs/toolkit/query';
-import React, { useMemo } from 'react';
-import { SectionList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useMemo, useCallback } from 'react';
+import { Alert, SectionList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
+import { usePullToRefresh } from 'src/shared/hooks/usePullToRefresh';
 import
-{
+  {
   useGetMatchDetailsQuery,
   useGetTeamMatchesQuery,
+  footballApi,
 } from '../../features/team-api/services/footballApi';
 import MatchSwiperSection from '../home-screen/components/MatchSwiperSection';
 import { MatchHistoryPlayersSection } from '../match-history-players/Section';
 import { MatchHistoryStatsSection } from '../match-history-stats/Section';
 import { MatchHistoryItem } from '../team-api/types/match';
 import { adaptSeasonMatchesToMatch } from './adapters';
-import { DateSeasonSwitcher } from './context/DateSeasonSwitcher';
-import
-{
-  MatchHistoryQueryProvider,
-  useMatchHistoryQueryState,
-} from './context/MatchHistoryQueryContext';
 import Typography from 'src/shared/ui/typography/Typography';
 import { colors } from 'src/shared/ui/theme/colors';
 import { DateFormatAdapter } from './adapters';
 import Header from 'src/shared/ui/header/Header';
+import { useMatchHistoryParams } from './hooks/useMatchHistoryParams';
 
 const MatchHistoryScreenContent: React.FC = () => {
-  const navigation = useNavigation();
-  const { matchId, venue, setMatchId } = useMatchHistoryQueryState();
-  const { data: match } = useGetMatchDetailsQuery( matchId );
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'MatchHistory'>>();
+  const { matchId, venue, homeId, awayId, season } = useMatchHistoryParams();
+  const { data: match, refetch: refetchMatch } = useGetMatchDetailsQuery( matchId );
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
 
   // Меморизация вычисления teamId и opponentId
-  const { teamId, opponentId } = useMemo( () =>
-  {
-    let teamId = undefined;
-    let opponentId = undefined;
-    if ( match && match.homeTeam && match.awayTeam )
-    {
-      if ( venue === 'home' )
-      {
-        teamId = match.homeTeam.id;
-        opponentId = match.awayTeam.id;
-      } else
-      {
-        teamId = match.awayTeam.id;
-        opponentId = match.homeTeam.id;
-      }
-    }
-    return { teamId, opponentId };
-  }, [ match, venue ] );
+  const { teamId, opponentId } = { teamId: homeId, opponentId: awayId };
 
-  const { data: matches } = useGetTeamMatchesQuery(
+  // DEBUG: логируем параметры для диагностики
+  console.log( 'matchId:', matchId, 'homeId:', homeId, 'awayId:', awayId, 'venue:', venue, 'teamId:', teamId, 'opponentId:', opponentId );
+
+  const { data: matches, refetch: refetchMatches } = useGetTeamMatchesQuery(
     teamId && opponentId ? { teamId, opponentId } : skipToken,
   );
+
+  useFocusEffect(
+    useCallback( () =>
+    {
+      refetchMatch();
+      refetchMatches();
+    }, [ matchId, teamId, opponentId ] )
+  );
+
+  const onRefresh = useCallback( () =>
+  {
+    if ( matchId )
+    {
+      dispatch(
+        footballApi.endpoints.getMatchDetails.initiate( matchId, { forceRefetch: true } )
+      );
+    }
+    if ( teamId && opponentId )
+    {
+      dispatch(
+        footballApi.endpoints.getTeamMatches.initiate( { teamId, opponentId }, { forceRefetch: true } )
+      );
+    }
+  }, [ dispatch, matchId, teamId, opponentId ] );
+
+  const { refreshControl } = usePullToRefresh( { onRefresh } );
 
   // Группируем матчи по сезону и сортируем по дате
   const matchesBySeason: Record<string, any[]> = {};
@@ -74,7 +87,7 @@ const MatchHistoryScreenContent: React.FC = () => {
   const sections = [
     {
       title: 'Карточка',
-      data: [ {} ],
+      data: [ { matchId } ], // теперь data зависит от matchId
       renderItem: () => (
         <>
           <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
@@ -86,67 +99,17 @@ const MatchHistoryScreenContent: React.FC = () => {
             loading={!matches}
             error={null}
             selectedMatchId={matchId}
-            onMatchPress={( m ) => setMatchId( m.id )}
+            onMatchPress={( m ) => navigation.navigate( 'MatchHistory', {
+              matchId: m.id,
+              homeId: m.homeTeam?.id,
+              awayId: m.awayTeam?.id,
+              venue,
+              season,
+            } )}
             // initialMatchId нужен для автоскролла к текущему матчу
             initialMatchId={matchId}
           />
-          <DateSeasonSwitcher>
-            <View style={{ marginHorizontal: 12, marginBottom: 24 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Typography
-                  variant="h2"
-                  style={{
-                    marginTop: 12,
-                    fontSize: 16,
-                    lineHeight: 16,
-                    fontWeight: '700',
-                  }}
-                >
-                  {match?.homeTeam.name}
-                </Typography>
-                <Typography
-                  variant="h2"
-                  style={{
-                    marginTop: 12,
-                    fontSize: 12,
-                    lineHeight: 16,
-                    fontWeight: '600',
-                    color: colors.gradientStart,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Домашняя
-                </Typography>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Typography
-                  variant="h2"
-                  style={{
-                    marginTop: 12,
-                    fontWeight: '700',
-                    fontSize: 16,
-                    lineHeight: 16,
-
-                  }}
-                >
-                  {match?.awayTeam.name}
-                </Typography>
-                <Typography
-                  variant="h2"
-                  style={{
-                    marginTop: 12,
-                    fontWeight: '600',
-                    fontSize: 12,
-                    lineHeight: 16,
-                    color: colors.gradientEnd,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Гостевая
-                </Typography>
-              </View>
-            </View>
-          </DateSeasonSwitcher>
+          {/* Удалён DateSeasonSwitcher и вложенный блок */}
         </>
       ),
     },
@@ -183,13 +146,24 @@ const MatchHistoryScreenContent: React.FC = () => {
           ...m,
           date: DateFormatAdapter.formatCompactDate( m.utcDate ),
         } ) );
+        // Кастомный обработчик нажатия
+        const handleMatchPress = ( m: any ) =>
+        {
+          navigation.navigate( 'MatchHistory', {
+            matchId: m.id,
+            homeId: m.homeTeam?.id,
+            awayId: m.awayTeam?.id,
+            venue,
+            season,
+          } );
+        };
         return (
           <MatchSwiperSection
             matches={matchesWithFormattedDate}
             loading={!matches}
             error={null}
             selectedMatchId={matchId}
-            onMatchPress={( m ) => setMatchId( m.id )}
+            onMatchPress={handleMatchPress}
             initialMatchId={initialMatchId}
           />
         );
@@ -201,26 +175,28 @@ const MatchHistoryScreenContent: React.FC = () => {
     <View style={styles.container}>
       <SectionList
         sections={sections}
-        keyExtractor={(_, idx) => String(idx)}
+        keyExtractor={( item, idx ) =>
+        {
+          // Для секции 'Карточка' используем matchId, чтобы SectionList реагировал на смену матча
+          if ( item && typeof item === 'object' && 'matchId' in item ) return String( item.matchId );
+          return String( idx );
+        }}
         renderItem={( { section, item } ) => section.renderItem( { item } )}
         renderSectionHeader={({ section }) => null}
         contentContainerStyle={[
           styles.list,
           { paddingTop: insets.top, paddingBottom: insets.bottom },
         ]}
+        refreshControl={refreshControl}
       />
     </View>
   );
 };
 
-const MatchHistoryScreen: React.FC = () => {
-  const route = useRoute();
-  // @ts-ignore
-  const matchId = route.params?.matchId ?? 123456; // fallback на дефолтный id
+const MatchHistoryScreen: React.FC = () =>
+{
   return (
-    <MatchHistoryQueryProvider initial={{ matchId }}>
-      <MatchHistoryScreenContent />
-    </MatchHistoryQueryProvider>
+    <MatchHistoryScreenContent />
   );
 };
 

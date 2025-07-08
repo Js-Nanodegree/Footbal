@@ -9,7 +9,9 @@ const MAX_CARDS = 15;
 
 // Маппинг данных RTK Query -> MatchCardProps
 const mapMatchToMatchCardProps = ( match: Match ): MatchCardProps => ( {
+  id: match.id,
   homeTeam: {
+    id: match.homeTeam?.id,
     name: match.homeTeam?.name || '',
     logo:
       typeof (match.homeTeam as any)?.crest === 'string'
@@ -17,6 +19,7 @@ const mapMatchToMatchCardProps = ( match: Match ): MatchCardProps => ( {
         : match.homeTeam?.logo || '',
   },
   awayTeam: {
+    id: match.awayTeam?.id,
     name: match.awayTeam?.name || '',
     logo:
       typeof (match.awayTeam as any)?.crest === 'string'
@@ -38,9 +41,7 @@ const Connector: React.FC<{
   matches: Match[];
   loading: boolean;
   error: string | null;
-}> = ( {
-  matches,
-} ) =>
+}> = ( { matches, } ) =>
   {
   return <Wrapper data={matches.map( mapMatchToMatchCardProps )} loading={false} error={null} />;
 };

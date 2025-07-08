@@ -1,8 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from 'src/roads/RootNavigator';
 import { skipToken } from '@reduxjs/toolkit/query';
 import React, { useEffect, useRef, useState } from 'react';
 import
 {
-    Alert,
     Animated,
     Dimensions,
     Image,
@@ -18,11 +20,10 @@ import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import { FeaturedMatchCardProps } from '../../shared/ui/featured-match-card/FeaturedMatchCard';
 import { MatchCardProps } from '../../shared/ui/match-card/types';
 import Typography from '../../shared/ui/typography/Typography';
-import { useAppContext } from '../home-screen/context/AppContext';
 import { footballApi, statusMatches } from '../team-api/services/footballApi';
 import EmptyState from './EmptyState';
 import SkeletonSwiper from './SkeletonSwiper';
-import { useNavigation } from '@react-navigation/native';
+import { formatDateTime } from 'src/shared/utils/dateFormat';
 
 const { width: SCREEN_WIDTH } = Dimensions.get( 'window' );
 const CARD_WIDTH = SCREEN_WIDTH;
@@ -34,21 +35,23 @@ const CARD_HORIZONTAL_PADDING = Math.round( SCREEN_WIDTH * 0.055 ); // ~5.5% о�
 const mapFeaturedToMatchCardProps = ( match: FeaturedMatchCardProps ): MatchCardProps => ( {
     homeTeam: {
         name: match.homeTeam?.name || '',
-        logo: typeof ( match.homeTeam as any )?.crest === 'string'
-            ? ( match.homeTeam as any ).crest
-            : ( match.homeTeam?.logo || '' ),
+        logo:
+            typeof ( match.homeTeam as any )?.crest === 'string'
+                ? ( match.homeTeam as any ).crest
+                : match.homeTeam?.logo || '',
     },
     awayTeam: {
         name: match.awayTeam?.name || '',
-        logo: typeof ( match.awayTeam as any )?.crest === 'string'
-            ? ( match.awayTeam as any ).crest
-            : ( match.awayTeam?.logo || '' ),
+        logo:
+            typeof ( match.awayTeam as any )?.crest === 'string'
+                ? ( match.awayTeam as any ).crest
+                : match.awayTeam?.logo || '',
     },
     homeScore: match.score?.fullTime?.homeTeam ?? '',
     awayScore: match.score?.fullTime?.awayTeam ?? '',
     league: match.competition?.name,
     status: match.status,
-    time: match.week,
+    time: match.utcDate ? formatDateTime( match.utcDate ) : match.week, // форматируем дату, если есть utcDate
     stadium: match.area?.name,
     isLive: match.status === statusMatches.LIVE,
     badgeText: match.competition?.code,
@@ -74,21 +77,23 @@ const mapMatchToMatchCardProps = ( match: any ): MatchCardProps =>
     return {
         homeTeam: {
             name: match.homeTeam?.name || '',
-            logo: typeof ( match.homeTeam as any )?.crest === 'string'
-                ? ( match.homeTeam as any ).crest
-                : ( match.homeTeam?.logo || '' ),
+            logo:
+                typeof ( match.homeTeam as any )?.crest === 'string'
+                    ? ( match.homeTeam as any ).crest
+                    : match.homeTeam?.logo || '',
         },
         awayTeam: {
             name: match.awayTeam?.name || '',
-            logo: typeof ( match.awayTeam as any )?.crest === 'string'
-                ? ( match.awayTeam as any ).crest
-                : ( match.awayTeam?.logo || '' ),
+            logo:
+                typeof ( match.awayTeam as any )?.crest === 'string'
+                    ? ( match.awayTeam as any ).crest
+                    : match.awayTeam?.logo || '',
         },
         homeScore: isFinished ? getScore( match.score, 'home' ) : '-',
         awayScore: isFinished ? getScore( match.score, 'away' ) : '-',
         league: match.competition?.name || '',
         status: match.status,
-        time: match.week,
+        time: match.utcDate ? formatDateTime( match.utcDate ) : match.week, // форматируем дату, если есть utcDate
         stadium: match.area?.name || '',
         isLive: match.status === statusMatches.LIVE,
         badgeText: match.competition?.code || '',
@@ -293,7 +298,7 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
                         </Typography>
                     </View>
                 </View>
-             
+
                 {/* Бейдж и стадион */}
                 <View
                     style={[
@@ -336,10 +341,15 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
     );
 };
 
-const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches, selectedMatchId, initialMatchId, onMatchPress } ) =>
+const MatchSwiper: React.FC<MatchSwiperProps> = ( {
+    matches,
+    selectedMatchId,
+    initialMatchId,
+    onMatchPress,
+} ) =>
 {
     // const { selectedLeagueId } = useAppContext(); // не используется
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'MatchHistory'>>();
     let data: MatchCardProps[] = [];
     let loading = false;
     let error: string | null = null;
@@ -360,35 +370,41 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches, selectedMatchId, in
     {
         // Получаем code лиги по selectedLeagueId (если есть)
         const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
-        const league = competitions?.find( c => c.id === matches?.[ 0 ]?.competition?.id );
+        const league = competitions?.find( ( c ) => c.id === matches?.[ 0 ]?.competition?.id );
         const leagueCode = league?.code || '';
-        // Получаем матчи только если есть selectedLeagueId
-        const { data: rtkMatches, isLoading, error: rtkError } = footballApi.endpoints.getLiveMatches.useQuery(
-            leagueCode ? { competitionId: leagueCode, status: statusMatches.LIVE } : skipToken
+    // Получаем матчи только если есть selectedLeagueId
+        const {
+            data: rtkMatches,
+            isLoading,
+            error: rtkError,
+        } = footballApi.endpoints.getLiveMatches.useQuery(
+            leagueCode ? { competitionId: leagueCode, status: statusMatches.LIVE } : skipToken,
         );
         const safeStoreMatches = Array.isArray( rtkMatches ) ? rtkMatches : [];
         data = safeStoreMatches
-            .filter( ( m: any ) => m && typeof m.homeTeam !== 'undefined' && typeof m.awayTeam !== 'undefined' )
+            .filter(
+                ( m: any ) => m && typeof m.homeTeam !== 'undefined' && typeof m.awayTeam !== 'undefined',
+            )
             .map( mapMatchToMatchCardProps );
         loading = isLoading;
         error = rtkError ? ( typeof rtkError === 'string' ? rtkError : 'Ошибка загрузки матчей' ) : null;
     }
 
-    // Скелетон при загрузке
+  // Скелетон при загрузке
     if ( loading )
         return (
             <View style={styles.container}>
                 <SkeletonSwiper />
             </View>
         );
-    // Ошибка
+  // Ошибка
     if ( error )
         return (
             <View style={styles.container}>
                 <ErrorState message={error} />
             </View>
         );
-    // Нет данных
+  // Нет данных
     if ( !data || data.length === 0 )
         return (
             <View style={styles.container}>
@@ -400,12 +416,12 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches, selectedMatchId, in
     const flatListRef = useRef( null );
     const safeMatches: any[] = Array.isArray( matches ) ? matches : [];
 
-    // Автоскролл к initialMatchId при первом рендере
+  // Автоскролл к initialMatchId при первом рендере
     useEffect( () =>
     {
         if ( typeof initialMatchId === 'number' && safeMatches.length > 0 )
         {
-            const idx = safeMatches.findIndex( m => m.id === initialMatchId );
+            const idx = safeMatches.findIndex( ( m ) => m.id === initialMatchId );
             if ( idx >= 0 && flatListRef.current )
             {
                 // @ts-ignore
@@ -416,12 +432,12 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches, selectedMatchId, in
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ initialMatchId, safeMatches.length ] );
 
-    // Скроллим к выбранному матчу при смене selectedMatchId (но не при первом рендере)
+  // Скроллим к выбранному матчу при смене selectedMatchId (но не при первом рендере)
     useEffect( () =>
     {
         if ( selectedMatchId && safeMatches.length > 0 )
         {
-            const idx = safeMatches.findIndex( m => m.id === selectedMatchId );
+            const idx = safeMatches.findIndex( ( m ) => m.id === selectedMatchId );
             if ( idx >= 0 && flatListRef.current )
             {
                 // @ts-ignore
@@ -447,7 +463,12 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches, selectedMatchId, in
                 onMatchPress( safeMatches[ index ] );
             } else
             {
-                navigation.navigate( 'MatchHistory', { matchId: safeMatches[ index ].id } );
+                navigation.navigate( 'MatchHistory', {
+                    matchId: safeMatches[ index ].id,
+                    homeId: safeMatches[ index ].homeTeam?.id,
+                    awayId: safeMatches[ index ].awayTeam?.id,
+                    venue: 'home',
+                } );
             }
         }
     };
@@ -461,8 +482,6 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches, selectedMatchId, in
             isSelected={Boolean( selectedMatchId && safeMatches[ index ]?.id === selectedMatchId )}
         />
     );
-
-
 
     return (
         <View style={styles.container}>

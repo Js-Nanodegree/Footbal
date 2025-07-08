@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Typography from 'src/shared/ui/typography/Typography';
 import { MatchCardProps } from './types';
 import useSvgDownload from './hooks/useSvgDownload';
+import { formatDateTime } from 'src/shared/utils/dateFormat';
 
 interface CardProps extends MatchCardProps
 {
@@ -74,7 +75,7 @@ const Card: React.FC<CardProps> = ( props ) =>
               {rest.backgroundLogo && (
                 <Image
                   source={{ uri: rest.backgroundLogo }}
-                  style={[ { width: 42, height: 42,} ]}
+                  style={[ { width: 42, height: 42 } ]}
                   resizeMode="contain"
                 />
               )}
@@ -97,7 +98,7 @@ const Card: React.FC<CardProps> = ( props ) =>
               color="#fff"
               style={styles.weekText}
             >
-              {rest.time.split( /\n|\r\n/ )[ 0 ]}
+              {formatDateTime( rest.time )}
             </Typography>
           )}
         </View>
@@ -117,9 +118,6 @@ const Card: React.FC<CardProps> = ( props ) =>
         )}
         <View style={[ styles.scoreRow, { position: 'absolute', bottom: 80, left: 0, right: 0 } ]}>
           <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={styles.score}>
-            {rest.score.penalties?.away || '-'}
-            {rest.score.halfTime?.away || '-'}
-            {rest.score.extraTime?.away || '-'}
             {rest.score.fullTime.home || '0'}
           </Typography>
           <View style={styles.vsCircle}>
@@ -135,9 +133,6 @@ const Card: React.FC<CardProps> = ( props ) =>
           </View>
           <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={styles.score}>
             {rest.score.fullTime.away || '0'}
-            {rest.score.extraTime?.away || '-'}
-            {rest.score.halfTime?.away || '-'}
-            {rest.score.penalties?.away || '-'}
           </Typography>
         </View>
         <View
@@ -193,16 +188,84 @@ const Card: React.FC<CardProps> = ( props ) =>
         </View>
         <View style={[ styles.bottomBlock, { position: 'absolute', bottom: 16, left: 0, right: 0 } ]}>
           {rest.badgeText && (
-            <View style={styles.badge}>
-              <Typography
-                variant="body"
-                weight="bold"
-                font="Oswald"
-                color="#1ED760"
-                style={styles.badgeText}
-              >
-                {rest.badgeText}
-              </Typography>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <View>
+                {rest.score.extraTime?.home && rest.score.extraTime?.away && (
+                  <Typography
+                    variant="h1"
+                    weight="bold"
+                    font="Oswald"
+                    color="#fff"
+                    style={{ fontSize: 12 }}
+                  >
+                    {rest.score.extraTime?.home || '-'} :EXTRA
+                  </Typography>
+                )}
+                {rest.score.halfTime?.home && rest.score.halfTime?.away && ( <Typography
+                  variant="h1"
+                  weight="bold"
+                  font="Oswald"
+                  color="#fff"
+                  style={{ fontSize: 12 }}
+                >
+                  {rest.score.halfTime?.home || '-'} :HALF
+                </Typography> )}
+                {rest.score.penalties?.home && rest.score.penalties?.away && ( <Typography
+                  variant="h1"
+                  weight="bold"
+                  font="Oswald"
+                  color="#fff"
+                  style={{ fontSize: 12 }}
+                >
+                  {rest.score.penalties?.home || '-'} :PEN
+                </Typography> )}
+              </View>
+              <View style={styles.badge}>
+                <Typography
+                  variant="body"
+                  weight="bold"
+                  font="Oswald"
+                  color="#1ED760"
+                  style={styles.badgeText}
+                >
+                  {rest.badgeText}
+                </Typography>
+              </View>
+              <View>
+                {rest.score.extraTime?.home && rest.score.extraTime?.away && <Typography
+                  variant="h1"
+                  weight="bold"
+                  font="Oswald"
+                  color="#fff"
+                  style={{ fontSize: 12 }}
+                >
+                  EXTRA:{rest.score.extraTime?.away || '-'}
+                </Typography>}
+                {rest.score.halfTime?.home && rest.score.halfTime?.away && <Typography
+                  variant="h1"
+                  weight="bold"
+                  font="Oswald"
+                  color="#fff"
+                  style={{ fontSize: 12 }}
+                >
+                  HALF:{rest.score.halfTime?.away || '-'}
+                </Typography>}
+                {rest.score.penalties?.home && rest.score.penalties?.away && <Typography
+                  variant="h1"
+                  weight="bold"
+                  font="Oswald"
+                  color="#fff"
+                  style={{ fontSize: 12 }}
+                >
+                  PEN:{rest.score.penalties?.away || '-'}
+                </Typography>}
+              </View>
             </View>
           )}
           {rest.stadium && (
@@ -262,7 +325,7 @@ const styles = StyleSheet.create( {
     marginRight: 8,
   },
   leagueText: {
-    fontWeight: '600',
+    fontWeight: '500',
     fontSize: 16,
     width: '70%',
   },
@@ -270,7 +333,7 @@ const styles = StyleSheet.create( {
     opacity: 0.85,
     marginBottom: 2,
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '500',
   },
   liveBlock: {
     position: 'absolute',

@@ -3,6 +3,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import { AvatarProps, AvatarSize, AvatarShape, AvatarColorVariant } from './types';
 import { avatarColorMap } from './colorMap';
 import Typography from '../typography/Typography';
+import { colors } from '../theme/colors';
 
 const sizeMap: Record<AvatarSize, number> = {
     small: 32,
@@ -33,14 +34,14 @@ const Avatar: React.FC<AvatarProps> = ( {
     const borderRadius = shape === 'circle' ? dimension / 2 : 8;
 
     return (
-        <View style={[ { width: dimension, height: dimension, borderRadius, backgroundColor: colors.background, borderWidth: border ? 2 : 0, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', position: 'relative' }, style ]}>
+        <View style={[ { width: dimension, height: dimension, borderRadius, backgroundColor: colors.background, borderWidth: 2, borderColor: colors.primary, alignItems: 'center', justifyContent: 'center', position: 'relative' }, style ]}>
             {src ? (
                 <Image source={{ uri: src }} style={{ width: dimension, height: dimension, borderRadius }} />
             ) : (
                 <Typography variant="body" weight="bold" style={{ color: colors.text, fontSize }}>{initials || ''}</Typography>
             )}
             {status && (
-                <View style={[ styles.statusDot, { backgroundColor: avatarColorMap.status[ status ], borderColor: colors.border, width: dimension / 3, height: dimension / 3, borderRadius: dimension / 6, bottom: 2, right: 2 } ]} />
+                <View style={[ styles.statusDot, { backgroundColor: avatarColorMap.status[ status ], borderColor: colors.primary, width: dimension / 3, height: dimension / 3, borderRadius: dimension / 6, bottom: 2, right: 2 } ]} />
             )}
         </View>
     );

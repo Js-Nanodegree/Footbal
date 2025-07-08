@@ -14,6 +14,7 @@ import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCar
 import Typography from 'src/shared/ui/typography/Typography';
 import { useAppContext } from '../context';
 import { DateFormatAdapter } from 'src/features/match-history/adapters';
+import { uiDebugConfig } from 'src/shared/debug/ui-debug.config';
 // import { t } from '@lingui/macro'; // TODO: подключить lingui.js и заменить строки на t()
 
 function formatCompactDate( dateStr: string )
@@ -40,17 +41,17 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
     navigation.navigate( 'FinishedMatches', { leagueId: selectedLeagueId } );
   };
 
-  // Преобразуем матчи к нужному формату для TodayMatchLink
+
   const todayMatches: {
     id: number;
     homeTeam: { name: string; logo: string };
     awayTeam: { name: string; logo: string };
     time: string;
     date: string;
-  }[] = matches.map( ( m ) => ( {
+  }[] = ( matches ).map( ( m ) => ( {
     id: m.id,
-    homeTeam: { name: m.homeTeam?.name, logo: m.homeTeam?.crestUrl || '' },
-    awayTeam: { name: m.awayTeam?.name, logo: m.awayTeam?.crestUrl || '' },
+    homeTeam: { name: m.homeTeam?.name, logo: m.homeTeam?.crest || '' },
+    awayTeam: { name: m.awayTeam?.name, logo: m.awayTeam?.crest || '' },
     time: m.utcDate ? m.utcDate.split( 'T' )[ 1 ]?.slice( 0, 5 ) : '',
     date: DateFormatAdapter.formatCompactDate( m.utcDate ),
   } ) );

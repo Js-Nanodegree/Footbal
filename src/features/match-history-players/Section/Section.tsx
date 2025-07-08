@@ -1,65 +1,12 @@
 // Section.tsx — UI секция игроков для истории матчей. Мок-данные, два горизонтальных FlatList (домашние/гостевые), анимация появления карточек. Без интеграции с API.
 
-import React, { useRef, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Animated } from 'react-native';
+import React from 'react';
+import { FlatList, View } from 'react-native';
+import { useGetTeamDetailsQuery } from 'src/features/team-api/services/footballApi';
+import { useTranslation } from 'src/shared/i18n';
 import Typography from 'src/shared/ui/typography/Typography';
 import { PlayerCard } from '../PlayerCard';
-import { useGetTeamDetailsQuery } from 'src/features/team-api/services/footballApi';
 import styles from './Section.styles';
-import { useTranslation } from 'src/shared/i18n';
-
-const mockHomePlayers = [
-  {
-    id: 1,
-    name: 'KURT ZOUMA',
-    firstName: 'Kurt',
-    lastName: 'Zouma',
-    position: 'Defender',
-    shirtNumber: 5,
-    avatarSrc: 'https://randomuser.me/api/portraits/men/1.jpg',
-    lastUpdated: '',
-  },
-  {
-    id: 3,
-    name: 'JORDAN PICKFORD',
-    firstName: 'Jordan',
-    lastName: 'Pickford',
-    position: 'Goalkeeper',
-    shirtNumber: 1,
-    avatarSrc: 'https://randomuser.me/api/portraits/men/3.jpg',
-    lastUpdated: '',
-  },
-];
-const mockAwayPlayers = [
-  {
-    id: 2,
-    name: 'LUCAS DIGNE',
-    firstName: 'Lucas',
-    lastName: 'Digne',
-    position: 'Defender',
-    shirtNumber: 10,
-    avatarSrc: 'https://randomuser.me/api/portraits/men/2.jpg',
-    lastUpdated: '',
-  },
-  {
-    id: 4,
-    name: 'AARON RAMSDALE',
-    firstName: 'Aaron',
-    lastName: 'Ramsdale',
-    position: 'Goalkeeper',
-    shirtNumber: 1,
-    avatarSrc: 'https://randomuser.me/api/portraits/men/4.jpg',
-    lastUpdated: '',
-  },
-];
-const homeTeam = {
-  name: 'Everton',
-  logo: 'https://upload.wikimedia.org/wikipedia/en/7/7c/Everton_FC_logo.svg',
-};
-const awayTeam = {
-  name: 'Arsenal',
-  logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg',
-};
 
 // Типизация пропсов для AnimatedPlayerCard
 interface AnimatedPlayerCardProps {
@@ -81,8 +28,7 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
   const { data: homeTeamDetails, isLoading: isHomeLoading, error: homeError } = useGetTeamDetailsQuery( match?.homeTeam?.id );
   const { data: awayTeamDetails, isLoading: isAwayLoading, error: awayError } = useGetTeamDetailsQuery( match?.awayTeam?.id );
 
-  if (loading) return <Typography>{t('section.loading')}</Typography>;
-  if (error) return <Typography>{t('section.error')}</Typography>;
+
   if (!match) return <Typography>{t('section.noData')}</Typography>;
   if ( isHomeLoading || isAwayLoading ) return <Typography>{t( 'section.loadingTeamComposition' )}</Typography>;
   if ( homeError || awayError ) return <Typography>{t( 'section.errorTeamComposition' )}</Typography>;

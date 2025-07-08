@@ -5,8 +5,14 @@ import React from 'react';
 import MatchCard from '../../shared/ui/match-card/MatchCard';
 import { MatchCardProps } from '../../shared/ui/match-card/types';
 import Typography from '../../shared/ui/typography/Typography';
-import { useMatchHistoryQueryState } from '../match-history/context/MatchHistoryQueryContext';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from 'src/roads/RootNavigator';
+import type { RouteProp } from '@react-navigation/native';
 import { useGetMatchDetailsQuery } from '../../features/team-api/services/footballApi';
+import { useMatchHistoryParams } from '../hooks/useMatchHistoryParams';
+import { uiDebugConfig } from 'src/shared/debug/ui-debug.config';
+import { formatDateTime } from 'src/shared/utils/dateFormat';
 
 // TODO: заменить на реальные данные из API/контекста
 const mockMatch: MatchCardProps = {
@@ -15,7 +21,7 @@ const mockMatch: MatchCardProps = {
   homeScore: 2,
   awayScore: 1,
   league: 'Premier League',
-  time: '19:00',
+  time: formatDateTime( '2025-08-08T19:00:00Z' ), // пример форматирования
   stadium: 'Stamford Bridge',
   isLive: false,
   badgeText: 'FT',
@@ -30,12 +36,12 @@ export interface MatchHistoryCardSectionProps {
 }
 
 export const MatchHistoryCardSection: React.FC<MatchHistoryCardSectionProps> = ({ match, loading, error }) => {
-  const { matchId, teamId, season, venue } = useMatchHistoryQueryState();
+  const { matchId, homeId: teamId, season, venue } = useMatchHistoryParams();
   const { data, isLoading, error: queryError } = useGetMatchDetailsQuery(matchId);
 
   if (loading) return <Typography>Загрузка...</Typography>;
   if (error) return <Typography>Ошибка загрузки</Typography>;
-  if (!match) return <Typography>Нет данных</Typography>;
+  if ( !match  ) return <Typography>Нет данных</Typography>;
 
   // Отображаем все данные из backend и аргументы
   return (
@@ -47,7 +53,7 @@ export const MatchHistoryCardSection: React.FC<MatchHistoryCardSectionProps> = (
         isLoading: {String(isLoading)} | error: {JSON.stringify(queryError)}
       </Typography>
       <Typography variant="body" style={{ fontSize: 10, color: '#444', marginBottom: 8 }}>
-        data: {JSON.stringify(data, null, 2)}
+        data: {data && data.utcDate ? formatDateTime( data.utcDate ) : JSON.stringify( data, null, 2 )}
       </Typography>
     </>
   );

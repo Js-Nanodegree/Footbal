@@ -31,7 +31,15 @@ export type RootStackParamList = {
     ErrorStateDemo: undefined;
     FABScrollToTopDemo: undefined;
     FinishedMatches: undefined;
-    MatchHistory: undefined;
+    MatchHistory:
+    | {
+        matchId?: number;
+        homeId?: number;
+        awayId?: number;
+        venue?: 'home' | 'away';
+        season?: string;
+    }
+    | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -45,10 +53,10 @@ const MainTabs = () => (
                 tabBarLabel: ( { focused } ) =>
                 {
                     let label = '';
-            if ( route.name === 'Competitions' ) label = 'Турниры';
-            if ( route.name === 'Teams' ) label = 'Команды';
-            if ( route.name === 'Styleguide' ) label = 'Стайлгайд';
-            return (
+                    if ( route.name === 'Competitions' ) label = 'Турниры';
+                    if ( route.name === 'Teams' ) label = 'Команды';
+                    if ( route.name === 'Styleguide' ) label = 'Стайлгайд';
+                    return (
                         <Text
                             style={{
                                 color: focused ? '#E94057' : '#B0B0B0',
@@ -102,19 +110,20 @@ const RootNavigator = () =>
     return (
         <Stack.Navigator initialRouteName="MainTabs">
             <Stack.Screen
-              name="MainTabs"
-              component={MainTabs}
-              options={{ headerShown: false }}
-              initialParams={{
+                name="MainTabs"
+                component={MainTabs}
+                options={{ headerShown: false }}
+                initialParams={{
                   competitions: competitions?.[ 0 ] || {},
               }}
           />
-            <Stack.Screen
-                name="MatchHistory"
-                component={MatchHistoryScreen}
-                options={{ title: 'История матчей', headerShown: false }}
-            />
-            <Stack.Screen
+          <Stack.Screen
+              name="MatchHistory"
+              component={MatchHistoryScreen}
+              options={{ title: 'История матчей', headerShown: false }}
+              getId={( props ) => props.params?.matchId?.toString() || ''}
+          />
+          <Stack.Screen
               name="FinishedMatches"
               component={FinishedMatchesScreen}
               options={{ title: 'Завершённые матчи', headerShown: false }}

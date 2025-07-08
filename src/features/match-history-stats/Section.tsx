@@ -1,9 +1,12 @@
 // Секция статистики для истории очных матчей с табами (Stats, Line-up, Summary)
-// Использует Typography, прогресс-бары, табы, получает сезон и venue из DateSeasonContext
+// Использует Typography, прогресс-бары, табы, получает сезон и venue из navigation params через useMatchHistoryParams
 // [ПРАВИЛО] Тесты для этой секции писать не обязательно, по решению команды.
 import React, { useState } from 'react';
 import Typography from '../../shared/ui/typography/Typography';
-import { useMatchHistoryQueryState } from '../match-history/context/MatchHistoryQueryContext';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from 'src/roads/RootNavigator';
+import type { RouteProp } from '@react-navigation/native';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import StatsBar from '../../shared/ui/stats-bar/StatsBar';
 import { statsBarColorMap } from '../../shared/ui/stats-bar/colorMap';
@@ -12,6 +15,7 @@ import { colors } from '../../shared/ui/theme/colors';
 import Button from '../../shared/ui/button/Button';
 import { durationMap, formatSeason, formatStage } from './mappings/matchStatsMappings';
 import Total from './by-feature/Total';
+import { useMatchHistoryParams } from '../match-history/hooks/useMatchHistoryParams';
 
 const TABS = [ 'Stats', 'Line-up', 'Summary' ];
 
@@ -41,12 +45,10 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
   error,
 } ) =>
 {
-  const { season, venue } = useMatchHistoryQueryState();
-  const [tab, setTab] = useState<'Stats' | 'Line-up' | 'Summary'>('Stats');
-  if (loading) return <Typography>Загрузка...</Typography>;
-  if (error) return <Typography>Ошибка загрузки</Typography>;
-  if (!match) return <Typography>Нет данных</Typography>;
 
+  const [tab, setTab] = useState<'Stats' | 'Line-up' | 'Summary'>('Stats');
+
+  if ( !match ) return <View />;
   // Общая информация о матче
   const generalInfo: { label: string; value: string }[] = [
     match.competition?.name ? { label: 'Турнир', value: match.competition.name } : null,

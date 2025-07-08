@@ -55,7 +55,6 @@ const TeamListSection = React.memo(
     // Формируем массив с logo для TeamList
     const teamsWithLogo = React.useMemo( () => teamsSafe.map( team => ( { ...team, logo: ( team as any ).crest || ( team as any ).logo || '' } ) ), [ teamsSafe ] );
 
-  
 
     return (
       <Animated.View style={[ styles.root, animatedRootStyle, shadows.section ]} testID="team-list-section">

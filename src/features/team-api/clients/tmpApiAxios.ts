@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, CancelTokenSource, AxiosRespo
 import axiosRetry from 'axios-retry';
 import reactotron from 'reactotron-react-native';
 // import * as Sentry from '@sentry/react-native'; // если используется Sentry
+import { showErrorNotification } from 'src/shared/utils/showErrorNotification';
 
 // Memory cache (примитивный, для примера)
 const memoryCache = new Map<string, any>();
@@ -71,6 +72,10 @@ export class TMPApiAxios
                             break;
                         default:
                             customMessage = error.message || 'Ошибка API';
+                    }
+                    if ( status === 429 )
+                    {
+                        showErrorNotification( 'Превышен лимит запросов к серверу. Подождите и попробуйте снова.' );
                     }
                     return Promise.reject( new Error( customMessage ) );
                 }

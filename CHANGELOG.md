@@ -69,3 +69,5 @@
 [2024-06-21] feat: Реализован DateSeasonContext (контекст выбора даты/сезона) и хук useDateSeason для match-history. Добавлен компонент DateSeasonSwitcher (FlatList с кнопками, интеграция с контекстом). Создан базовый экран истории матчей (MatchHistoryScreen) с SectionList и интеграцией контекста. Добавлено правило: тесты не обязательны для этих частей (решение команды). 
 
 [2024-06-19] feat: Унификация MatchSwiperSection для истории матчей, добавлен initialMatchId для автоскролла, исправлен импорт MatchSwiper, добавлены полифиллы Object.entries/values. 
+
+[2025-07-04] refactor: Полностью удалён DateSeasonContext, DateSeasonSwitcher и все остатки контекста из feature match-history. Все параметры состояния теперь только через navigation params и useMatchHistoryParams. Обновлены комментарии, context.md и структура секций. (MatchHistory) 

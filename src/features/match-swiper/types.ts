@@ -1,9 +1,13 @@
+import type { MatchScore } from '../../features/team-api/types/match';
+
 export interface TeamInfo {
+  id: number;
   name: string;
   logo: string;
 }
 
 export interface MatchCardProps {
+  id: string | number;
   homeTeam: TeamInfo;
   awayTeam: TeamInfo;
   score: MatchScore;

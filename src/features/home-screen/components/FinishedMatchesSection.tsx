@@ -1,6 +1,6 @@
 // FinishedMatchesSection: секция завершённых матчей, отображает карточку с итоговым счётом, поддержка единого стиля, accessibility
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import TodayMatchCard from 'src/shared/ui/today-match-card/TodayMatchCard';
 
 interface FinishedMatchesSectionProps
