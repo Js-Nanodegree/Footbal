@@ -6,6 +6,7 @@ import { Competition } from 'src/features/team-api/types/competition';
 import { Team } from 'src/features/team-api/types/team';
 import { Match } from 'src/features/team-api/types/match';
 import { usePullToRefresh } from 'src/shared/hooks/usePullToRefresh';
+import Loader from 'src/shared/ui/loader';
 
 interface HomeScreenProps
 {
@@ -21,7 +22,7 @@ interface HomeScreenProps
 const HomeScreen = ( { competitions, teams, matches, loading, error, onRefresh, onPaginate }: HomeScreenProps ) =>
 {
   const sectionsData = useHomeScreenSections( { competitions, teams, matches, loading, error, onRefresh, onPaginate } );
-  const { sections } = sectionsData;
+  const { sections, loadingTeams } = sectionsData;
   const insets = useSafeAreaInsets();
 
   const { refreshing, onRefresh: handleRefresh, refreshControl } = usePullToRefresh( { onRefresh } );

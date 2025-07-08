@@ -19,6 +19,7 @@ interface AppContextValue
     lastFetched: number | null;
     competition: any | null;
     setCompetition: ( c: any | null ) => void;
+    refreshTeams: () => void;
 }
 
 const AppContext = createContext<AppContextValue | undefined>( undefined );
@@ -70,6 +71,10 @@ export const AppContextProvider: React.FC<{
         lastFetched,
         competition,
         setCompetition,
+        refreshTeams: () =>
+        {
+            setSelectedTeamIds( [] );
+        },
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

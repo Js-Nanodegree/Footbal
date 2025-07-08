@@ -13,7 +13,8 @@ export function filterMatchesByLeague(matches: Match[]): Match[] {
 
 // Фильтрация матчей по выбранным командам
 export function filterMatchesByTeams(matches: Match[], selectedTeamIds: (number | string)[]): Match[] {
-  if (!selectedTeamIds.length) return matches;
+  console.log( selectedTeamIds, 'selectedTeamIds' );
+  if ( selectedTeamIds.length === 0 ) return matches;
   return matches.filter(
     match =>
       selectedTeamIds.includes(match.homeTeam?.id) ||

@@ -21,6 +21,7 @@ import {
 import { View } from 'react-native';
 import { shadows } from 'src/shared/ui/theme/shadows';
 import { colors } from 'src/shared/ui/theme/colors';
+import Loader from 'src/shared/ui/loader';
 
 interface UseHomeScreenSectionsParams {
   competitions: Competition[];
@@ -35,9 +36,11 @@ interface UseHomeScreenSectionsParams {
 export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSectionsParams) {
   const dispatch = useDispatch();
   const selectedLeagueId = useSelector(selectSelectedLeagueId);
-  const { setSelectedTeamIds, selectedTeamIds } = useAppContext();
+  const { setSelectedTeamIds, selectedTeamIds, refreshTeams } = useAppContext();
   const [localError, setLocalError] = useState<string | null>(null);
   const { competitions, teams, matches, loading, error } = useSelectMode();
+
+  const [ loadingTeams, setLoadingTeams ] = useState( false );
 
   // Дефолтный выбор лиги при первом рендере
   useEffect(() => {
@@ -48,6 +51,18 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
       dispatch(setSelectedLeagueId(competitions[0].id));
     }
   }, [selectedLeagueId, competitions, dispatch]);
+
+  React.useEffect( () =>
+  {
+    setLoadingTeams( true );
+    refreshTeams();
+    requestAnimationFrame( () =>
+    {
+      setLoadingTeams( false );
+    } );
+  }, [ selectedLeagueId ] );
+
+
 
   // Фильтрация команд по выбранной лиге
   const filteredTeams = useMemo(
@@ -129,6 +144,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
       { title: 'Header', data: ['header'], renderItem: renderHeader },
       { title: 'Leagues', data: ['leagues'], renderItem: renderLeagues },
     ];
+
     dataState.push({
       title: 'Match Swiper',
       data: ['match-swiper'],
@@ -177,6 +193,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
     });
     return dataState;
   }, [
+    loadingTeams,
     liveMatches,
     actualMatches,
     renderHeader,
@@ -190,6 +207,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
   ]);
 
   return {
+    loadingTeams,
     sections,
     loading,
     error: errorString || localError,
