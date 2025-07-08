@@ -22,7 +22,7 @@ interface HomeScreenProps
 const HomeScreen = ( { competitions, teams, matches, loading, error, onRefresh, onPaginate }: HomeScreenProps ) =>
 {
   const sectionsData = useHomeScreenSections( { competitions, teams, matches, loading, error, onRefresh, onPaginate } );
-  const { sections, loadingTeams } = sectionsData;
+  const { sections } = sectionsData;
   const insets = useSafeAreaInsets();
 
   const { refreshing, onRefresh: handleRefresh, refreshControl } = usePullToRefresh( { onRefresh } );

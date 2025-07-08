@@ -108,7 +108,6 @@ const TeamListSection = React.memo(
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
-                  {/* TODO: {t`Нет команд для отображения`} */}
                   Нет команд для отображения
                 </Typography>
                 <Typography
@@ -116,7 +115,6 @@ const TeamListSection = React.memo(
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
-                  {/* TODO: {t`Попробуйте изменить лигу или команду`} */}
                   Попробуйте изменить лигу или команду
                 </Typography>
               </View>
@@ -132,7 +130,6 @@ const TeamListSection = React.memo(
           {!loading && !error && teamsSafe.length > 0 && (
             <>
               <Typography variant="h1" weight="bold" font="Oswald" style={{ marginLeft: 16, fontSize: 24, color: colors.text, fontWeight: '600' }}>
-                {/* TODO: {t`Выбор команды`} */}
                 Выбор команды
               </Typography>
               <TeamList

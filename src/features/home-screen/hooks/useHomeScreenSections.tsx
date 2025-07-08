@@ -36,8 +36,8 @@ interface UseHomeScreenSectionsParams {
 export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSectionsParams) {
   const dispatch = useDispatch();
   const selectedLeagueId = useSelector(selectSelectedLeagueId);
-  const { setSelectedTeamIds, selectedTeamIds, refreshTeams } = useAppContext();
-  const [localError, setLocalError] = useState<string | null>(null);
+  const {  selectedTeamIds, refreshTeams } = useAppContext();
+  const [localError] = useState<string | null>(null);
   const { competitions, teams, matches, loading, error } = useSelectMode();
 
   const [ loadingTeams, setLoadingTeams ] = useState( false );
