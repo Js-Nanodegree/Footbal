@@ -24,7 +24,6 @@ interface PlayerCardProps {
 }
 
 const CARD_WIDTH = 200;
-const CARD_MARGIN = 12;
 const CARD_HEIGHT = 300;
 const PHOTO_SIZE = 190;
 
@@ -77,9 +76,9 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, clubName, clubLo
         </View>
         {/* Имя и фамилия */}
         <View style={styles.nameBlock}>
-          <Typography variant="h2" weight="bold" font="Oswald" style={styles.clubName}>{clubName.toUpperCase()}</Typography>
-          <Typography variant="h2" weight="bold" font="Oswald" style={styles.playerName}>{first}</Typography>
-          {last && <Typography variant="h2" weight="bold" font="Oswald" style={styles.playerName}>{last}</Typography>}
+          <Typography variant="h2" weight="bold" numberOfLines={1} font="Oswald" style={styles.clubName}>{clubName.toUpperCase()}</Typography>
+          <Typography variant="h2" weight="bold" numberOfLines={1} font="Oswald" style={styles.playerName}>{first || ''}</Typography>
+          <Typography variant="h2" weight="bold" numberOfLines={1} font="Oswald" style={styles.playerName}>{last || ''}</Typography>
           <Typography variant="body" font="Oswald" style={styles.shirtNumber}>{player.shirtNumber ? `#${ player.shirtNumber }` : ''} {player.position ? ` · ${ player.position }` : ''}</Typography>
         </View>
         {/* Номер игрока */}
@@ -186,7 +185,8 @@ const styles = StyleSheet.create({
   playerName: {
     fontSize: 26,
     fontWeight: 'bold',
-    lineHeight: 30,
+    lineHeight: 32,
+    height: 32,
     letterSpacing: 0.5,
     textAlign: 'left',
     color: colors.grayDark,

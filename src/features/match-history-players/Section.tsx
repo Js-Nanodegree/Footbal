@@ -67,18 +67,6 @@ interface AnimatedPlayerCardProps {
   variant: 'home' | 'away';
 }
 
-const AnimatedPlayerCard: React.FC<AnimatedPlayerCardProps> = ({ player, clubName, clubLogo, variant }) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-  }, []);
-  return (
-    <Animated.View style={{ opacity: fadeAnim }}>
-      <PlayerCard player={player} clubName={clubName} clubLogo={clubLogo} variant={variant} avatarSrc={player.avatarSrc} />
-    </Animated.View>
-  );
-};
-
 export interface MatchHistoryPlayersSectionProps {
   match?: any;
   loading?: boolean;
@@ -109,7 +97,10 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
 
   return (
     <View style={styles.container}>
-      <Typography variant="h2" weight="bold" style={styles.sectionTitle}>{homeTeam.name}</Typography>
+      <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+        <Typography variant="h2" weight="bold" numberOfLines={1} font="Oswald" style={[ styles.sectionTitle, { fontWeight: '800' } ]}>Состав команды</Typography>
+        <Typography variant="body" weight="bold" style={styles.sectionTitle}>{homeTeam.name}</Typography>
+      </View>
       <FlatList
         data={homePlayers}
         keyExtractor={item => String(item.id)}
@@ -127,7 +118,9 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
         disableIntervalMomentum
         getItemLayout={( _, index ) => ( { length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index } )}
       />
-      <Typography variant="h2" weight="bold" style={styles.sectionTitle}>{awayTeam.name}</Typography>
+      <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+        <Typography variant="body" weight="bold" style={styles.sectionTitle}>{awayTeam.name}</Typography>
+      </View>
       <FlatList
         data={awayPlayers}
         keyExtractor={item => String(item.id)}
