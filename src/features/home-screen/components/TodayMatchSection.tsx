@@ -13,7 +13,15 @@ import { shadows } from 'src/shared/ui/theme/shadows';
 import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
 import Typography from 'src/shared/ui/typography/Typography';
 import { useAppContext } from '../context';
+import { DateFormatAdapter } from 'src/features/match-history/adapters';
 // import { t } from '@lingui/macro'; // TODO: подключить lingui.js и заменить строки на t()
+
+function formatCompactDate( dateStr: string )
+{
+  if ( !dateStr ) return '';
+  const [ year, month, day ] = dateStr.split( '-' );
+  return `${ month }.${ day }.${ year.slice( 2 ) }`;
+}
 
 const SECTION_SPACING = 20;
 
@@ -44,7 +52,7 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
     homeTeam: { name: m.homeTeam?.name, logo: m.homeTeam?.crestUrl || '' },
     awayTeam: { name: m.awayTeam?.name, logo: m.awayTeam?.crestUrl || '' },
     time: m.utcDate ? m.utcDate.split( 'T' )[ 1 ]?.slice( 0, 5 ) : '',
-    date: m.utcDate ? m.utcDate.split( 'T' )[ 0 ] : '',
+    date: DateFormatAdapter.formatCompactDate( m.utcDate ),
   } ) );
 
   return (

@@ -1,0 +1,12 @@
+export default {
+  'section.home': 'Home',
+  'section.away': 'Away',
+  'section.noPlayers': 'No players',
+  'section.loading': 'Loading...',
+  'section.error': 'Loading error',
+  'section.noData': 'No data',
+  'section.loadingTeamComposition': 'Loading team composition...',
+  'section.errorTeamComposition': 'Team composition loading error',
+  'section.noTeamData': 'No team data',
+  'section.teamComposition': 'Team composition',
+}; 

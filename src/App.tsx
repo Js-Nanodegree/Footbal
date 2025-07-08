@@ -1,6 +1,23 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import App from './App';
+import { I18nextProvider } from 'react-i18next';
+import { i18n } from 'src/shared/i18n';
+import ruSection from '../src/features/match-history-players/Section/locales/ru/messages';
+import enSection from '../src/features/match-history-players/Section/locales/en/messages';
+import ruPlayerCard from '../src/features/match-history-players/PlayerCard/locales/ru/messages';
+import enPlayerCard from '../src/features/match-history-players/PlayerCard/locales/en/messages';
+
+// Настройка i18n
+const catalogs = {
+    ru: { ...ruSection, ...ruPlayerCard },
+    en: { ...enSection, ...enPlayerCard },
+};
+// Удалить все вызовы i18n.load и i18n.activate
+// Для смены языка использовать i18n.changeLanguage(lng)
+
+// Для теста: временно активировать английский язык
+// i18n.activate('en');
 
 interface ErrorBoundaryProps
 {
@@ -42,9 +59,23 @@ class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBound
 
 export default function AppWrapper()
 {
+    const [ lang, setLang ] = useState( 'ru' );
+
+    const handleLangChange = ( lng: 'ru' | 'en' ) =>
+    {
+        i18n.changeLanguage( lng );
+        setLang( lng );
+    };
+
     return (
-        <GlobalErrorBoundary>
-            <App />
-        </GlobalErrorBoundary>
+        <I18nextProvider i18n={i18n}>
+            <div style={{ flexDirection: 'row', gap: 8, margin: 12 }}>
+                <button onClick={() => handleLangChange( 'ru' )} style={{ fontWeight: lang === 'ru' ? 'bold' : 'normal' }}>RU</button>
+                <button onClick={() => handleLangChange( 'en' )} style={{ fontWeight: lang === 'en' ? 'bold' : 'normal' }}>EN</button>
+            </div>
+            <GlobalErrorBoundary>
+                <App />
+            </GlobalErrorBoundary>
+        </I18nextProvider>
     );
 } 

@@ -1,25 +1,40 @@
 // FinishedMatchesSection: секция завершённых матчей, отображает карточку с итоговым счётом, поддержка единого стиля, accessibility
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import TodayMatchCard from 'src/shared/ui/today-match-card/TodayMatchCard';
-// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
+
+interface FinishedMatchesSectionProps
+{
+    match: any;
+    onPress?: () => void;
+}
 
 const FinishedMatchesSection = React.memo(
-    ( { match }: { match: any } ) =>
+    ( { match, onPress }: FinishedMatchesSectionProps ) =>
     {
-        // Адаптируем под TodayMatchCard + добавляем счёт
-        const homeScore = match.score?.fullTime?.homeTeam ?? '';
-        const awayScore = match.score?.fullTime?.awayTeam ?? '';
         return (
             <TodayMatchCard
                 homeTeam={match.homeTeam}
                 awayTeam={match.awayTeam}
-                time={[ homeScore, awayScore ].join( ' : ' )}
+                time={match.time}
                 date={match.date}
-                testID="finished-match-card"
-                accessibilityLabel={`Завершённый матч: ${ match.homeTeam?.name } - ${ homeScore } : ${ awayScore } - ${ match.awayTeam?.name }`}
+                onPress={onPress}
             />
         );
     }
 );
+
+const styles = StyleSheet.create( {
+    cardShadow: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.1,
+        shadowRadius: 16,
+        elevation: 6,
+        borderRadius: 24,
+        // marginVertical: 12,
+        backgroundColor: 'transparent',
+    },
+} );
 
 export default FinishedMatchesSection; 

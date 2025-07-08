@@ -28,4 +28,16 @@ export function adaptSeasonMatchesToMatch(seasonMatches: MatchHistoryItem[]): Ma
       };
       return match;
     });
+}
+
+export class DateFormatAdapter
+{
+  static formatCompactDate( dateStr: string )
+  {
+    if ( !dateStr ) return '';
+    // Оставляем только YYYY-MM-DD
+    const [ datePart ] = dateStr.split( 'T' );
+    const [ year, month, day ] = datePart.split( '-' );
+    return `${ month }.${ day }.${ year.slice( 2 ) }`;
+  }
 } 

@@ -23,6 +23,8 @@ import
 } from './context/MatchHistoryQueryContext';
 import Typography from 'src/shared/ui/typography/Typography';
 import { colors } from 'src/shared/ui/theme/colors';
+import { DateFormatAdapter } from './adapters';
+import Header from 'src/shared/ui/header/Header';
 
 const MatchHistoryScreenContent: React.FC = () => {
   const navigation = useNavigation();
@@ -76,11 +78,7 @@ const MatchHistoryScreenContent: React.FC = () => {
       renderItem: () => (
         <>
           <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>
-                Назад
-              </Typography>
-            </TouchableOpacity>
+            <Header title="Назад" onBack={() => navigation.goBack()} />
           </View>
 
           <MatchSwiperSection
@@ -180,14 +178,18 @@ const MatchHistoryScreenContent: React.FC = () => {
           }
         } );
         const initialMatchId = index !== -1 ? seasonMatches[ index ].id : undefined;
+        // Форматируем дату для каждого матча
+        const matchesWithFormattedDate = adaptSeasonMatchesToMatch( seasonMatches ).map( ( m ) => ( {
+          ...m,
+          date: DateFormatAdapter.formatCompactDate( m.utcDate ),
+        } ) );
         return (
           <MatchSwiperSection
-            matches={adaptSeasonMatchesToMatch( seasonMatches )}
+            matches={matchesWithFormattedDate}
             loading={!matches}
             error={null}
             selectedMatchId={matchId}
             onMatchPress={( m ) => setMatchId( m.id )}
-            // initialMatchId нужен для автоскролла к текущему матчу
             initialMatchId={initialMatchId}
           />
         );

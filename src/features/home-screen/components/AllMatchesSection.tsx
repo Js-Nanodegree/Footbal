@@ -7,7 +7,15 @@ import { shadows } from 'src/shared/ui/theme/shadows';
 import TodayMatchCard from 'src/shared/ui/today-match-card/TodayMatchCard';
 import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
 import { useNavigation } from '@react-navigation/native';
+import { DateFormatAdapter } from 'src/features/match-history/adapters';
 // import { t } from '@lingui/macro'; // TODO: подключить lingui.js
+
+function formatCompactDate( dateStr: string )
+{
+  if ( !dateStr ) return '';
+  const [ year, month, day ] = dateStr.split( '-' );
+  return `${ month }.${ day }.${ year.slice( 2 ) }`;
+}
 
 const SECTION_SPACING = 20;
 
@@ -48,7 +56,7 @@ const AllMatchesSection = React.memo(
           homeTeam={match.homeTeam}
           awayTeam={match.awayTeam}
           time={match.time}
-          date={match.date}
+          date={DateFormatAdapter.formatCompactDate( match.date )}
           onPress={handlePress}
           testID="all-match-card"
           accessibilityLabel={`Матч: ${ match.homeTeam?.name } - ${ match.time } - ${ match.awayTeam?.name }`}

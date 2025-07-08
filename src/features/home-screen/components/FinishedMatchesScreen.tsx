@@ -1,15 +1,18 @@
 // FinishedMatchesScreen: экран завершённых матчей, поддержка единого стиля, локализации, типографики, accessibility
-import React, { useEffect } from 'react';
-import { View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAppContext } from '../context/AppContext';
+import { useSelector } from 'react-redux';
+import { DateFormatAdapter } from 'src/features/match-history/adapters';
 import { footballApi, statusMatches } from 'src/features/team-api/services/footballApi';
-import { useHomeScreenSections } from '../hooks/useHomeScreenSections';
-import FinishedMatchesSection from './FinishedMatchesSection';
 import { Match } from 'src/features/team-api/types/match';
+import Typography from 'src/shared/ui/typography/Typography';
 import { AppContextProvider } from '../context';
-// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
+import { selectSelectedLeagueId } from '../leagueSlice';
+import FinishedMatchesSection from './FinishedMatchesSection';
+import Header from 'src/shared/ui/header/Header';
 
 
 const FinishedMatchesScreenInner = () => {
@@ -17,34 +20,49 @@ const FinishedMatchesScreenInner = () => {
   const route = useRoute();
   // @ts-ignore
   const { leagueId } = route.params || {};
-  const { selectedLeagueId } = useAppContext();
+  const selectedLeagueId = useSelector( selectSelectedLeagueId );
+  const { t } = useTranslation();
 
-  // Получаем все соревнования, команды и матчи через RTK Query
+  // Получаем все соревнования через RTK Query
   const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
-  const { data: teams } = footballApi.endpoints.getCompetitionsTeams.useQuery( {
-    competitionId: leagueId || selectedLeagueId || competitions?.[ 0 ]?.id || 0,
-  } );
-  const { data: matches } = footballApi.endpoints.getLiveMatches.useQuery( {
-    competitionId: competitions?.find( c => c.id === ( leagueId || selectedLeagueId ) )?.code || competitions?.[ 0 ]?.code || '',
+
+  // Вычисляем competitionId (code)
+  const competitionId = competitions?.find( ( c ) => c.id === ( leagueId || selectedLeagueId ) )?.code || competitions?.[ 0 ]?.code || '';
+
+  // Получаем завершённые матчи через RTK Query
+  const { data, isLoading, isError } = footballApi.endpoints.getLiveMatches.useQuery( {
+    competitionId,
     status: statusMatches.FINISHED,
-  } );
-
-  // Получаем finishedMatches из хука
-  const { finishedMatches } = useHomeScreenSections( {
-    loading: false,
-    error: null,
-    onRefresh: () => {},
-    onPaginate: () => {},
   });
+  const matches = data?.matches || [];
 
-  // Фильтруем по выбранной лиге, если leagueId задан
-  const filteredMatches = leagueId
-    ? finishedMatches.filter((m) => m.competition?.id === leagueId)
-    : finishedMatches;
+  // DEBUG: выводим competitions, competitionId, matches
+  React.useEffect( () =>
+  {
+    console.log( 'competitions', competitions );
+    console.log( 'competitionId', competitionId );
+    console.log( 'matches', matches );
+  }, [ competitions, competitionId, matches ] );
+
+  // Вернуть фильтрацию по лиге
+  const filteredMatches = React.useMemo( () =>
+  {
+    if ( !matches ) return [];
+    if ( leagueId )
+    {
+      return matches.filter( ( m: Match ) => m.competition?.id === leagueId );
+    }
+    return matches;
+  }, [ matches, leagueId ] );
+
+  const insets = useSafeAreaInsets();
 
   // Адаптер для передачи нужных полей
   const renderItem = ({ item }: { item: Match }) => {
+    const homeScore = item.score?.fullTime?.home ?? '';
+    const awayScore = item.score?.fullTime?.away ?? '';
     const adaptedMatch = {
+      id: item.id,
       homeTeam: {
         name: item.homeTeam?.name,
         crest: ( item.homeTeam as any )?.crest || ( item.homeTeam as any )?.logo || '',
@@ -53,38 +71,65 @@ const FinishedMatchesScreenInner = () => {
         name: item.awayTeam?.name,
         crest: ( item.awayTeam as any )?.crest || ( item.awayTeam as any )?.logo || '',
       },
-      time: item.utcDate ? item.utcDate.split('T')[1]?.slice(0, 5) : '',
-      date: item.utcDate ? item.utcDate.split('T')[0] : '',
+      time: `${ homeScore } : ${ awayScore }`,
+      date: DateFormatAdapter.formatCompactDate( item.utcDate ),
       score: item.score,
     };
-    return <FinishedMatchesSection match={adaptedMatch} />;
+    return <FinishedMatchesSection match={adaptedMatch} onPress={() => navigation.navigate( 'MatchHistory', { matchId: item.id } )} />;
   };
 
-  const insets = useSafeAreaInsets();
-
-  // Отступ между карточками
   const renderSeparator = () => <View style={{ height: 16 }} />;
 
-  useEffect( () =>
+  if ( isLoading )
   {
-    // debug
-    // log('FinishedMatchesScreen: props', { leagueId, competitions, teams, matches });
-    // log('FinishedMatchesScreen: matches', filteredMatches);
-  }, [ leagueId, competitions, teams, matches, filteredMatches ] );
+    return (
+      <View style={[ styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
+        <Typography variant="h2" font="Oswald">{t( 'Загрузка...' )}</Typography>
+      </View>
+    );
+  }
 
-  // ... здесь должен быть SectionList или FlatList для отображения filteredMatches ...
-  // Для примера:
-  // return (
-  //   <FlatList
-  //     data={filteredMatches}
-  //     renderItem={renderItem}
-  //     keyExtractor={item => String(item.id)}
-  //     ItemSeparatorComponent={renderSeparator}
-  //     contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
-  //   />
-  // );
-  return null; // TODO: реализовать UI
+  if ( isError )
+  {
+    return (
+      <View style={[ styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
+        <Typography variant="h2" font="Oswald" style={{ color: 'red' }}>{t( 'Ошибка загрузки матчей' )}</Typography>
+      </View>
+    );
+  }
+
+  if ( !filteredMatches || filteredMatches.length === 0 )
+  {
+    return (
+      <View style={[ styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
+        <Header title={t( 'Завершённые матчи' )} onBack={() => navigation.goBack()} />
+        <Typography variant="h2" font="Oswald">{t( 'Завершённых матчей нет' )}</Typography>
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={filteredMatches}
+      renderItem={renderItem}
+      keyExtractor={( item ) => String( item.id )}
+      contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom, paddingHorizontal: 16 }}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <Header title={t( 'Завершённые матчи' )} onBack={() => navigation.goBack()} />
+      }
+    />
+  );
 };
+
+const styles = StyleSheet.create( {
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+} );
 
 const FinishedMatchesScreen = () => {
   return (
