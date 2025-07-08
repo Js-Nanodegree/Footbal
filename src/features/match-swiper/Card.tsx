@@ -12,17 +12,27 @@ interface CardProps extends MatchCardProps
   onPress?: () => void;
 }
 
+// Определяет цвета градиента по статусу матча
+const getGradientByStatus = ( status: string ): string[] =>
+{
+  switch ( status )
+  {
+    case 'finished':
+      return [ '#8e2de2', '#4a00e0' ]; // Пурпурный → синий
+    case 'live':
+      return [ '#E32C2C', '#FF9800' ]; // Красный → оранжевый
+    case 'scheduled':
+      return [ '#757F9A', '#D7DDE8' ]; // Серый → голубой
+    case 'postponed':
+      return [ '#FFD600', '#757F9A' ]; // Желтый → серый
+    default:
+      return [ '#E32C2C', '#2C5DE3' ]; // Красный → синий (дефолт)
+  }
+};
+
 const Card: React.FC<CardProps> = ( props ) =>
 {
   const { index, currentIndex, onPress, ...rest } = props;
-  const { downloadSvg } = useSvgDownload();
-
-  useEffect( () =>
-  {
-    if ( rest.homeTeam?.logo ) downloadSvg( rest.homeTeam.logo, 'homeTeam' );
-    if ( rest.awayTeam?.logo ) downloadSvg( rest.awayTeam.logo, 'awayTeam' );
-  }, [ rest.homeTeam?.logo, rest.awayTeam?.logo ] );
-
 
   const scaleAnim = useRef( new Animated.Value( index === currentIndex ? 1 : 0.8 ) ).current;
   useEffect( () =>
@@ -37,8 +47,9 @@ const Card: React.FC<CardProps> = ( props ) =>
   return (
     <Pressable style={styles.cardPressable} onPress={onPress}>
       <Animated.View style={[ styles.card, { transform: [ { scale: scaleAnim } ] } ]}>
+        {/* Градиент теперь зависит от статуса матча */}
         <LinearGradient
-          colors={[ '#E32C2C', '#2C5DE3' ]}
+          colors={getGradientByStatus( rest.status ?? 'default' )}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFillObject}
@@ -106,7 +117,10 @@ const Card: React.FC<CardProps> = ( props ) =>
         )}
         <View style={[ styles.scoreRow, { position: 'absolute', bottom: 80, left: 0, right: 0 } ]}>
           <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={styles.score}>
-            {rest.homeScore || '0'}
+            {rest.score.penalties?.away || '-'}
+            {rest.score.halfTime?.away || '-'}
+            {rest.score.extraTime?.away || '-'}
+            {rest.score.fullTime.home || '0'}
           </Typography>
           <View style={styles.vsCircle}>
             <Typography
@@ -120,7 +134,10 @@ const Card: React.FC<CardProps> = ( props ) =>
             </Typography>
           </View>
           <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={styles.score}>
-            {rest.awayScore || '0'}
+            {rest.score.fullTime.away || '0'}
+            {rest.score.extraTime?.away || '-'}
+            {rest.score.halfTime?.away || '-'}
+            {rest.score.penalties?.away || '-'}
           </Typography>
         </View>
         <View

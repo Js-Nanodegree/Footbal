@@ -22,6 +22,7 @@ import { useAppContext } from '../home-screen/context/AppContext';
 import { footballApi, statusMatches } from '../team-api/services/footballApi';
 import EmptyState from './EmptyState';
 import SkeletonSwiper from './SkeletonSwiper';
+import { useNavigation } from '@react-navigation/native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get( 'window' );
 const CARD_WIDTH = SCREEN_WIDTH;
@@ -55,35 +56,53 @@ const mapFeaturedToMatchCardProps = ( match: FeaturedMatchCardProps ): MatchCard
     backgroundLogo: match.competition?.emblem,
 } );
 
+// Универсальный геттер счёта: ищет по fullTime, halfTime, extraTime, penalties
+function getScore( score: any, type: 'home' | 'away' )
+{
+    if ( !score ) return '-';
+    if ( score.fullTime && score.fullTime[ type ] != null ) return score.fullTime[ type ];
+    if ( score.halfTime && score.halfTime[ type ] != null ) return score.halfTime[ type ];
+    if ( score.extraTime && score.extraTime[ type ] != null ) return score.extraTime[ type ];
+    if ( score.penalties && score.penalties[ type ] != null ) return score.penalties[ type ];
+    return '-';
+}
+
 // Маппинг Match -> MatchCardProps (для redux/моков)
-const mapMatchToMatchCardProps = ( match: any ): MatchCardProps => ( {
-    homeTeam: {
-        name: match.homeTeam?.name || '',
-        logo: typeof ( match.homeTeam as any )?.crest === 'string'
-            ? ( match.homeTeam as any ).crest
-            : ( match.homeTeam?.logo || '' ),
-    },
-    awayTeam: {
-        name: match.awayTeam?.name || '',
-        logo: typeof ( match.awayTeam as any )?.crest === 'string'
-            ? ( match.awayTeam as any ).crest
-            : ( match.awayTeam?.logo || '' ),
-    },
-    homeScore: match.score?.fullTime?.homeTeam ?? '',
-    awayScore: match.score?.fullTime?.awayTeam ?? '',
-    league: match.competition?.name || '',
-    status: match.status,
-    time: match.week,
-    stadium: match.area?.name || '',
-    isLive: match.status === statusMatches.LIVE,
-    badgeText: match.competition?.code || '',
-    variant: 'gradient',
-    backgroundLogo: match.competition?.emblem || '',
-} );
+const mapMatchToMatchCardProps = ( match: any ): MatchCardProps =>
+{
+    const isFinished = match.status === 'FINISHED';
+    return {
+        homeTeam: {
+            name: match.homeTeam?.name || '',
+            logo: typeof ( match.homeTeam as any )?.crest === 'string'
+                ? ( match.homeTeam as any ).crest
+                : ( match.homeTeam?.logo || '' ),
+        },
+        awayTeam: {
+            name: match.awayTeam?.name || '',
+            logo: typeof ( match.awayTeam as any )?.crest === 'string'
+                ? ( match.awayTeam as any ).crest
+                : ( match.awayTeam?.logo || '' ),
+        },
+        homeScore: isFinished ? getScore( match.score, 'home' ) : '-',
+        awayScore: isFinished ? getScore( match.score, 'away' ) : '-',
+        league: match.competition?.name || '',
+        status: match.status,
+        time: match.week,
+        stadium: match.area?.name || '',
+        isLive: match.status === statusMatches.LIVE,
+        badgeText: match.competition?.code || '',
+        variant: 'gradient',
+        backgroundLogo: match.competition?.emblem || '',
+    };
+};
 
 interface MatchSwiperProps
 {
     matches?: FeaturedMatchCardProps[];
+    selectedMatchId?: number;
+    initialMatchId?: number; // Новый проп для автоскролла
+    onMatchPress?: ( match: any ) => void;
 }
 
 // --- Новый компонент карточки ---
@@ -92,6 +111,7 @@ interface MatchSwiperCardProps extends MatchCardProps
     index: number;
     currentIndex: number;
     onPress?: () => void;
+    isSelected?: boolean;
 }
 
 const useSvgDownload = () =>
@@ -316,25 +336,35 @@ const MatchSwiperCard: React.FC<MatchSwiperCardProps> = ( props ) =>
     );
 };
 
-const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches } ) =>
+const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches, selectedMatchId, initialMatchId, onMatchPress } ) =>
 {
-    const { selectedLeagueId } = useAppContext();
+    // const { selectedLeagueId } = useAppContext(); // не используется
+    const navigation = useNavigation();
     let data: MatchCardProps[] = [];
     let loading = false;
     let error: string | null = null;
 
     if ( matches && matches.length > 0 )
     {
-        data = matches.slice( 0, MAX_CARDS ).map( mapFeaturedToMatchCardProps );
+        data = matches.slice( 0, MAX_CARDS ).map( ( m: any ) =>
+        {
+            // Если матч уже приведён к MatchCardProps (есть homeScore/awayScore), не адаптируем повторно
+            if ( typeof m.homeScore !== 'undefined' && typeof m.awayScore !== 'undefined' )
+            {
+                return m;
+            }
+            // Если матч "сырой" (из API), адаптируем
+            return mapMatchToMatchCardProps( m );
+        } );
     } else
     {
         // Получаем code лиги по selectedLeagueId (если есть)
         const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
-        const league = competitions?.find( c => c.id === selectedLeagueId );
+        const league = competitions?.find( c => c.id === matches?.[ 0 ]?.competition?.id );
         const leagueCode = league?.code || '';
         // Получаем матчи только если есть selectedLeagueId
         const { data: rtkMatches, isLoading, error: rtkError } = footballApi.endpoints.getLiveMatches.useQuery(
-            selectedLeagueId ? { competitionId: leagueCode, status: statusMatches.LIVE } : skipToken
+            leagueCode ? { competitionId: leagueCode, status: statusMatches.LIVE } : skipToken
         );
         const safeStoreMatches = Array.isArray( rtkMatches ) ? rtkMatches : [];
         data = safeStoreMatches
@@ -368,6 +398,38 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches } ) =>
 
     const [ currentIndex, setCurrentIndex ] = useState( 0 );
     const flatListRef = useRef( null );
+    const safeMatches: any[] = Array.isArray( matches ) ? matches : [];
+
+    // Автоскролл к initialMatchId при первом рендере
+    useEffect( () =>
+    {
+        if ( typeof initialMatchId === 'number' && safeMatches.length > 0 )
+        {
+            const idx = safeMatches.findIndex( m => m.id === initialMatchId );
+            if ( idx >= 0 && flatListRef.current )
+            {
+                // @ts-ignore
+                flatListRef.current.scrollToIndex( { index: idx, animated: false } );
+                setCurrentIndex( idx );
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ initialMatchId, safeMatches.length ] );
+
+    // Скроллим к выбранному матчу при смене selectedMatchId (но не при первом рендере)
+    useEffect( () =>
+    {
+        if ( selectedMatchId && safeMatches.length > 0 )
+        {
+            const idx = safeMatches.findIndex( m => m.id === selectedMatchId );
+            if ( idx >= 0 && flatListRef.current )
+            {
+                // @ts-ignore
+                flatListRef.current.scrollToIndex( { index: idx, animated: true } );
+                setCurrentIndex( idx );
+            }
+        }
+    }, [ selectedMatchId, safeMatches.length ] );
 
     const onMomentumScrollEnd = ( e: NativeSyntheticEvent<NativeScrollEvent> ) =>
     {
@@ -376,12 +438,27 @@ const MatchSwiper: React.FC<MatchSwiperProps> = ( { matches } ) =>
         setCurrentIndex( newIndex );
     };
 
+    const handleCardPress = ( index: number ) =>
+    {
+        if ( safeMatches[ index ] && typeof safeMatches[ index ].id !== 'undefined' )
+        {
+            if ( onMatchPress )
+            {
+                onMatchPress( safeMatches[ index ] );
+            } else
+            {
+                navigation.navigate( 'MatchHistory', { matchId: safeMatches[ index ].id } );
+            }
+        }
+    };
+
     const renderItem = ( { item, index }: { item: MatchCardProps; index: number } ) => (
         <MatchSwiperCard
             {...item}
             index={index}
             currentIndex={currentIndex}
-            onPress={() => Alert.alert( 'Переход на детали матча' )}
+            onPress={() => handleCardPress( index )}
+            isSelected={Boolean( selectedMatchId && safeMatches[ index ]?.id === selectedMatchId )}
         />
     );
 

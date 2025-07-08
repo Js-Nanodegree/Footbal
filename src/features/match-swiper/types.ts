@@ -6,8 +6,7 @@ export interface TeamInfo {
 export interface MatchCardProps {
   homeTeam: TeamInfo;
   awayTeam: TeamInfo;
-  homeScore: string | number;
-  awayScore: string | number;
+  score: MatchScore;
   league?: string;
   status?: string;
   time?: string;

@@ -4,6 +4,7 @@ import { Match } from '../types/match';
 import { Competition } from '../types/competition';
 import { Standing } from '../types/standing';
 import { tmpApiAxios } from '../clients/tmpApiAxios';
+import { MatchDetails } from '../types/match';
 
 const API_KEY = 'bf63b2eaacf54ac0b42620ac5c820ec7';
 
@@ -69,10 +70,32 @@ export const footballApi = createApi( {
           query: ( teamId ) => ( { url: `/teams/${ teamId }` } ),
           transformResponse: ( response: any ) => response,
       } ),
-      getTeamMatches: builder.query<Match[], number>( {
-          query: ( teamId ) => ( { url: `/teams/${ teamId }/matches` } ),
-          transformResponse: ( response: any ) => response.matches,
-      } ),
+        getTeamMatches: builder.query<
+            Match[],
+            {
+                teamId: number;
+                dateFrom?: string;
+                dateTo?: string;
+                status?: statusMatches;
+                venue?: 'home' | 'away';
+                opponentId?: number;
+            }
+        >( {
+            query: ( { teamId, dateFrom, dateTo, status, venue, opponentId } ) =>
+            {
+                const params: Record<string, any> = {};
+                if ( dateFrom ) params.dateFrom = dateFrom;
+                if ( dateTo ) params.dateTo = dateTo;
+                if ( status ) params.status = status;
+                if ( venue ) params.venue = venue;
+                if ( opponentId ) params.opponent = opponentId;
+                return {
+                    url: `/teams/${ teamId }/matches`,
+                    params,
+                };
+            },
+            transformResponse: ( response: any ) => response.matches,
+        } ),
       getCompetitions: builder.query<Competition[], void>( {
           query: () => ( { url: `/competitions` } ),
           transformResponse: ( response: any ) => response.competitions,
@@ -122,6 +145,10 @@ export const footballApi = createApi( {
             };
         },
     } ),
+    getMatchDetails: builder.query<MatchDetails, number>({
+        query: (matchId) => ({ url: `/matches/${matchId}` }),
+        transformResponse: (response: any) => response.match ?? response,
+    }),
     } ),
 } );
 
@@ -132,4 +159,5 @@ export const {
     useGetCompetitionsQuery,
     useGetStandingsQuery,
     useGetLeaguesQuery,
+    useGetMatchDetailsQuery,
 } = footballApi;

@@ -6,6 +6,7 @@ import { colors } from 'src/shared/ui/theme/colors';
 import { shadows } from 'src/shared/ui/theme/shadows';
 import TodayMatchCard from 'src/shared/ui/today-match-card/TodayMatchCard';
 import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
+import { useNavigation } from '@react-navigation/native';
 // import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 const SECTION_SPACING = 20;
@@ -13,6 +14,7 @@ const SECTION_SPACING = 20;
 const AllMatchesSection = React.memo(
   ( { match, loading, error }: { match: any; loading?: boolean; error?: string | null } ) =>
   {
+    const navigation = useNavigation();
     if ( error && !loading )
     {
       return (
@@ -36,6 +38,10 @@ const AllMatchesSection = React.memo(
       );
     }
 
+    const handlePress = () => {
+      navigation.navigate('MatchHistory', { matchId: match.id });
+    };
+
     return (
       <View style={{ backgroundColor: colors.card }}>
         <TodayMatchCard
@@ -43,6 +49,7 @@ const AllMatchesSection = React.memo(
           awayTeam={match.awayTeam}
           time={match.time}
           date={match.date}
+          onPress={handlePress}
           testID="all-match-card"
           accessibilityLabel={`Матч: ${ match.homeTeam?.name } - ${ match.time } - ${ match.awayTeam?.name }`}
         />

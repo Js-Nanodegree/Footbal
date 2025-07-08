@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { StatsBarProps } from './types';
 import { statsBarColorMap } from './colorMap';
 import Typography from '../typography/Typography';
+import { colors } from '../theme/colors';
 
 const StatsBar: React.FC<StatsBarProps> = ( {
     leftValue,
@@ -24,16 +25,38 @@ const StatsBar: React.FC<StatsBarProps> = ( {
     return (
         <View style={[ styles.root, style ]}>
             <View style={styles.row}>
-                <Typography variant="body" style={styles.value} color={leftColor}>{leftValue}</Typography>
-                <Typography variant="caption" style={styles.label}>{label}</Typography>
-                <Typography variant="body" style={[ styles.value, { textAlign: 'right' } ]} color={rightColor}>{rightValue}</Typography>
+                <Typography variant="body" style={styles.value} color={leftColor}>
+                    {leftValue}
+                </Typography>
+                <Typography variant="caption" style={styles.label}>
+                    {label}
+                </Typography>
+                <Typography
+                    variant="body"
+                    style={[ styles.value, { textAlign: 'right' } ]}
+                    color={rightColor}
+                >
+                    {rightValue}
+                </Typography>
             </View>
             <View style={styles.barRow}>
                 <View style={[ styles.barBg, { backgroundColor } ]}>
-                    <View style={[ styles.bar, { width: `${ leftPercent }%`, backgroundColor: leftColor, borderTopLeftRadius: 6, borderBottomLeftRadius: 6 } ]} />
+                    <View
+                        style={[
+                            styles.bar,
+                            leftPercent > 0 && { width: `${ leftPercent }%` },
+                            { backgroundColor: leftColor, borderTopLeftRadius: 6, borderBottomLeftRadius: 6 },
+                        ]}
+                    />
                 </View>
                 <View style={[ styles.barBg, { backgroundColor } ]}>
-                    <View style={[ styles.bar, { width: `${ rightPercent }%`, backgroundColor: rightColor, borderTopRightRadius: 6, borderBottomRightRadius: 6, marginLeft: 'auto' } ]} />
+                    <View
+                        style={[
+                            styles.bar,
+                            rightPercent > 0 && { width: `${ rightPercent }%` },
+                            { backgroundColor: rightColor, borderTopRightRadius: 6, borderBottomRightRadius: 6 },
+                        ]}
+                    />
                 </View>
             </View>
         </View>
@@ -52,27 +75,31 @@ const styles = StyleSheet.create( {
     },
     value: {
         minWidth: 36,
-        fontWeight: 'bold',
+        fontWeight: '400',
+        fontSize: 12,
     },
     label: {
         flex: 1,
+        fontSize: 14,
+        fontWeight: '600',
         textAlign: 'center',
-        color: '#888',
+        color: colors.grayDark,
     },
     barRow: {
         flexDirection: 'row',
-        gap: 8,
+        gap: 20,
+        width: '100%',
     },
     barBg: {
         flex: 1,
-        height: 6,
+        height: 4,
         borderRadius: 6,
         overflow: 'hidden',
         backgroundColor: statsBarColorMap.background,
     },
     bar: {
-        height: 6,
+        height: 5,
     },
 } );
 
-export default StatsBar; 
+export default StatsBar;

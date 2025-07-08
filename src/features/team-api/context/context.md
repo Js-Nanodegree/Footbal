@@ -97,6 +97,26 @@
 - Используется для валидации и типизации данных в хуках, сервисах, интеграционных тестах
 - Готова к расширению под новые поля/endpoint'ы
 
+## Расширение getTeamMatches
+
+Теперь endpoint getTeamMatches поддерживает параметры:
+- dateFrom, dateTo — фильтрация по дате
+- status — статус матча (FINISHED, SCHEDULED и т.д.)
+- venue — домашние/гостевые (home/away)
+- opponentId — id соперника
+
+Пример:
+```ts
+useGetTeamMatchesQuery({
+  teamId: 81, // Барселона
+  dateFrom: '1988-01-01',
+  dateTo: '1988-12-31',
+  status: statusMatches.FINISHED,
+  venue: 'home',
+  opponentId: 86, // Реал Мадрид
+})
+```
+
 ---
 
 _Документ обновлён автоматически после внедрения production-ready API-клиента и тестовой инфраструктуры._ 

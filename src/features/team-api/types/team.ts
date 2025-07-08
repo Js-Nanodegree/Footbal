@@ -27,6 +27,7 @@ export interface TeamSquadMember {
 }
 
 // Team — основная структура команды
+// История матчей доступна с фильтрацией по дате, статусу, venue и сопернику через getTeamMatches
 export interface Team {
   id: number;
   name: string;

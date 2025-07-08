@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { MatchEventTimelineProps } from './types';
 import MatchEventCard from './MatchEventCard';
@@ -7,6 +7,13 @@ import { matchEventColorMap } from './colorMap';
 
 const MatchEventTimeline: React.FC<MatchEventTimelineProps> = ( { events, style } ) =>
 {
+    const [ openIds, setOpenIds ] = useState<( string | number )[]>( [] );
+    const handleToggle = ( id: string | number ) =>
+    {
+        setOpenIds( ( prev ) =>
+            prev.includes( id ) ? prev.filter( ( x ) => x !== id ) : [ ...prev, id ]
+        );
+    };
     return (
         <View style={[ styles.root, style ]}>
             {events.map( ( event, idx ) => (
@@ -19,7 +26,11 @@ const MatchEventTimeline: React.FC<MatchEventTimelineProps> = ( { events, style 
                         </View>
                     </View>
                     <View style={{ flex: 1 }}>
-                        <MatchEventCard event={event} />
+                        <MatchEventCard
+                            event={event}
+                            collapsed={!openIds.includes( event.id )}
+                            onToggle={() => handleToggle( event.id )}
+                        />
                     </View>
                 </View>
             ) )}

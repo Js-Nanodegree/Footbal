@@ -1,11 +1,12 @@
 import { ReactNode } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 export type ButtonVariant = 'primary' | 'secondary';
 
 export interface ButtonProps {
   title: string;
   onPress: () => void;
+  styleText?: StyleProp<TextStyle>;
   variant?: ButtonVariant;
   disabled?: boolean;
   loading?: boolean;

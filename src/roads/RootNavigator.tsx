@@ -18,6 +18,7 @@ import NetworkStatusBar from '../shared/ui/tab-bar/NetworkStatusBar';
 import HomeScreen from 'src/screens/HomeScreen';
 import FinishedMatchesScreen from 'src/features/home-screen/components/FinishedMatchesScreen';
 import { footballApi } from 'src/features/team-api/services/footballApi';
+import MatchHistoryScreen from '../features/match-history/Screen';
 
 export type RootStackParamList = {
     MainTabs: undefined;
@@ -30,6 +31,7 @@ export type RootStackParamList = {
     ErrorStateDemo: undefined;
     FABScrollToTopDemo: undefined;
     FinishedMatches: undefined;
+    MatchHistory: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -98,8 +100,8 @@ const RootNavigator = () =>
     const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
 
     return (
-    <Stack.Navigator initialRouteName="MainTabs">
-          <Stack.Screen
+        <Stack.Navigator initialRouteName="MainTabs">
+            <Stack.Screen
               name="MainTabs"
               component={MainTabs}
               options={{ headerShown: false }}
@@ -107,7 +109,12 @@ const RootNavigator = () =>
                   competitions: competitions?.[ 0 ] || {},
               }}
           />
-          <Stack.Screen
+            <Stack.Screen
+                name="MatchHistory"
+                component={MatchHistoryScreen}
+                options={{ title: 'История матчей', headerShown: false }}
+            />
+            <Stack.Screen
               name="FinishedMatches"
               component={FinishedMatchesScreen}
               options={{ title: 'Завершённые матчи', headerShown: false }}

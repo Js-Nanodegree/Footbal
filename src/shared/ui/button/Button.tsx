@@ -18,6 +18,7 @@ const Button: React.FC<ButtonProps & { accessibilityLabel?: string; testID?: str
     style,
     accessibilityLabel,
     testID,
+    styleText,
 } ) =>
 {
     const colors = buttonColorMap[ theme ][ variant ];
@@ -55,6 +56,7 @@ const Button: React.FC<ButtonProps & { accessibilityLabel?: string; testID?: str
                         font="Inter"
                         style={[
                             styles.title,
+                            styleText,
                             { color: appliedColors.text },
                         ]}
                         numberOfLines={1}

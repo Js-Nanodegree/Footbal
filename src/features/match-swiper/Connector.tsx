@@ -8,7 +8,7 @@ import { Match } from '../team-api/types/match';
 const MAX_CARDS = 15;
 
 // Маппинг данных RTK Query -> MatchCardProps
-const mapMatchToMatchCardProps = (match: any): MatchCardProps => ({
+const mapMatchToMatchCardProps = ( match: Match ): MatchCardProps => ( {
   homeTeam: {
     name: match.homeTeam?.name || '',
     logo:
@@ -23,11 +23,10 @@ const mapMatchToMatchCardProps = (match: any): MatchCardProps => ({
         ? (match.awayTeam as any).crest
         : match.awayTeam?.logo || '',
   },
-  homeScore: match.score?.fullTime?.homeTeam ?? '',
-  awayScore: match.score?.fullTime?.awayTeam ?? '',
+  score: match.score,
   league: match.competition?.name || '',
   status: match.status,
-  time: match.week,
+  time: match.utcDate,
   stadium: match.area?.name || '',
   isLive: match.status === statusMatches.LIVE,
   badgeText: match.competition?.code || '',
@@ -43,7 +42,7 @@ const Connector: React.FC<{
   matches,
 } ) =>
   {
-    return <Wrapper data={matches.map( mapMatchToMatchCardProps ).slice( 0, 25 )} loading={false} error={null} />;
+  return <Wrapper data={matches.map( mapMatchToMatchCardProps )} loading={false} error={null} />;
 };
 
 export default Connector;

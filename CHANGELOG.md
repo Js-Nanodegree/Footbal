@@ -63,3 +63,9 @@
 [2024-06-19] refactor: Вынесена фильтрация команд и матчей в HomeScreenFilterUtils (by-feature), исправлены типы и обработка ошибок в useHomeScreenSections, добавлен context.md для by-feature (HomeScreen).
 
 [2024-06-19] refactor: Фильтры вынесены в filters/filters.ts по фиче home-screen, удалён устаревший by-feature, обновлена структура и импорты (HomeScreen). 
+
+[2025-07-03] feat: Расширен endpoint getTeamMatches — добавлены параметры фильтрации (dateFrom, dateTo, status, venue, opponentId). Обновлены типы, документация, context.md. 
+
+[2024-06-21] feat: Реализован DateSeasonContext (контекст выбора даты/сезона) и хук useDateSeason для match-history. Добавлен компонент DateSeasonSwitcher (FlatList с кнопками, интеграция с контекстом). Создан базовый экран истории матчей (MatchHistoryScreen) с SectionList и интеграцией контекста. Добавлено правило: тесты не обязательны для этих частей (решение команды). 
+
+[2024-06-19] feat: Унификация MatchSwiperSection для истории матчей, добавлен initialMatchId для автоскролла, исправлен импорт MatchSwiper, добавлены полифиллы Object.entries/values. 
