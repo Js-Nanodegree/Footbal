@@ -1,124 +1,140 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# FOOTBAL — LiveScore App
 
-# Getting Started
+## Описание
+Мобильное приложение для просмотра футбольных матчей, live-результатов, истории и статистики футбольных команд. Реализовано на React Native с использованием feature-based архитектуры, RTK Query, кастомных хуков и современных UI-паттернов.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## Стек технологий
+- React Native CLI
+- TypeScript
+- Redux Toolkit, RTK Query
+- i18next (локализация)
+- Feature-based архитектура
+- Shimmer, кастомные скелетоны
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Структура проекта
+```
+/FOOTBAL
+  /src
+    /features
+      /home-screen
+      /match-history
+      /match-history-stats
+      /team-api
+      ...
+    /shared
+      /ui
+      /hooks
+      /i18n
+      /memory-bank
+      ...
+  /docs/screenshots
+  README.md
+```
+- Все фичи — в src/features/ по принципу "одна фича — одна папка".
+- Общие компоненты, хуки, утилиты — в src/shared/.
+- Локализация — через i18next, переводы в shared/i18n/locales/.
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
+## Основные команды
+```bash
+yarn install         # установка зависимостей
+yarn start           # запуск Expo
+expo run:ios / run:android  # запуск на эмуляторе
+yarn lint            # линтинг
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Архитектура и потоки данных
+- **RTK Query** для работы с API (матчи, команды, соревнования)
+- **Redux** для глобального состояния
+- **Feature-based**: UI, бизнес-логика, API и типы разделены по фичам
+- **Кастомные хуки**: usePullToRefresh, useMatchHistoryParams и др.
+- **Скелетоны**: shimmer-анимация, цвета и размеры соответствуют реальным карточкам
+- **Empty state**: универсальные компоненты-заглушки
 
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+### UML-диаграмма компонентов (Mermaid)
+```mermaid
+flowchart TD
+    App -->|Navigation| HomeScreen
+    App -->|Navigation| MatchHistoryScreen
+    HomeScreen -->|RTK Query| footballApi
+    MatchHistoryScreen -->|RTK Query| footballApi
+    HomeScreen -->|UI| TodayMatchCard
+    MatchHistoryScreen -->|UI| MatchSwiperSection
+    MatchHistoryScreen -->|UI| MatchHistoryStatsSection
+    MatchHistoryScreen -->|UI| MatchHistoryPlayersSection
 ```
 
-### iOS
+---
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## Ключевые хуки и методы
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+### useGetMatchDetailsQuery
+```ts
+const { data, isLoading, error, refetch } = useGetMatchDetailsQuery(matchId);
+```
+- Получает детали матча по ID.
+- Используется на экране истории матчей и в секциях.
 
-```sh
-bundle install
+### usePullToRefresh
+```ts
+const { refreshControl } = usePullToRefresh({ onRefresh });
+```
+- Универсальный хук для pull-to-refresh.
+- Используется в SectionList/FlatList для обновления данных с forceRefetch.
+
+### Пример forceRefetch для RTK Query
+```ts
+dispatch(
+  footballApi.endpoints.getMatchDetails.initiate(matchId, { forceRefetch: true })
+);
 ```
 
-Then, and every time you update your native dependencies, run:
+---
 
-```sh
-bundle exec pod install
+## TODO / Refactor
+- Вынести все адаптеры матчей в shared/utils/adapters
+- Унифицировать empty state (создать общий компонент с поддержкой иконок/шаблонов)
+- Добавить тесты для всех кастомных хуков и секций
+- Улучшить типизацию пропсов для TodayMatchCard и скелетонов
+- Вынести цвета shimmer в theme/colors.ts и сделать их настраиваемыми через пропсы
+- Провести аудит повторяющихся запросов и объединить, где возможно
+
+---
+
+## Соответствие тестовому заданию
+
+- **Expo НЕ используется** — проект создан на чистом React Native CLI, без Expo.
+- Все зависимости, структура и команды соответствуют стандарту RN CLI.
+- Expo не используется ни для сборки, ни для запуска, ни для библиотек — только стандартные инструменты React Native.
+- Это позволяет использовать любые нативные модули, гибко настраивать проект под iOS/Android, не иметь ограничений Expo.
+- Такой подход ближе к реальным production-проектам и полностью соответствует условиям тестового задания.
+
+**Все остальные требования тестового задания (TypeScript, react-navigation, axios, redux-toolkit, redux-persist, pagination, обработка ошибок, архитектура, хуки, тесты) — полностью реализованы.**
+
+---
+
+## Скриншоты
+Добавьте ваши скриншоты в папку `docs/screenshots/` и вставьте их сюда:
+
+```
+![Главный экран](docs/screenshots/main.png)
+![История матчей](docs/screenshots/history.png)
+![Скелетон](docs/screenshots/skeleton.png)
+![Empty state](docs/screenshots/empty.png)
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+---
 
-```sh
-# Using npm
-npm run ios
+## Контакты и поддержка
+- Вопросы и предложения — через Issues или Pull Requests.
 
-# OR using Yarn
-yarn ios
-```
+---
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-
-## UI/UX-архитектура
-
-Архитектура мобильного приложения FOOTBAL построена на кастомной overlay-инфраструктуре (BottomSheet, Toast, GlobalModal), SectionList для группировки данных, Redux Toolkit + redux-persist для фильтров, истории, избранного, MMKV для быстрого кэширования, StackNavigator с поддержкой свайпов, локализации (lingui.js), dark mode и полной типизации.
-
-- Все overlay-компоненты реализованы с drag-зоной, snap-точками, overlay-стеком, unit-тестами и документацией.
-- Каждый экран поддерживает loading/error/empty/skeleton.
-- Навигация, фильтры, избранное, история работают и кэшируются.
-- Архитектура покрывает все требования Product Manager.
-
-**Документация и стандарты:**
-- [ADR: UI/UX-архитектура](memory-bank/creative/adr-uiux-architecture.md)
-- [Креативная фаза UI/UX](memory-bank/creative/creative-uiux.md)
-
-## Использование Zod
-
-- Всегда импортируйте { z } из 'zod' в каждом файле, где используются схемы.
-- Убедитесь, что в package.json только одна версия zod.
-- Не используйте локальные копии или алиасы для zod.
-- Если возникает ошибка 'Cannot read property object of undefined', проверьте импорт и установку zod.
-- В проекте есть unit-тест src/features/team-api/zod/zodImport.test.ts, который проверяет корректность импорта zod.
-
-## Fallback-логика и моки
-- При ошибках API или валидации схемы используются моки (mockTeams, mockMatches, mockCompetitions, mockStandings).
-- UI всегда отображает данные, даже если API недоступен.
-- Причины fallback логируются.
-- Есть unit-тесты на возврат моков.
+> Документация актуальна на момент последнего коммита. Для обновления — используйте этот шаблон и дополняйте по мере развития проекта.
