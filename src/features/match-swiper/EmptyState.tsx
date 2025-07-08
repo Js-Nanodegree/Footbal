@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import AnimatedShimmer from 'src/shared/ui/shimmer/AnimatedShimmer';
+import { colors } from 'src/shared/ui/theme/colors';
 
-const EmptyState = ( { message }: { message: string } ) => (
+const EmptyState = () => (
     <View style={styles.container}>
-        <Text style={styles.text}>{message}</Text>
+        <AnimatedShimmer style={styles.shimmer} borderRadius={32} />
     </View>
 );
 
@@ -12,12 +14,15 @@ const styles = StyleSheet.create( {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: 120,
+        minHeight: 220,
+        width: '100%',
+        backgroundColor: colors.grayLight,
     },
-    text: {
-        color: '#888',
-        fontSize: 18,
-        textAlign: 'center',
+    shimmer: {
+        width: 180,
+        height: 180,
+        borderRadius: 32,
+        backgroundColor: colors.grayMedium,
     },
 } );
 

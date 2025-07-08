@@ -32,7 +32,9 @@ export const Line: React.FC<LineProps> = ({ homeTeam, awayTeam }) => (
             </Typography>
           ))
         ) : (
-          <Typography variant="caption">Нет данных</Typography>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+              <Typography>Нет данных</Typography>
+            </View>
         )}
       </View>
       <View style={styles.lineupCol}>
@@ -43,7 +45,9 @@ export const Line: React.FC<LineProps> = ({ homeTeam, awayTeam }) => (
             </Typography>
           ))
         ) : (
-          <Typography variant="caption">Нет данных</Typography>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+              <Typography>Нет данных</Typography>
+            </View>
         )}
       </View>
     </View>

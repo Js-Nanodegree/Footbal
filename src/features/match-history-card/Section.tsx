@@ -13,11 +13,18 @@ import { useGetMatchDetailsQuery } from '../../features/team-api/services/footba
 import { useMatchHistoryParams } from '../hooks/useMatchHistoryParams';
 import { uiDebugConfig } from 'src/shared/debug/ui-debug.config';
 import { formatDateTime } from 'src/shared/utils/dateFormat';
+import { View } from 'react-native';
 
 // TODO: заменить на реальные данные из API/контекста
 const mockMatch: MatchCardProps = {
-  homeTeam: { name: 'Chelsea', logo: 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg' },
-  awayTeam: { name: 'Arsenal', logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg' },
+  homeTeam: {
+    name: 'Chelsea',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg',
+  },
+  awayTeam: {
+    name: 'Arsenal',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg',
+  },
   homeScore: 2,
   awayScore: 1,
   league: 'Premier League',
@@ -35,13 +42,31 @@ export interface MatchHistoryCardSectionProps {
   error?: any;
 }
 
-export const MatchHistoryCardSection: React.FC<MatchHistoryCardSectionProps> = ({ match, loading, error }) => {
+export const MatchHistoryCardSection: React.FC<MatchHistoryCardSectionProps> = ( {
+  match,
+  loading,
+  error,
+} ) =>
+{
   const { matchId, homeId: teamId, season, venue } = useMatchHistoryParams();
   const { data, isLoading, error: queryError } = useGetMatchDetailsQuery(matchId);
 
-  if (loading) return <Typography>Загрузка...</Typography>;
-  if (error) return <Typography>Ошибка загрузки</Typography>;
-  if ( !match  ) return <Typography>Нет данных</Typography>;
+  if ( loading ) return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <Typography>Загрузка...</Typography>
+    </View>
+  );
+  if ( error ) return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <Typography>Ошибка загрузки</Typography>
+    </View>
+  );
+  if ( !match )
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+        <Typography>Нет данных</Typography>
+      </View>
+    );
 
   // Отображаем все данные из backend и аргументы
   return (
@@ -57,4 +82,4 @@ export const MatchHistoryCardSection: React.FC<MatchHistoryCardSectionProps> = (
       </Typography>
     </>
   );
-}; 
+};

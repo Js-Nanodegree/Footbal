@@ -9,11 +9,12 @@ interface AnimatedShimmerProps
 {
     style?: ViewStyle;
     borderRadius?: number;
+    colors?: string[];
 }
 
 const SHIMMER_WIDTH = 150;
 
-const AnimatedShimmer: React.FC<AnimatedShimmerProps> = ( { style, borderRadius = 0 } ) =>
+const AnimatedShimmer: React.FC<AnimatedShimmerProps> = ( { style, borderRadius = 0, colors: shimmerColors } ) =>
 {
     const translateX = useSharedValue( -SHIMMER_WIDTH );
 
@@ -30,10 +31,12 @@ const AnimatedShimmer: React.FC<AnimatedShimmerProps> = ( { style, borderRadius 
         transform: [ { translateX: translateX.value } ],
     } ) );
 
+    const gradientColors = shimmerColors || [ '#E32C2C', '#2C5DE3', '#E32C2C', '#2C5DE3' ];
+
     return (
         <View style={[ styles.container, style, { borderRadius } ]}>
             <AnimatedLinearGradient
-                colors={[ '#E32C2C', '#2C5DE3', '#E32C2C', '#2C5DE3' ]}
+                colors={gradientColors}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={[ StyleSheet.absoluteFill, animatedStyle, { borderRadius } ]}

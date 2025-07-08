@@ -27,7 +27,7 @@ const AllMatchesSection = React.memo(
         </View>
       );
     }
-    if ( loading )
+    if (loading )
     {
       return (
         <View style={{ backgroundColor: colors.card, ...shadows.section }}>

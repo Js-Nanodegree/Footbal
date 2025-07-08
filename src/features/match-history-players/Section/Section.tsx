@@ -29,7 +29,11 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
   const { data: awayTeamDetails, isLoading: isAwayLoading, error: awayError } = useGetTeamDetailsQuery( match?.awayTeam?.id );
 
 
-  if (!match) return <Typography>{t('section.noData')}</Typography>;
+  if ( !match ) return (
+
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <Typography>{t( 'section.noData' )}</Typography>
+    </View> );
   if ( isHomeLoading || isAwayLoading ) return <Typography>{t( 'section.loadingTeamComposition' )}</Typography>;
   if ( homeError || awayError ) return <Typography>{t( 'section.errorTeamComposition' )}</Typography>;
   if ( !homeTeamDetails || !awayTeamDetails ) return <Typography>{t( 'section.noTeamData' )}</Typography>;
