@@ -4,6 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Animated } from 'react-native';
 import Typography from 'src/shared/ui/typography/Typography';
 import { PlayerCard } from './PlayerCard';
+import { useGetTeamDetailsQuery } from '../team-api/services/footballApi';
 
 const mockHomePlayers = [
   {
@@ -89,36 +90,60 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
   if (error) return <Typography>Ошибка загрузки</Typography>;
   if (!match) return <Typography>Нет данных</Typography>;
 
-  const homePlayers = match.homeTeam?.lineup || [];
-  const awayPlayers = match.awayTeam?.lineup || [];
-  const homeTeam = { name: match.homeTeam?.name, logo: match.homeTeam?.crest };
-  const awayTeam = { name: match.awayTeam?.name, logo: match.awayTeam?.crest };
+  // Получаем детали обеих команд
+  const { data: homeTeamDetails, isLoading: isHomeLoading, error: homeError } = useGetTeamDetailsQuery( match.homeTeam?.id );
+  const { data: awayTeamDetails, isLoading: isAwayLoading, error: awayError } = useGetTeamDetailsQuery( match.awayTeam?.id );
+
+  if ( isHomeLoading || isAwayLoading ) return <Typography>Загрузка состава команд...</Typography>;
+  if ( homeError || awayError ) return <Typography>Ошибка загрузки состава</Typography>;
+  if ( !homeTeamDetails || !awayTeamDetails ) return <Typography>Нет данных по командам</Typography>;
+
+  const homePlayers = homeTeamDetails.squad || [];
+  const awayPlayers = awayTeamDetails.squad || [];
+  const homeTeam = { name: homeTeamDetails.name, logo: homeTeamDetails.crest };
+  const awayTeam = { name: awayTeamDetails.name, logo: awayTeamDetails.crest };
+
+  const CARD_WIDTH = 200;
+  const CARD_MARGIN = 12;
+  const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN * 2;
 
   return (
     <View style={styles.container}>
-      <Typography variant="h2" weight="bold" style={styles.sectionTitle}>Домашние</Typography>
+      <Typography variant="h2" weight="bold" style={styles.sectionTitle}>{homeTeam.name}</Typography>
       <FlatList
         data={homePlayers}
         keyExtractor={item => String(item.id)}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[ styles.list, { paddingHorizontal: CARD_MARGIN } ]}
         renderItem={({ item }) => (
-          <AnimatedPlayerCard player={item} clubName={homeTeam.name} clubLogo={homeTeam.logo} variant="home" />
+          <PlayerCard player={item} clubName={homeTeam.name || ''} clubLogo={homeTeam.logo || ''} variant="home" />
         )}
         ListEmptyComponent={<Typography variant="caption">Нет игроков</Typography>}
+        pagingEnabled
+        snapToInterval={SNAP_INTERVAL}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        disableIntervalMomentum
+        getItemLayout={( _, index ) => ( { length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index } )}
       />
-      <Typography variant="h2" weight="bold" style={styles.sectionTitle}>Гостевые</Typography>
+      <Typography variant="h2" weight="bold" style={styles.sectionTitle}>{awayTeam.name}</Typography>
       <FlatList
         data={awayPlayers}
         keyExtractor={item => String(item.id)}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[ styles.list, { paddingHorizontal: CARD_MARGIN } ]}
         renderItem={({ item }) => (
-          <AnimatedPlayerCard player={item} clubName={awayTeam.name} clubLogo={awayTeam.logo} variant="away" />
+          <PlayerCard player={item} clubName={awayTeam.name || ''} clubLogo={awayTeam.logo || ''} variant="away" />
         )}
         ListEmptyComponent={<Typography variant="caption">Нет игроков</Typography>}
+        pagingEnabled
+        snapToInterval={SNAP_INTERVAL}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        disableIntervalMomentum
+        getItemLayout={( _, index ) => ( { length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index } )}
       />
     </View>
   );

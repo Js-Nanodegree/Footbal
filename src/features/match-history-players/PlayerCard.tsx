@@ -23,7 +23,8 @@ interface PlayerCardProps {
   avatarSrc?: string;
 }
 
-const CARD_WIDTH = Math.round(Dimensions.get('window').width * 0.55); // 1.5 карточки на экран
+const CARD_WIDTH = 200;
+const CARD_MARGIN = 12;
 const CARD_HEIGHT = 300;
 const PHOTO_SIZE = 190;
 
@@ -40,6 +41,9 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, clubName, clubLo
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, []);
 
+  // Внутри PlayerCard, определяем источник фото:
+  const avatar = 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Lionel-Messi-Argentina-2022-FIFA-World-Cup.jpg';
+
   return (
     <Animated.View style={[styles.cardShadow, { opacity: fadeAnim }]}> 
       <View style={styles.card}>
@@ -54,8 +58,21 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, clubName, clubLo
         {/* Фото игрока (абсолютно позиционировано, справа, обрезано) */}
         <View style={styles.photoWrapper}>
           <Image
-            source={{ uri: avatarSrc || player.avatarSrc }}
-            style={styles.playerPhoto}
+            source={{ uri: avatar }}
+            resizeMode="stretch"
+            style={{
+              width: 220,
+              height: 300,
+              borderRadius: 50,
+              borderWidth: 2,
+              borderColor: '#eee',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              alignSelf: 'center',
+              marginBottom: 8,
+            }}
           />
         </View>
         {/* Имя и фамилия */}
@@ -63,7 +80,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, clubName, clubLo
           <Typography variant="h2" weight="bold" font="Oswald" style={styles.clubName}>{clubName.toUpperCase()}</Typography>
           <Typography variant="h2" weight="bold" font="Oswald" style={styles.playerName}>{first}</Typography>
           {last && <Typography variant="h2" weight="bold" font="Oswald" style={styles.playerName}>{last}</Typography>}
-        <Typography variant="h2" font="Oswald" style={styles.shirtNumber}>{shirtNumber}</Typography>
+          <Typography variant="body" font="Oswald" style={styles.shirtNumber}>{player.shirtNumber ? `#${ player.shirtNumber }` : ''} {player.position ? ` · ${ player.position }` : ''}</Typography>
         </View>
         {/* Номер игрока */}
       </View>
@@ -141,7 +158,7 @@ const styles = StyleSheet.create({
   },
   photoWrapper: {
     position: 'absolute',
-    right: -30,
+    right: -50,
     top: 48,
     width: PHOTO_SIZE,
     height: PHOTO_SIZE + 10,
@@ -178,9 +195,9 @@ const styles = StyleSheet.create({
     textShadowRadius: 1,
   },
   shirtNumber: {
-    fontSize: 32,
+    fontSize: 14,
     color: colors.gradientEnd,
-    fontWeight: '700',
+    fontWeight: '400',
     marginTop: 10,
     marginLeft: 2,
     alignSelf: 'flex-start',
