@@ -26,16 +26,9 @@ const LeagueFilterBar: React.FC<LeagueFilterBarProps> = ( { leagues } ) =>
     const selectedLeagueId = useSelector(selectSelectedLeagueId);
     const flatListRef = useRef<FlatList>( null );
 
-    const log = ( msg: string, data?: any ) =>
-    {
-        console.log( `[Reactotron] ${ msg }`, data );
-    };
 
     useEffect( () =>
     {
-        log( 'LeagueFilterBar: props', { leagues, selectedLeagueId } );
-        log( 'LeagueFilterBar: leagues', { count: leagues?.length, leagues } );
-        // scroll to selected league
         const index = leagues.findIndex( l => l.id === selectedLeagueId );
         if ( index !== -1 && flatListRef.current )
         {
@@ -62,7 +55,6 @@ const LeagueFilterBar: React.FC<LeagueFilterBarProps> = ( { leagues } ) =>
     {
         const isActive = selectedLeagueId === league.id;
 
-        console.log( league, 'league' )
         return (
             <TouchableOpacity
                 key={league.id}

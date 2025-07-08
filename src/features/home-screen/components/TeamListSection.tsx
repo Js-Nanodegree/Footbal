@@ -14,12 +14,6 @@ import { useAppContext } from '../context';
 
 const SECTION_SPACING = 20;
 
-const log = ( msg: string, data?: any ) =>
-{
- 
-  console.log( `[Reactotron] ${ msg }`, data );
-};
-
 // Хук для fade-перехода между состояниями
 function useFadeTransition( visible: boolean )
 {

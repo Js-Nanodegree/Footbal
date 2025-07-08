@@ -213,8 +213,6 @@ const TeamList: React.FC<TeamListProps> = ({
           isActive={false}
           disabled={isTv}
           onSelect={() => {
-            console.log('isTv', isTv);
-            console.log('item.id', item);
             if (isTv) {
               onTvPress?.();
               return;

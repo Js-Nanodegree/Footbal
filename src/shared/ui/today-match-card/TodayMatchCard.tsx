@@ -74,8 +74,8 @@ const TodayMatchCard: React.FC<TodayMatchCardProps> = ({
   time,
   date,
   onPress,
-}) => {
-  console.log(homeTeam, awayTeam);
+} ) =>
+{
   return (
     <View style={styles.cardShadow}>
       <Swipeable
@@ -97,7 +97,7 @@ const TodayMatchCard: React.FC<TodayMatchCardProps> = ({
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           />
-          <Typography style={styles.teamNameLeft} font="Oswald" weight="bold">
+          <Typography numberOfLines={1} style={styles.teamNameLeft} font="Oswald" weight="500">
             {homeTeam.name}
           </Typography>
           {homeTeam.crest && (
@@ -107,10 +107,10 @@ const TodayMatchCard: React.FC<TodayMatchCardProps> = ({
           )}
           {/* <Image source={{ uri: homeTeam.crestUrl }} style={styles.logo} resizeMode="contain" /> */}
           <View style={styles.centerBlock}>
-            <Typography style={styles.time} font="Oswald" weight="bold">
+            <Typography style={styles.time} font="Inter" weight="400">
               {time}
             </Typography>
-            <Typography style={styles.date} font="Oswald" weight="regular">
+            <Typography style={styles.date} font="Inter" weight="400">
               {date}
             </Typography>
           </View>
@@ -119,7 +119,7 @@ const TodayMatchCard: React.FC<TodayMatchCardProps> = ({
               <Image source={{ uri: awayTeam.crest }} style={styles.logo} />
             </View>
           )}
-          <Typography style={styles.teamNameRight} font="Oswald" weight="bold">
+          <Typography numberOfLines={1} style={styles.teamNameRight} font="Oswald" weight="500">
             {awayTeam.name}
           </Typography>
         </Pressable>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   teamNameLeft: {
     flex: 1.2,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#111',
     textAlign: 'right',
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   teamNameRight: {
     flex: 1.2,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#111',
     textAlign: 'left',
@@ -171,8 +171,8 @@ const styles = StyleSheet.create({
     maxWidth: 90,
   },
   logo: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     marginHorizontal: 3,
   },
   centerBlock: {
@@ -180,13 +180,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   time: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FF8800',
     marginBottom: 1,
   },
   date: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#888',
     fontWeight: '500',
   },

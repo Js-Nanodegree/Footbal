@@ -4,7 +4,6 @@ import { AppContextProvider } from 'src/features/home-screen/context/AppContext'
 import { selectSelectedLeagueId } from 'src/features/home-screen/leagueSlice';
 import { footballApi, statusMatches } from 'src/features/team-api/services/footballApi';
 import Screen from './screen';
-import reactotron from 'reactotron-react-native';
 
 const HomeScreenConnectedInner = ( {
   competitions,

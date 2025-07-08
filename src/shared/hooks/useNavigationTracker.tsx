@@ -11,8 +11,6 @@ export function useNavigationTracker()
 
     const trackedNavigate = useCallback( ( screen: string, params?: any ) =>
     {
-        // Здесь можно добавить отправку аналитики, Sentry и т.д.
-        console.log( '[NAVIGATE]', screen, params );
         navigation.navigate( screen as never, params as never );
     }, [ navigation ] );
 

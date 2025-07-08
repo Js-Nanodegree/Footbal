@@ -24,7 +24,6 @@ const Card: React.FC<CardProps> = ( props ) =>
   }, [ rest.homeTeam?.logo, rest.awayTeam?.logo ] );
 
 
-  console.log( rest, 'rest' );
   const scaleAnim = useRef( new Animated.Value( index === currentIndex ? 1 : 0.8 ) ).current;
   useEffect( () =>
   {

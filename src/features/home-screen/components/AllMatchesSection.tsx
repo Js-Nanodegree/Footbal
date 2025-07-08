@@ -36,9 +36,6 @@ const AllMatchesSection = React.memo(
       );
     }
 
-    console.log( 'match', match );
-
-    // TODO: строки для lingui.js, если появятся
     return (
       <View style={{ backgroundColor: colors.card }}>
         <TodayMatchCard

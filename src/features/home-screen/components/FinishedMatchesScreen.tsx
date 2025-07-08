@@ -11,11 +11,6 @@ import { Match } from 'src/features/team-api/types/match';
 import { AppContextProvider } from '../context';
 // import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
-const log = ( msg: string, data?: any ) =>
-{
- 
-  console.log( `[Reactotron] ${ msg }`, data );
-};
 
 const FinishedMatchesScreenInner = () => {
   const navigation = useNavigation();
