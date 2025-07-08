@@ -1,9 +1,9 @@
 // Экран истории очных матчей: секции собираются через SectionList, используется DateSeasonProvider и DateSeasonSwitcher
 // [ПРАВИЛО] Тесты для этого экрана писать не обязательно, по решению команды.
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { skipToken } from '@reduxjs/toolkit/query';
 import React, { useMemo } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
+import { SectionList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import
 {
@@ -21,8 +21,11 @@ import
   MatchHistoryQueryProvider,
   useMatchHistoryQueryState,
 } from './context/MatchHistoryQueryContext';
+import Typography from 'src/shared/ui/typography/Typography';
+import { colors } from 'src/shared/ui/theme/colors';
 
 const MatchHistoryScreenContent: React.FC = () => {
+  const navigation = useNavigation();
   const { matchId, venue, setMatchId } = useMatchHistoryQueryState();
   const { data: match } = useGetMatchDetailsQuery( matchId );
   const insets = useSafeAreaInsets();
@@ -66,13 +69,20 @@ const MatchHistoryScreenContent: React.FC = () => {
     arr.sort( ( a: any, b: any ) => new Date( b.utcDate ).getTime() - new Date( a.utcDate ).getTime() ),
   );
 
-
   const sections = [
     {
       title: 'Карточка',
       data: [ {} ],
       renderItem: () => (
         <>
+          <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>
+                Назад
+              </Typography>
+            </TouchableOpacity>
+          </View>
+
           <MatchSwiperSection
             matches={match ? adaptSeasonMatchesToMatch( [ match ] ) : []}
             loading={!matches}
@@ -82,7 +92,63 @@ const MatchHistoryScreenContent: React.FC = () => {
             // initialMatchId нужен для автоскролла к текущему матчу
             initialMatchId={matchId}
           />
-          <DateSeasonSwitcher />
+          <DateSeasonSwitcher>
+            <View style={{ marginHorizontal: 12, marginBottom: 24 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Typography
+                  variant="h2"
+                  style={{
+                    marginTop: 12,
+                    fontSize: 16,
+                    lineHeight: 16,
+                    fontWeight: '700',
+                  }}
+                >
+                  {match?.homeTeam.name}
+                </Typography>
+                <Typography
+                  variant="h2"
+                  style={{
+                    marginTop: 12,
+                    fontSize: 12,
+                    lineHeight: 16,
+                    fontWeight: '600',
+                    color: colors.gradientStart,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Домашняя
+                </Typography>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Typography
+                  variant="h2"
+                  style={{
+                    marginTop: 12,
+                    fontWeight: '700',
+                    fontSize: 16,
+                    lineHeight: 16,
+
+                  }}
+                >
+                  {match?.awayTeam.name}
+                </Typography>
+                <Typography
+                  variant="h2"
+                  style={{
+                    marginTop: 12,
+                    fontWeight: '600',
+                    fontSize: 12,
+                    lineHeight: 16,
+                    color: colors.gradientEnd,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Гостевая
+                </Typography>
+              </View>
+            </View>
+          </DateSeasonSwitcher>
         </>
       ),
     },
@@ -103,7 +169,7 @@ const MatchHistoryScreenContent: React.FC = () => {
       renderItem: ( { item }: { item: any } ) =>
       {
         const [ season, seasonMatches ] = item;
-        const index = seasonMatches.findIndex( m =>
+        const index = seasonMatches.findIndex( ( m ) =>
         {
           if ( venue === 'home' )
           {
@@ -136,7 +202,10 @@ const MatchHistoryScreenContent: React.FC = () => {
         keyExtractor={(_, idx) => String(idx)}
         renderItem={( { section, item } ) => section.renderItem( { item } )}
         renderSectionHeader={({ section }) => null}
-        contentContainerStyle={[ styles.list, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}
+        contentContainerStyle={[
+          styles.list,
+          { paddingTop: insets.top, paddingBottom: insets.bottom },
+        ]}
       />
     </View>
   );

@@ -9,7 +9,7 @@ import { useMatchHistoryQueryState } from './MatchHistoryQueryContext';
 import { useGetTeamMatchesQuery, useGetMatchDetailsQuery } from '../../team-api/services/footballApi';
 import { skipToken } from '@reduxjs/toolkit/query';
 
-export const DateSeasonSwitcher: React.FC = () =>
+export const DateSeasonSwitcher: React.FC<{ children: React.ReactNode }> = ( { children } ) =>
 {
   const { matchId, venue, setVenue } = useMatchHistoryQueryState();
   const { data: match } = useGetMatchDetailsQuery( matchId );
@@ -32,7 +32,10 @@ export const DateSeasonSwitcher: React.FC = () =>
 
   return (
     <View style={styles.container}>
-      <Typography variant="h2" style={{ marginTop: 12 }}>Тип матча</Typography>
+      <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+        <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>Тип матча</Typography>
+      </View>
+      {children}
       <View style={styles.venueRow}>
         <Button
           title="Домашняя"

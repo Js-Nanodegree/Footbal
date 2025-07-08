@@ -12,9 +12,6 @@ export const Total: React.FC<TotalProps> = ({ generalInfo }) => {
   if (!generalInfo.length) return null;
   return (
     <View style={styles.container}>
-      <Typography variant="h2" style={styles.header}>
-        Общая информация
-      </Typography>
       <View style={styles.infoBlock}>
         {generalInfo.map((info) => (
           <View key={info.label} style={styles.row}>

@@ -158,6 +158,10 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
   ];
 
   return (
+    <>
+      <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+        <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>Общая информация</Typography>
+      </View>
     <View style={styles.section}>
       {/* Общая информация */}
       <Total generalInfo={generalInfo} />
@@ -265,6 +269,8 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
         </Typography>
       </View>
     </View>
+    </>
+
   );
 };
 
