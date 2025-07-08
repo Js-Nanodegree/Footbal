@@ -58,4 +58,8 @@
 
 [2024-06-20] feat: Добавлен footballApi (RTK Query) с эндпоинтами getTeams, getTeamDetails, getTeamMatches, getCompetitions, getStandings. Интеграция footballApi.reducer и middleware в store.ts (Task: RTK Query интеграция футбольного API).
 
-[2024-06-19] refactor: Полностью удалена устаревшая логика Redux (slices, thunk'и, actions, селекторы), ручные хуки и сервисы для API, zod-схемы, моки и все связанные тесты. Теперь все данные обслуживаются через RTK Query (footballApi). Очищен store и типы. (Аудит и чистка после миграции на RTK Query) 
+[2024-06-19] refactor: Полностью удалена устаревшая логика Redux (slices, thunk'и, actions, селекторы), ручные хуки и сервисы для API, zod-схемы, моки и все связанные тесты. Теперь все данные обслуживаются через RTK Query (footballApi). Очищен store и типы. (Аудит и чистка после миграции на RTK Query)
+
+[2024-06-19] refactor: Вынесена фильтрация команд и матчей в HomeScreenFilterUtils (by-feature), исправлены типы и обработка ошибок в useHomeScreenSections, добавлен context.md для by-feature (HomeScreen).
+
+[2024-06-19] refactor: Фильтры вынесены в filters/filters.ts по фиче home-screen, удалён устаревший by-feature, обновлена структура и импорты (HomeScreen). 

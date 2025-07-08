@@ -3,6 +3,7 @@ import { useAppContext } from '../home-screen/context/AppContext';
 import { footballApi, statusMatches } from '../team-api/services/footballApi';
 import { MatchCardProps } from './types';
 import Wrapper from './Wrapper';
+import { Match } from '../team-api/types/match';
 
 const MAX_CARDS = 15;
 
@@ -34,38 +35,15 @@ const mapMatchToMatchCardProps = (match: any): MatchCardProps => ({
   backgroundLogo: match.competition?.emblem || '',
 });
 
-const Connector: React.FC = () => {
-  const { selectedLeagueId } = useAppContext();
-  const { data: competitions } = footballApi.endpoints.getLeagues.useQuery({});
-  const league = competitions?.find((c) => c.id === selectedLeagueId);
-  const leagueCode = league?.code || '';
-
-  if (!selectedLeagueId || !leagueCode) return null;
-
-  const {
-    data: rtkMatches,
-    isLoading,
-    error: rtkError,
-  } = footballApi.endpoints.getLiveMatches.useQuery({
-    competitionId: leagueCode,
-    status: statusMatches.LIVE,
-  });
-
-  const safeStoreMatches = Array.isArray(rtkMatches) ? rtkMatches : [];
-
-  const data = safeStoreMatches
-    .filter((m: any) => m && typeof m.homeTeam !== 'undefined' && typeof m.awayTeam !== 'undefined')
-    .slice(0, MAX_CARDS)
-    .map(mapMatchToMatchCardProps);
-
-  const errorMsg =
-    rtkError && typeof rtkError === 'string'
-      ? rtkError
-      : rtkError
-        ? 'Ошибка загрузки матчей'
-        : null;
-
-  return <Wrapper data={data} loading={isLoading} error={errorMsg} />;
+const Connector: React.FC<{
+  matches: Match[];
+  loading: boolean;
+  error: string | null;
+}> = ( {
+  matches,
+} ) =>
+  {
+    return <Wrapper data={matches.map( mapMatchToMatchCardProps ).slice( 0, 25 )} loading={false} error={null} />;
 };
 
 export default Connector;

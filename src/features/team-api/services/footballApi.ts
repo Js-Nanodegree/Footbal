@@ -117,6 +117,7 @@ export const footballApi = createApi( {
                     'X-Unfold-Goals': true,
                 },
                 params: {
+                    status,
                 },
             };
         },

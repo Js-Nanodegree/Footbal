@@ -17,6 +17,7 @@ import { Competition } from '../features/team-api/types/competition';
 import NetworkStatusBar from '../shared/ui/tab-bar/NetworkStatusBar';
 import HomeScreen from 'src/screens/HomeScreen';
 import FinishedMatchesScreen from 'src/features/home-screen/components/FinishedMatchesScreen';
+import { footballApi } from 'src/features/team-api/services/footballApi';
 
 export type RootStackParamList = {
     MainTabs: undefined;
@@ -37,56 +38,81 @@ const Tab = createBottomTabNavigator();
 const MainTabs = () => (
     <>
         <Tab.Navigator
-        screenOptions={( { route } ) => ( {
-            headerShown: false,
+            screenOptions={( { route } ) => ( {
+                headerShown: false,
                 tabBarLabel: ( { focused } ) =>
                 {
-                let label = '';
-                if ( route.name === 'Competitions' ) label = 'Турниры';
-                if ( route.name === 'Teams' ) label = 'Команды';
-                if ( route.name === 'Styleguide' ) label = 'Стайлгайд';
-                return (
-                    <Text style={{ color: focused ? '#E94057' : '#B0B0B0', fontWeight: focused ? 'bold' : 'normal', fontSize: 12 }}>{label}</Text>
-                );
-            },
+                    let label = '';
+            if ( route.name === 'Competitions' ) label = 'Турниры';
+            if ( route.name === 'Teams' ) label = 'Команды';
+            if ( route.name === 'Styleguide' ) label = 'Стайлгайд';
+            return (
+                        <Text
+                            style={{
+                                color: focused ? '#E94057' : '#B0B0B0',
+                                fontWeight: focused ? 'bold' : 'normal',
+                                fontSize: 12,
+                            }}
+                        >
+                            {label}
+                        </Text>
+                    );
+                },
                 tabBarIcon: ( { focused } ) =>
                 {
-                let icon = '';
-                if ( route.name === 'Competitions' ) icon = '🏆';
-                if ( route.name === 'Teams' ) icon = '👥';
-                if ( route.name === 'Styleguide' ) icon = '🎨';
-                return <Text style={{ fontSize: 20, color: focused ? '#E94057' : '#B0B0B0' }}>{icon}</Text>;
-            },
-            tabBarStyle: {
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                height: 64,
-                backgroundColor: '#fff',
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 0,
-                shadowColor: '#000',
-                shadowOpacity: 0.06,
-                shadowOffset: { width: 0, height: -2 },
-                shadowRadius: 8,
-                elevation: 8,
-            },
-        } )}
+                    let icon = '';
+                    if ( route.name === 'Competitions' ) icon = '🏆';
+                    if ( route.name === 'Teams' ) icon = '👥';
+                    if ( route.name === 'Styleguide' ) icon = '🎨';
+                    return (
+                        <Text style={{ fontSize: 20, color: focused ? '#E94057' : '#B0B0B0' }}>{icon}</Text>
+                    );
+                },
+                tabBarStyle: {
+                    borderTopLeftRadius: 24,
+                    borderTopRightRadius: 24,
+                    height: 64,
+                    backgroundColor: '#fff',
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    shadowColor: '#000',
+                    shadowOpacity: 0.06,
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowRadius: 8,
+                    elevation: 8,
+                },
+            } )}
         >
             <Tab.Screen name="Competitions" component={HomeScreen} />
-        <Tab.Screen name="Teams" component={TeamListScreen} />
-        <Tab.Screen name="Styleguide" component={StyleguideScreen} />
+            <Tab.Screen name="Teams" component={TeamListScreen} />
+            <Tab.Screen name="Styleguide" component={StyleguideScreen} />
         </Tab.Navigator>
         <NetworkStatusBar />
     </>
 );
 
-const RootNavigator = () => (
+const RootNavigator = () =>
+{
+    const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
+
+    return (
     <Stack.Navigator initialRouteName="MainTabs">
-        <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
-        <Stack.Screen name="FinishedMatches" component={FinishedMatchesScreen} options={{ title: 'Завершённые матчи', headerShown: false }} />
-        {/* <Stack.Screen name="CompetitionDetails" component={CompetitionDetailsScreen} options={{ title: 'Детали турнира', headerShown: false }} />
+          <Stack.Screen
+              name="MainTabs"
+              component={MainTabs}
+              options={{ headerShown: false }}
+              initialParams={{
+                  competitions: competitions?.[ 0 ] || {},
+              }}
+          />
+          <Stack.Screen
+              name="FinishedMatches"
+              component={FinishedMatchesScreen}
+              options={{ title: 'Завершённые матчи', headerShown: false }}
+          />
+          {/* <Stack.Screen name="CompetitionDetails" component={CompetitionDetailsScreen} options={{ title: 'Детали турнира', headerShown: false }} />
         <Stack.Screen name="Standings" component={StandingsScreen} options={{ title: 'Турнирная таблица', headerShown: false }} />
         <Stack.Screen name="TeamDetails" component={TeamDetailsScreen} options={{ title: 'Детали команды', headerShown: false }} />
         <Stack.Screen name="TeamPastMatches" component={TeamPastMatchesScreen} options={{ title: 'Прошедшие матчи', headerShown: false }} />
@@ -95,6 +121,7 @@ const RootNavigator = () => (
         <Stack.Screen name="ErrorStateDemo" component={ErrorStateDemoScreen} options={{ title: 'Error State Demo', headerShown: false }} />
         <Stack.Screen name="FABScrollToTopDemo" component={FABScrollToTopDemoScreen} options={{ title: 'FAB Scroll To Top Demo', headerShown: false }} /> */}
     </Stack.Navigator>
-);
+  );
+};
 
-export default RootNavigator; 
+export default RootNavigator;

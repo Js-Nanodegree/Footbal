@@ -1,57 +1,130 @@
 import React from 'react';
-import { AppContextProvider, useAppContext } from 'src/features/home-screen/context';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppContextProvider } from 'src/features/home-screen/context/AppContext';
+import { selectSelectedLeagueId } from 'src/features/home-screen/leagueSlice';
 import { footballApi, statusMatches } from 'src/features/team-api/services/footballApi';
 import Screen from './screen';
+import reactotron from 'reactotron-react-native';
 
-const HomeScreenConnectedInner = () =>
+const HomeScreenConnectedInner = ( {
+  competitions,
+  teams,
+  matches,
+  loading,
+  error,
+  onRefresh,
+  onPaginate,
+}: any ) =>
 {
-  const { competition, refresh, lastFetched } = useAppContext();
-
-  // Для RTK Query: если lastFetched меняется (refresh), refetch будет вызван
-  const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {}, { refetchOnMountOrArgChange: !!lastFetched } );
-
-  const { data: matchesData, refetch: refetchMatches } = footballApi.endpoints.getLiveMatches.useQuery(
-    {
-      competitionId: competition?.code || '',
-      status: statusMatches.FINISHED,
-    },
-    { refetchOnMountOrArgChange: !!lastFetched }
-  );
-  const { data: teamsData, refetch: refetchTeams } = footballApi.endpoints.getCompetitionsTeams.useQuery(
-    {
-      competitionId: competition?.id ?? 0,
-    },
-    { refetchOnMountOrArgChange: !!lastFetched }
-  );
-
-  // Можно добавить useEffect для ручного force-refetch при refresh
-  React.useEffect( () =>
-  {
-    if ( lastFetched )
-    {
-      refetchMatches();
-      refetchTeams();
-    }
-  }, [ lastFetched ] );
-
+  // useAppContext можно использовать для других целей, если нужно
   return (
     <Screen
-      competitions={competitions || []}
-      teams={teamsData || []}
-      matches={matchesData || []}
-      loading={false}
-      error={null}
-      onRefresh={refresh}
-      onPaginate={() => { }}
+      competitions={competitions}
+      teams={teams}
+      matches={matches}
+      loading={loading}
+      error={error}
+      onRefresh={onRefresh}
+      onPaginate={onPaginate}
     />
   );
 };
 
-export default function HomeScreenConnected()
+export const useSelectMode = () =>
 {
+  const selectedLeagueId = useSelector( selectSelectedLeagueId );
+  const competitionIdStr = selectedLeagueId ? String( selectedLeagueId ) : '';
+
+  const {
+    data: competitions = [],
+    isLoading: loadingLeagues,
+    error: errorLeagues,
+  } = footballApi.endpoints.getLeagues.useQueryState( {} );
+
+  const {
+    data: teams = [],
+    isLoading: loadingTeams,
+    error: errorTeams,
+  } = footballApi.endpoints.getCompetitionsTeams.useQueryState( {
+    competitionId: selectedLeagueId ?? 0,
+  } );
+  const {
+    data: matches = [],
+    isLoading: loadingMatches,
+    error: errorMatches,
+  } = footballApi.endpoints.getLiveMatches.useQueryState( {
+    competitionId: competitionIdStr,
+    status: statusMatches.SCHEDULED,
+  } );
+  const {
+    data: matchesLives = [],
+    isLoading: loadingMatchesLives,
+    error: errorMatchesLives,
+  } = footballApi.endpoints.getLiveMatches.useQueryState( {
+    competitionId: competitionIdStr,
+    status: statusMatches.LIVE,
+  } );
+
+
+  return {
+    matchesLives,
+    competitions,
+    teams,
+    matches,
+    loading: loadingTeams || loadingMatches || loadingLeagues || loadingMatchesLives,
+    error: {
+      teams: errorTeams,
+      matches: errorMatches,
+      competitions: errorLeagues,
+      matchesLives: errorMatchesLives,
+    },
+  };
+};
+
+const HomeScreenConnected = () =>
+{
+  footballApi.endpoints.getLeagues.useQuery( {} );
+  const selectedLeagueId = useSelector( selectSelectedLeagueId );
+  const competitionIdStr = selectedLeagueId ? String( selectedLeagueId ) : '';
+  const dispatch = useDispatch();
+  // Получаем команды и матчи для выбранной лиги
+  footballApi.endpoints.getCompetitionsTeams.useQuery(
+    { competitionId: selectedLeagueId ?? 0 },
+    { skip: !selectedLeagueId },
+  );
+  footballApi.endpoints.getLiveMatches.useQuery(
+    { competitionId: competitionIdStr, status: statusMatches.SCHEDULED },
+    { skip: !selectedLeagueId },
+  );
+  footballApi.endpoints.getLiveMatches.useQuery(
+    { competitionId: competitionIdStr, status: statusMatches.LIVE },
+    { skip: !selectedLeagueId },
+  );
+
+  // onRefresh/onPaginate заглушки (можно доработать)
+  const onRefresh = () =>
+  {
+    dispatch( footballApi.endpoints.getLeagues.initiate( {} ) );
+    dispatch( footballApi.endpoints.getCompetitionsTeams.initiate(
+      { competitionId: selectedLeagueId ?? 0 },
+      { forceRefetch: true },
+    ) );
+    dispatch( footballApi.endpoints.getLiveMatches.initiate(
+      { competitionId: competitionIdStr, status: statusMatches.SCHEDULED },
+      { forceRefetch: true },
+    ) );
+    dispatch( footballApi.endpoints.getLiveMatches.initiate(
+      { competitionId: competitionIdStr, status: statusMatches.LIVE },
+      { forceRefetch: true },
+    ) );
+  };
+  const onPaginate = () => { };
+
   return (
     <AppContextProvider>
-      <HomeScreenConnectedInner />
+      <HomeScreenConnectedInner onRefresh={onRefresh} onPaginate={onPaginate} />
     </AppContextProvider>
   );
-}
+};
+
+export default HomeScreenConnected;

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { RefreshControl } from 'react-native';
 
 interface UsePullToRefreshProps {
@@ -10,7 +10,7 @@ interface UsePullToRefreshProps {
 
 interface UsePullToRefreshResult {
   refreshing: boolean;
-  refreshControl: React.ReactElement;
+  refreshControl: React.ReactElement<any>;
   onRefresh: () => void;
 }
 

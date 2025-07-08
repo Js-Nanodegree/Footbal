@@ -35,10 +35,7 @@ const FinishedMatchesScreenInner = () => {
   } );
 
   // Получаем finishedMatches из хука
-  const { finishedMatches } = useHomeScreenSections({
-    competitions: competitions || [],
-    teams: teams || [],
-    matches: matches || [],
+  const { finishedMatches } = useHomeScreenSections( {
     loading: false,
     error: null,
     onRefresh: () => {},

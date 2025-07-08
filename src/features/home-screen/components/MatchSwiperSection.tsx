@@ -25,17 +25,6 @@ const MatchSwiperSection = React.memo( ( { matches, loading, error }: MatchSwipe
     const errorStyle = useFadeTransition( !!error || !matches || matches.length === 0 );
     const contentStyle = useFadeTransition( !loading && !error && matches && matches.length > 0 );
 
-    const log = ( msg: string, data?: any ) =>
-    {
-        console.log( `[Reactotron] ${ msg }`, data );
-    };
-
-    useEffect( () =>
-    {
-        log( 'MatchSwiperSection: props', { matches, loading, error } );
-        log( 'MatchSwiperSection: matches', matches );
-    }, [ matches, loading, error ] );
-
     return (
         <>
             <View style={[styles.root, shadows.section]} testID="match-swiper-section">
@@ -48,13 +37,13 @@ const MatchSwiperSection = React.memo( ( { matches, loading, error }: MatchSwipe
                 {/* ERROR/EMPTY */}
                 <Animated.View style={[ StyleSheet.absoluteFill, errorStyle ]} pointerEvents={error || !matches || matches.length === 0 ? 'auto' : 'none'}>
                     {( error || !matches || matches.length === 0 ) && (
-                        <SkeletonSwiper msg={/* TODO: {t`Извините, на текущий момент live-матчей нет.`} */ 'Извините, на текущий момент live-матчей нет.'} />
+                        <SkeletonSwiper msg={/* TODO: {t`На текущий момент live-матчей нет.`} */ 'На текущий момент\nlive-матчей нет.'} />
                     )}
                 </Animated.View>
                 {/* CONTENT */}
                 <Animated.View style={[ StyleSheet.absoluteFill, contentStyle ]} pointerEvents={!loading && !error && matches && matches.length > 0 ? 'auto' : 'none'}>
                     {!loading && !error && matches && matches.length > 0 && (
-                        <MatchSwiper />
+                        <MatchSwiper matches={matches} />
                     )}
                 </Animated.View>
             </View>

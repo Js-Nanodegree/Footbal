@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Competition } from 'src/features/team-api/types/competition';
 import { Team } from 'src/features/team-api/types/team';
 import { Match } from 'src/features/team-api/types/match';
+import { usePullToRefresh } from 'src/shared/hooks/usePullToRefresh';
 
 interface HomeScreenProps
 {
@@ -23,6 +24,8 @@ const HomeScreen = ( { competitions, teams, matches, loading, error, onRefresh, 
   const { sections } = sectionsData;
   const insets = useSafeAreaInsets();
 
+  const { refreshing, onRefresh: handleRefresh, refreshControl } = usePullToRefresh( { onRefresh } );
+
   return (
     <View style={{ flex: 1 }}>
       <SectionList
@@ -38,8 +41,9 @@ const HomeScreen = ( { competitions, teams, matches, loading, error, onRefresh, 
             ? section.renderItem( { item } )
             : section.renderItem();
         }}
-        refreshing={loading}
-        onRefresh={onRefresh}
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
+        refreshControl={refreshControl}
         onEndReached={onPaginate}
         contentContainerStyle={{
           paddingTop: insets.top,

@@ -2,15 +2,17 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { footballApi } from '../../features/team-api/services/footballApi';
+import leagueReducer from '../../features/home-screen/leagueSlice';
 
 const rootReducer = combineReducers( {
     [ footballApi.reducerPath ]: footballApi.reducer,
+    leagues: leagueReducer,
 } );
 
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    whitelist: [], // Оставляем пустым, так как все данные теперь через RTK Query
+    whitelist: ['leagues'], // persist только selectedLeagueId
 };
 
 const persistedReducer = persistReducer( persistConfig, rootReducer );
