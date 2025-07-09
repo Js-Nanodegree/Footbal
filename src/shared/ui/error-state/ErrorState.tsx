@@ -29,7 +29,7 @@ const ErrorState: React.FC<ErrorStateProps> = ( {
                 style={{ width: 180, height: 180 }}
             />
         )} */}
-        <Typography variant="h3" weight="bold" style={{ marginTop: 12 }}>
+        <Typography variant="body" weight="bold" style={{ marginTop: 12 }}>
             {message}
         </Typography>
         {!!description && (

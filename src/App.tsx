@@ -3,16 +3,8 @@ import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import App from './App';
 import { I18nextProvider } from 'react-i18next';
 import { i18n } from 'src/shared/i18n';
-import ruSection from '../src/features/match-history-players/Section/locales/ru/messages';
-import enSection from '../src/features/match-history-players/Section/locales/en/messages';
-import ruPlayerCard from '../src/features/match-history-players/PlayerCard/locales/ru/messages';
-import enPlayerCard from '../src/features/match-history-players/PlayerCard/locales/en/messages';
 
-// Настройка i18n
-const catalogs = {
-    ru: { ...ruSection, ...ruPlayerCard },
-    en: { ...enSection, ...enPlayerCard },
-};
+
 // Удалить все вызовы i18n.load и i18n.activate
 // Для смены языка использовать i18n.changeLanguage(lng)
 

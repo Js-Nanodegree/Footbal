@@ -11,7 +11,14 @@ yarn-error.log*
 Thumbs.db
 
 # Build
-android/app/build/
+android/app/build/*
+android/app/.cxx/*
+android/app/.cxx/Debug/*
+android/app/.cxx/RelWithDebInfo/*
+android/app/.cxx/Release/*
+android/app/.cxx/Debug/
+android/app/.cxx/RelWithDebInfo/
+android/app/.cxx/Release/
 ios/Pods/
 ios/build/
 

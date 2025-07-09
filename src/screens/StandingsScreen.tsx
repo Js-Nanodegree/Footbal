@@ -1,10 +1,6 @@
 import React from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl, Image, StyleSheet } from 'react-native';
-import { useStandings } from '../features/team-api/hooks/useStandings';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { TableEntry } from '../features/team-api/types/standing';
-import { useMMKVNetworkStatus } from '../shared/memory-bank/mmkvMemoryBank';
-import ScreenWrapper from '../shared/ui/ScreenWrapper';
 
 // Ожидаем competitionId через route.params
 export type StandingsScreenParams = {
@@ -30,43 +26,10 @@ function TableEntryItem({ item }: { item: TableEntry }) {
 }
 
 export default function StandingsScreen() {
-  const route = useRoute<RouteProp<{ params: StandingsScreenParams }, 'params'>>();
-  const { competitionId } = route.params;
-  let API_KEY = 'bf63b2eaacf54ac0b42620ac5c820ec7';
-
-  const { standings, loading, error, refresh } = useStandings(competitionId, 'axios', API_KEY);
-  const table = standings[0]?.table || [];
-  const isConnected = useMMKVNetworkStatus();
-
   return (
-    <ScreenWrapper
-      loading={loading}
-      isConnected={isConnected}
-      hasData={table.length > 0}
-      error={error}
-    >
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <Text style={styles.headerCell}>#</Text>
-          <Text style={[styles.headerCell, { flex: 2 }]}>Команда</Text>
-          <Text style={styles.headerCell}>И</Text>
-          <Text style={styles.headerCell}>О</Text>
-          <Text style={styles.headerCell}>В</Text>
-          <Text style={styles.headerCell}>Н</Text>
-          <Text style={styles.headerCell}>П</Text>
-          <Text style={styles.headerCell}>+/-</Text>
-        </View>
-        <FlatList
-          data={table}
-          keyExtractor={item => item.team.id.toString()}
-          renderItem={({ item }) => <TableEntryItem item={item} />}
-          refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} />}
-          contentContainerStyle={table.length === 0 ? styles.empty : undefined}
-          ListEmptyComponent={<Text style={styles.emptyText}>Нет данных</Text>}
-        />
-      </View>
-    </ScreenWrapper>
-  );
+    <View />
+  )
+
 }
 
 const styles = StyleSheet.create({

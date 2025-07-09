@@ -29,6 +29,7 @@ export const store = configureStore( {
 export const persistor = persistStore( store );
 
 export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
 
 // Типобезопасный хук для dispatch
 import { useDispatch } from 'react-redux';

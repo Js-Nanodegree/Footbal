@@ -4,7 +4,6 @@ import { Competition } from '../features/team-api/types/competition';
 import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../roads/RootNavigator';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCompetitions } from '../features/team-api/hooks/useCompetitions';
 import { useMMKVNetworkStatus } from '../shared/memory-bank/mmkvMemoryBank';
 import ScreenWrapper from '../shared/ui/ScreenWrapper';
 
@@ -30,7 +29,6 @@ function CompetitionListItem( { item }: { item: Competition } )
 
 export const CompetitionsScreen = () =>
 {
-  const { competitions, loading, error } = useCompetitions( 'axios', API_KEY );
   const isConnected = useMMKVNetworkStatus();
 
   return (
@@ -42,9 +40,7 @@ export const CompetitionsScreen = () =>
     // >
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>Список турниров</Text>
-        {competitions.map( ( comp, idx ) => (
-          <Text key={idx}>{comp.name}</Text>
-        ) )}
+ 
       </ScrollView>
     // </ScreenWrapper>
   );
