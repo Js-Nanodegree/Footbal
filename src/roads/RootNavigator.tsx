@@ -1,15 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { Text } from 'react-native';
 import FinishedMatchesScreen from 'src/features/home-screen/components/FinishedMatchesScreen';
 import { footballApi } from 'src/features/team-api/services/footballApi';
 import HomeScreen from 'src/screens/HomeScreen';
 import MatchHistoryScreen from '../features/match-history/Screen';
 import { Competition } from '../features/team-api/types/competition';
-import StyleguideScreen from '../screens/StyleguideScreen';
-import TeamListScreen from '../screens/TeamListScreen';
-import NetworkStatusBar from '../shared/ui/tab-bar/NetworkStatusBar';
 
 export type RootStackParamList = {
     MainTabs: undefined;
@@ -34,7 +30,6 @@ export type RootStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator();
 
 
 const RootNavigator = () =>
@@ -61,15 +56,7 @@ const RootNavigator = () =>
               name="FinishedMatches"
               component={FinishedMatchesScreen}
               options={{ title: 'Завершённые матчи', headerShown: false }}
-          />
-          {/* <Stack.Screen name="CompetitionDetails" component={CompetitionDetailsScreen} options={{ title: 'Детали турнира', headerShown: false }} />
-        <Stack.Screen name="Standings" component={StandingsScreen} options={{ title: 'Турнирная таблица', headerShown: false }} />
-        <Stack.Screen name="TeamDetails" component={TeamDetailsScreen} options={{ title: 'Детали команды', headerShown: false }} />
-        <Stack.Screen name="TeamPastMatches" component={TeamPastMatchesScreen} options={{ title: 'Прошедшие матчи', headerShown: false }} />
-        <Stack.Screen name="ActionListDemo" component={ActionListDemoScreen} options={{ title: 'Action List Demo', headerShown: false }} />
-        <Stack.Screen name="CollapsibleHeaderDemo" component={CollapsibleHeaderDemoScreen} options={{ title: 'Collapsible Header Demo', headerShown: false }} />
-        <Stack.Screen name="ErrorStateDemo" component={ErrorStateDemoScreen} options={{ title: 'Error State Demo', headerShown: false }} />
-        <Stack.Screen name="FABScrollToTopDemo" component={FABScrollToTopDemoScreen} options={{ title: 'FAB Scroll To Top Demo', headerShown: false }} /> */}
+            />
     </Stack.Navigator>
   );
 };
