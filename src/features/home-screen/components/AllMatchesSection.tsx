@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View } from 'react-native';
 import { DateFormatAdapter } from 'src/features/match-history/adapters';
+import { Match } from 'src/features/team-api/types/match';
 import Spacer from 'src/shared/ui/Spacer';
 import { colors } from 'src/shared/ui/theme/colors';
 import { shadows } from 'src/shared/ui/theme/shadows';
@@ -13,7 +14,7 @@ import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCar
 const SECTION_SPACING = 20;
 
 const AllMatchesSection = React.memo(
-  ( { match, loading, error }: { match: any; loading?: boolean; error?: string | null } ) =>
+  ( { match, loading, error }: { match: Match; loading?: boolean; error?: string | null } ) =>
   {
     const navigation = useNavigation();
     if ( error && !loading )
@@ -51,10 +52,18 @@ const AllMatchesSection = React.memo(
     return (
       <View style={{ backgroundColor: colors.card }}>
         <TodayMatchCard
-          homeTeam={match.homeTeam}
-          awayTeam={match.awayTeam}
+          homeTeam={{
+            id: match.homeTeam?.id,
+            name: match.homeTeam?.name,
+            crest: match.homeTeam?.crest || match.homeTeam?.logo || '',
+          }}
+          awayTeam={{
+            id: match.awayTeam?.id,
+            name: match.awayTeam?.name,
+            crest: match.awayTeam?.crest || match.awayTeam?.logo || '',
+          }}
           time={match.time}
-          date={DateFormatAdapter.formatCompactDate( match.date )}
+          date={DateFormatAdapter.formatCompactDate(match.date)}
           onPress={handlePress}
           testID="all-match-card"
           accessibilityLabel={`Матч: ${ match.homeTeam?.name } - ${ match.time } - ${ match.awayTeam?.name }`}
