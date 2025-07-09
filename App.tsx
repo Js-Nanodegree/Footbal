@@ -9,6 +9,8 @@ import RootNavigator from './src/roads/RootNavigator';
 import { store } from './src/shared/api/store';
 import { NETWORK_STATUS_KEY, setCache } from './src/shared/memory-bank/mmkvMemoryBank';
 import { OverlayProvider } from './src/shared/ui/OverlayContext';
+import { I18nextProvider } from 'react-i18next';
+import { i18n } from './src/shared/i18n';
 
 const NetworkStatusSync: React.FC = () =>
 {
@@ -23,21 +25,34 @@ const NetworkStatusSync: React.FC = () =>
   return null;
 };
 
-const App = () => (
-  <Provider store={store}>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <OverlayProvider>
-          <NotifierWrapper>
-            <NetworkStatusSync />
-            <NavigationContainer>
-              <RootNavigator />
-            </NavigationContainer>
-          </NotifierWrapper>
-        </OverlayProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
-  </Provider>
-);
+
+
+const App = () =>
+{
+  React.useEffect( () =>
+  {
+    i18n.changeLanguage( 'en' );
+  }, [] )
+
+
+  return (
+    <I18nextProvider i18n={i18n}>
+      <Provider store={store}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <SafeAreaProvider>
+            <OverlayProvider>
+              <NotifierWrapper>
+                <NetworkStatusSync />
+                <NavigationContainer>
+                  <RootNavigator />
+                </NavigationContainer>
+              </NotifierWrapper>
+            </OverlayProvider>
+          </SafeAreaProvider>
+        </GestureHandlerRootView>
+      </Provider>
+    </I18nextProvider>
+  )
+};
 
 export default App;

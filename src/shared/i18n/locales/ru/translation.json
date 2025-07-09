@@ -1,6 +1,77 @@
 {
-  "matchHistory": {
-    "title": "История матчей"
+  "matchStats": {
+    "generalInfo": "Общая информация",
+    "tournament": "Турнир",
+    "round": "Тур",
+    "stage": "Стадия",
+    "country": "Страна",
+    "date": "Дата",
+    "season": "Сезон",
+    "noScoreData": "Нет данных по счёту для этого матча",
+    "noData": "Нет данных",
+    "noEvents": "Нет событий",
+    "buySubscription": "Купить подписку",
+    "detailedStats": "Детальная статистика",
+    "notAvailableForMatch": "недоступна для этого матча",
+    "fullTimeScore": "Счёт (Full Time)",
+    "halfTimeScore": "Счёт (1-й тайм)",
+    "extraTimeScore": "Счёт (Extra Time)",
+    "penaltiesScore": "Счёт (Пенальти)",
+    "winner": "Победитель",
+    "type": "Тип матча",
+    "status": "Статус",
+    "corners": "Угловые",
+    "penalties": "Пенальти (удары)",
+    "touchesInBox": "Касания к воротам",
+    "shotsOnTarget": "Удары по воротам",
+    "possession": "Владение мячом",
+    "xg": "xG",
+    "fouls": "Фолы",
+    "yellowCards": "Жёлтые карточки",
+    "redCards": "Красные карточки",
+    "referees": "Судьи",
+    "duration": {
+      "REGULAR": "Основное время",
+      "EXTRA_TIME": "Доп. время",
+      "PENALTY_SHOOTOUT": "Пенальти"
+    },
+    "stageNames": {
+      "REGULAR_SEASON": "Регулярный сезон",
+      "GROUP_STAGE": "Групповой этап",
+      "PLAYOFFS": "Плей-офф",
+      "FINAL": "Финал",
+      "SEMI_FINALS": "1/2 финала",
+      "QUARTER_FINALS": "1/4 финала",
+      "LAST_16": "1/8 финала",
+      "LAST_32": "1/16 финала",
+      "LAST_64": "1/32 финала",
+      "THIRD_PLACE": "Матч за 3 место"
+    }
+  },
+  "section": {
+    "teamComposition": "Состав команды",
+    "noPlayers": "Нет игроков",
+    "noData": "Нет данных"
+  },
+  "matchSwiper": {
+    "headerTitle": {
+      "scheduled": "Запланирован",
+      "live": "Идёт",
+      "paused": "Перерыв",
+      "finished": "Завершён",
+      "postponed": "Перенесён",
+      "suspended": "Остановлен",
+      "cancelled": "Отменён",
+      "default": "Матч"
+    }
+  },
+  "teamList": {
+    "selectTeam": "Выберите команду",
+    "tvAlert": "Перейти к ТВ-матчам или трансляциям"
+  },
+  "header": {
+    "back": "Назад",
+    "liveScore": "LiveScore"
   },
   "finishedMatches": {
     "title": "Завершённые матчи"
@@ -8,115 +79,58 @@
   "pullToRefresh": {
     "title": "Потяните для обновления"
   },
-  "header": {
-    "back": "Назад",
-    "liveScore": "LiveScore"
+  "homeScreen": {
+    "upcomingEvents": "Ближайшие события",
+    "actualMatches": "Актуальные матчи",
+    "all": "Все",
+    "teams": "Команды"
   },
-  "section": {
-    "home": "Домашние",
-    "away": "Гостевые",
-    "noPlayers": "Нет игроков",
-    "loading": "Загрузка...",
-    "error": "Ошибка загрузки",
-    "noData": "Нет данных",
-    "loadingTeamComposition": "Загрузка состава команд...",
-    "errorTeamComposition": "Ошибка загрузки состава",
-    "noTeamData": "Нет данных по командам",
-    "teamComposition": "Состав команды"
+  "actionList": {
+    "section1": "Секция 1"
+  },
+  "fabDemo": {
+    "section": "Секция"
+  },
+  "styleguide": {
+    "input": { "title": "Инпут" },
+    "button": { "title": "Кнопка" }
   },
   "player": {
-    "position": "Позиция",
-    "number": "Номер",
-    "club": "Клуб"
+    "position": "Позиция"
   },
   "competition": {
-    "listTitle": "Список турниров",
-    "tableButton": "Турнирная таблица",
-    "id": "ID: {{id}}",
-    "code": "Код: {{code}}",
-    "type": "Тип: {{type}}",
-    "season": "Сезон: {{start}} — {{end}}"
-  },
-  "error": {
-    "retry": "Ошибка! Попыток: {{count}}"
+    "listTitle": "Список турниров"
   },
   "teamDetails": {
     "screenStub": "Экран деталей команды (заглушка)",
     "pastMatches": "Смотреть прошедшие матчи"
   },
-  "actionList": {
-    "section1": "Секция 1",
-    "section2": "Секция 2",
-    "action1": "Action 1",
-    "action2": "Action 2",
-    "action3": "Action 3",
-    "action4": "Action 4"
+  "matchHistory": {
+    "title": "История матчей"
   },
-  "fabDemo": {
-    "section": "Секция",
-    "item": "Item {{index}}"
-  },
-  "styleguide": {
-    "input": {
-      "title": "Инпут",
-      "default": "Обычный",
-      "focused": "Фокус",
-      "error": "Ошибка",
-      "success": "Успех",
-      "disabled": "Disabled"
-    },
-    "button": {
-      "title": "Кнопка",
-      "primary": "Primary",
-      "secondary": "Secondary",
-      "disabled": "Disabled",
-      "loading": "Loading"
-    }
-  },
-  "matchStats": {
-    "duration": {
-      "REGULAR": "Основное время",
-      "EXTRA_TIME": "Доп. время",
-      "PENALTY_SHOOTOUT": "Пенальти"
-    },
-    "stage": {
-      "REGULAR_SEASON": "Регулярный сезон",
-      "GROUP_STAGE": "Групповой этап",
-      "PLAYOFFS": "Плей-офф",
-      "FINAL": "Финал",
-      "SEMI_FINALS": "Полуфинал",
-      "QUARTER_FINALS": "Четвертьфинал",
-      "LAST_16": "1/8 финала",
-      "LAST_32": "1/16 финала",
-      "LAST_64": "1/32 финала",
-      "THIRD_PLACE": "Матч за 3-е место"
-    }
-  },
-  "matchSwiper": {
-    "headerTitle": {
-      "scheduled": "Запланирован",
-      "live": "Идёт матч",
-      "paused": "Перерыв",
-      "finished": "Матч завершён",
-      "postponed": "Перенесён",
-      "suspended": "Остановлен",
-      "cancelled": "Отменён",
-      "default": "Матч"
-    },
-    "headerSubtitle": {
-      "live": "Матч идёт прямо сейчас",
-      "finished": "Матч завершён",
-      "scheduled": "Матч ещё не начался"
-    }
-  },
-  "teamList": {
-    "selectTeam": "Выбор команды",
-    "tvAlert": "Переход к ТВ-матчам или трансляциям",
-    "noTeams": "Нет команд для отображения",
-    "tryChangeLeagueOrTeam": "Попробуйте изменить лигу или команду"
-  },
-  "homeScreen": {
-    "noLeagues": "Нет доступных лиг",
-    "noMatches": "Нет матчей"
+  "common": {
+    "all": "Все",
+    "gamesCount_one": "{{count}} игра",
+    "gamesCount_few": "{{count}} игры",
+    "gamesCount_many": "{{count}} игр",
+    "gamesCount_other": "{{count}} игр",
+    "empty": "Нет данных",
+    "loading": "Загрузка...",
+    "noData": "Нет данных",
+    "noEvents": "Нет событий",
+    "noTeams": "Нет команд",
+    "noMatches": "Нет матчей",
+    "noCurrentMatches": "На текущий момент нет матчей",
+    "noCurrentLiveMatches": "На текущий момент live-матчей нет.",
+    "loadingError": "Ошибка загрузки",
+    "error400": "Некорректный запрос (400)",
+    "error403": "Доступ запрещён (403)",
+    "error404": "Не найдено (404)",
+    "error429": "Слишком много запросов (429)",
+    "errorSystem": "Неизвестная ошибка",
+    "showError": "Показать ошибку: {{type}}",
+    "retry": "Повторить",
+    "details": "Подробнее",
+    "errorTitle": "Ошибка {{type}}"
   }
 } 

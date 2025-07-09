@@ -1,96 +1,57 @@
 {
-  "matchHistory": {
-    "title": "Match History"
-  },
-  "finishedMatches": {
-    "title": "Finished Matches"
-  },
-  "pullToRefresh": {
-    "title": "Pull to refresh"
-  },
-  "header": {
-    "back": "Back",
-    "liveScore": "LiveScore"
-  },
-  "section": {
-    "home": "Home",
-    "away": "Away",
-    "noPlayers": "No players",
-    "loading": "Loading...",
-    "error": "Loading error",
-    "noData": "No data",
-    "loadingTeamComposition": "Loading team composition...",
-    "errorTeamComposition": "Team composition loading error",
-    "noTeamData": "No team data",
-    "teamComposition": "Team composition"
-  },
-  "player": {
-    "position": "Position",
-    "number": "Number",
-    "club": "Club"
-  },
-  "competition": {
-    "listTitle": "Competition list",
-    "tableButton": "Standings",
-    "id": "ID: {{id}}",
-    "code": "Code: {{code}}",
-    "type": "Type: {{type}}",
-    "season": "Season: {{start}} — {{end}}"
-  },
-  "error": {
-    "retry": "Error! Attempts: {{count}}"
-  },
-  "teamDetails": {
-    "screenStub": "Team Details Screen (stub)",
-    "pastMatches": "View past matches"
-  },
-  "actionList": {
-    "section1": "Section 1",
-    "section2": "Section 2",
-    "action1": "Action 1",
-    "action2": "Action 2",
-    "action3": "Action 3",
-    "action4": "Action 4"
-  },
-  "fabDemo": {
-    "section": "Section",
-    "item": "Item {{index}}"
-  },
-  "styleguide": {
-    "input": {
-      "title": "Input",
-      "default": "Default",
-      "focused": "Focused",
-      "error": "Error",
-      "success": "Success",
-      "disabled": "Disabled"
-    },
-    "button": {
-      "title": "Button",
-      "primary": "Primary",
-      "secondary": "Secondary",
-      "disabled": "Disabled",
-      "loading": "Loading"
-    }
-  },
   "matchStats": {
+    "generalInfo": "General information",
+    "tournament": "Tournament",
+    "round": "Round",
+    "stage": "Stage",
+    "country": "Country",
+    "date": "Date",
+    "season": "Season",
+    "noScoreData": "No score data for this match",
+    "noData": "No data",
+    "noEvents": "No events",
+    "buySubscription": "Buy subscription",
+    "detailedStats": "Detailed statistics",
+    "notAvailableForMatch": "not available for this match",
+    "fullTimeScore": "Full Time Score",
+    "halfTimeScore": "Half Time Score",
+    "extraTimeScore": "Extra Time Score",
+    "penaltiesScore": "Penalties Score",
+    "winner": "Winner",
+    "type": "Type",
+    "status": "Status",
+    "corners": "Corners",
+    "penalties": "Penalties (shots)",
+    "touchesInBox": "Touches in box",
+    "shotsOnTarget": "Shots on target",
+    "possession": "Possession",
+    "xg": "xG",
+    "fouls": "Fouls",
+    "yellowCards": "Yellow cards",
+    "redCards": "Red cards",
+    "referees": "Referees",
     "duration": {
       "REGULAR": "Regular time",
       "EXTRA_TIME": "Extra time",
       "PENALTY_SHOOTOUT": "Penalty shootout"
     },
-    "stage": {
+    "stageNames": {
       "REGULAR_SEASON": "Regular season",
       "GROUP_STAGE": "Group stage",
       "PLAYOFFS": "Playoffs",
       "FINAL": "Final",
       "SEMI_FINALS": "Semi-finals",
       "QUARTER_FINALS": "Quarter-finals",
-      "LAST_16": "Round of 16",
-      "LAST_32": "Round of 32",
-      "LAST_64": "Round of 64",
-      "THIRD_PLACE": "Third place match"
+      "LAST_16": "Last 16",
+      "LAST_32": "Last 32",
+      "LAST_64": "Last 64",
+      "THIRD_PLACE": "Third place"
     }
+  },
+  "section": {
+    "teamComposition": "Team composition",
+    "noPlayers": "No players",
+    "noData": "No data"
   },
   "matchSwiper": {
     "headerTitle": {
@@ -102,21 +63,74 @@
       "suspended": "Suspended",
       "cancelled": "Cancelled",
       "default": "Match"
-    },
-    "headerSubtitle": {
-      "live": "Match is live now",
-      "finished": "Match finished",
-      "scheduled": "Match not started yet"
     }
   },
   "teamList": {
     "selectTeam": "Select a team",
-    "tvAlert": "Go to TV matches or broadcasts",
-    "noTeams": "No teams to display",
-    "tryChangeLeagueOrTeam": "Try changing league or team"
+    "tvAlert": "Go to TV matches or broadcasts"
+  },
+  "header": {
+    "back": "Back",
+    "liveScore": "LiveScore"
+  },
+  "finishedMatches": {
+    "title": "Finished Matches"
+  },
+  "pullToRefresh": {
+    "title": "Pull to refresh"
   },
   "homeScreen": {
-    "noLeagues": "No leagues available",
-    "noMatches": "No matches"
+    "upcomingEvents": "Upcoming events",
+    "actualMatches": "Actual matches",
+    "all": "All",
+    "teams": "Teams"
+  },
+  "actionList": {
+    "section1": "Section 1"
+  },
+  "fabDemo": {
+    "section": "Section"
+  },
+  "styleguide": {
+    "input": { "title": "Input" },
+    "button": { "title": "Button" }
+  },
+  "player": {
+    "position": "Position"
+  },
+  "competition": {
+    "listTitle": "Competition list"
+  },
+  "teamDetails": {
+    "screenStub": "Team Details Screen (stub)",
+    "pastMatches": "View past matches"
+  },
+  "matchHistory": {
+    "title": "Match History"
+  },
+  "common": {
+    "all": "All",
+    "gamesCount_one": "{{count}} game",
+    "gamesCount_few": "{{count}} games",
+    "gamesCount_many": "{{count}} games",
+    "gamesCount_other": "{{count}} games",
+    "empty": "No data",
+    "loading": "Loading...",
+    "noData": "No data",
+    "noEvents": "No events",
+    "noTeams": "No teams",
+    "noMatches": "No matches",
+    "noCurrentMatches": "No matches at the moment",
+    "noCurrentLiveMatches": "No live matches at the moment",
+    "loadingError": "Loading error",
+    "error400": "Bad request (400)",
+    "error403": "Access denied (403)",
+    "error404": "Not found (404)",
+    "error429": "Too many requests (429)",
+    "errorSystem": "Unknown error",
+    "showError": "Show error: {{type}}",
+    "retry": "Retry",
+    "details": "Details",
+    "errorTitle": "Error {{type}}"
   }
 } 

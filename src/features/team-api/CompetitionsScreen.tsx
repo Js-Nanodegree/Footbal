@@ -6,12 +6,14 @@ import Input from 'src/shared/ui/input/Input';
 import Loader from 'src/shared/ui/loader/Loader';
 import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 export default function CompetitionsScreen()
 {
     const { competitions, loading, error, refresh } = useCompetitions();
     const [ search, setSearch ] = useState( '' );
     const navigation = useNavigation();
+    const { t } = useTranslation();
 
     const filteredCompetitions = competitions.filter( c =>
         c.name.toLowerCase().includes( search.toLowerCase() )
@@ -19,7 +21,7 @@ export default function CompetitionsScreen()
 
     if ( loading && competitions.length === 0 ) return <Loader />;
     if ( error && competitions.length === 0 ) return <ErrorState message={error} onRetry={refresh} />;
-    if ( competitions.length === 0 ) return <ErrorState message="Нет турниров" onRetry={refresh} />;
+    if ( competitions.length === 0 ) return <ErrorState message={t('common.noData')} onRetry={refresh} />;
 
     return (
         <>

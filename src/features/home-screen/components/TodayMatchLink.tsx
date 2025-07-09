@@ -2,9 +2,8 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { colors } from 'src/shared/ui/theme/colors';
-import { shadows } from 'src/shared/ui/theme/shadows';
 import Typography from 'src/shared/ui/typography/Typography';
-// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
+import { useTranslation } from 'react-i18next';
 
 interface TodayMatchLinkProps
 {
@@ -32,14 +31,15 @@ function pluralizeGame( count: number ): string
 const TodayMatchLink: React.FC<TodayMatchLinkProps> = ( { onPress, todayMatches, testID, accessibilityLabel } ) =>
 {
     const count = todayMatches.length;
+    const { t } = useTranslation();
     return (
         <View style={[ styles.row ]} testID={testID} accessibilityLabel={accessibilityLabel}>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', flex: 1 }}>
                 <Typography variant="h2" weight="bold" font="Oswald" style={[ styles.text, { fontWeight: '700' } ]}>
-                    Актуальные матчи
+                    {t('homeScreen.actualMatches')}
                 </Typography>
                 <Typography variant="caption" font="Inter" style={[ styles.count, { color: colors.primary } ]}>
-                    {count > 0 ? `${ count } ${ pluralizeGame( count ) }` :'Нет матчей'}
+                    {count > 0 ? t('common.gamesCount', { count }) : t('common.noMatches')}
                 </Typography>
             </View>
             <Pressable onPress={onPress} testID="today-match-link-pressable" accessibilityLabel="today-match-link-pressable">
@@ -48,7 +48,7 @@ const TodayMatchLink: React.FC<TodayMatchLinkProps> = ( { onPress, todayMatches,
                     fontWeight: '700',
                     color: colors.primary,
                 } ]}>
-                    Все
+                    {t('common.all')}
                 </Typography>
             </Pressable>
         </View>

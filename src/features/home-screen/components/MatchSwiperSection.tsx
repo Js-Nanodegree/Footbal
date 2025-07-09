@@ -9,8 +9,8 @@ import { useFadeTransition } from 'src/shared/hooks/useFadeTransition';
 import Spacer from 'src/shared/ui/Spacer';
 import { colors } from 'src/shared/ui/theme/colors';
 import { shadows } from 'src/shared/ui/theme/shadows';
-// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
+import { useTranslation } from 'react-i18next';
 
 const SECTION_SPACING = 20;
 
@@ -31,6 +31,7 @@ const MatchSwiperSection = React.memo(
         const errorStyle = useFadeTransition( !!error || !matches || matches.length === 0 );
         const contentStyle = useFadeTransition( !loading && !error && matches && matches.length > 0 );
         const isAndroidNoAnim = useDisableAnimationsForAndroid();
+        const { t } = useTranslation();
 
         if (isAndroidNoAnim) {
             return (
@@ -38,13 +39,13 @@ const MatchSwiperSection = React.memo(
                     {/* LOADING */}
                     <Animated.View style={[ StyleSheet.absoluteFill, loadingStyle ]} pointerEvents={loading ? 'auto' : 'none'}>
                         {loading && (
-                            <SkeletonSwiper msg={/* TODO: {t`Загрузка live-матчей...`} */ 'Загрузка live-матчей...'} />
+                            <SkeletonSwiper msg={t( 'common.loading' )} />
                         )}
                     </Animated.View>
                     {/* ERROR/EMPTY */}
                     <Animated.View style={[ StyleSheet.absoluteFill, errorStyle ]} pointerEvents={error || !matches || matches.length === 0 ? 'auto' : 'none'}>
                         {( error || !matches || matches.length === 0 ) && (
-                            <SkeletonSwiper msg={/* TODO: {t`На текущий момент live-матчей нет.`} */ 'На текущий момент\nlive-матчей нет.'} />
+                            <SkeletonSwiper msg={t( 'common.noCurrentLiveMatches' )} />
                         )}
                     </Animated.View>
                     {/* CONTENT */}
@@ -67,13 +68,13 @@ const MatchSwiperSection = React.memo(
                 {/* LOADING */}
                 <Animated.View style={[ StyleSheet.absoluteFill, loadingStyle ]} pointerEvents={loading ? 'auto' : 'none'}>
                     {loading && (
-                        <SkeletonSwiper msg={/* TODO: {t`Загрузка live-матчей...`} */ 'Загрузка live-матчей...'} />
+                        <SkeletonSwiper msg={t( 'common.loading' )} />
                     )}
                 </Animated.View>
                 {/* ERROR/EMPTY */}
                 <Animated.View style={[ StyleSheet.absoluteFill, errorStyle ]} pointerEvents={error || !matches || matches.length === 0 ? 'auto' : 'none'}>
                     {( error || !matches || matches.length === 0 ) && (
-                        <SkeletonSwiper msg={/* TODO: {t`На текущий момент live-матчей нет.`} */ 'На текущий момент\nlive-матчей нет.'} />
+                        <SkeletonSwiper msg={t( 'common.noCurrentLiveMatches' )} />
                     )}
                 </Animated.View>
                 {/* CONTENT */}

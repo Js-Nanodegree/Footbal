@@ -156,7 +156,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
     });
 
     if (filteredTeams.length > 0) {
-      dataState.push({ title: 'Команды', data: ['teams'], renderItem: renderTeams });
+      dataState.push({ title: t('homeScreen.teams'), data: ['teams'], renderItem: renderTeams });
     }
 
     if (actualMatches.length === 0) {
@@ -190,11 +190,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
     }
 
     dataState.push({ title: 'Today Match', data: ['today-match'], renderItem: renderTodayMatch });
-    dataState.push({
-      title: 'Актуальные матчи',
-      data: actualMatches,
-      renderItem: ({ item }: { item: Match }) => renderAllMatches(item),
-    });
+    dataState.push({ title: t('homeScreen.actualMatches'), data: actualMatches, renderItem: ({ item }: { item: Match }) => renderAllMatches(item) });
     return dataState;
   }, [
     loadingTeams,

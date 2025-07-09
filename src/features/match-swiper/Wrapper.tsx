@@ -14,6 +14,7 @@ import SkeletonSwiper from './SkeletonSwiper';
 import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import EmptyState from './EmptyState';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH;
@@ -29,6 +30,7 @@ const Wrapper: React.FC<WrapperProps> = ({ data, loading, error, onCardPress }) 
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const onMomentumScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = e.nativeEvent.contentOffset.x;
@@ -51,7 +53,7 @@ const Wrapper: React.FC<WrapperProps> = ({ data, loading, error, onCardPress }) 
   if ( !data || data.length === 0 )
     return (
       <View style={{ minHeight: 250, justifyContent: 'center', alignItems: 'center' }}>
-        <EmptyState message="Нет матчей" />
+        <EmptyState message={t('common.noMatches')} />
       </View>
     );
 

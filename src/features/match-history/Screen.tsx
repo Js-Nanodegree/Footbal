@@ -24,6 +24,7 @@ import { colors } from 'src/shared/ui/theme/colors';
 import { DateFormatAdapter } from './adapters';
 import Header from 'src/shared/ui/header/Header';
 import { useMatchHistoryParams } from './hooks/useMatchHistoryParams';
+import { useTranslation } from 'react-i18next';
 
 const MatchHistoryScreenContent: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'MatchHistory'>>();
@@ -34,6 +35,7 @@ const MatchHistoryScreenContent: React.FC = () => {
   );
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   // Меморизация вычисления teamId и opponentId
   const { teamId, opponentId } = { teamId: homeId, opponentId: awayId };
@@ -92,7 +94,7 @@ const MatchHistoryScreenContent: React.FC = () => {
       renderItem: () => (
         <>
           <View style={{ marginHorizontal: 12, }}>
-            <Header title="Назад" onBack={() => navigation.goBack()} />
+            <Header title={t('header.back')} onBack={() => navigation.goBack()} />
           </View>
 
           <MatchSwiperSection
@@ -159,7 +161,7 @@ const MatchHistoryScreenContent: React.FC = () => {
           <>
             <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
               <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>
-                Ближайшие события
+                {t('homeScreen.upcomingEvents')}
               </Typography>
             </View>
             <MatchSwiperSection

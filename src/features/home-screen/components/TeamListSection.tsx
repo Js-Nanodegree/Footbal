@@ -229,14 +229,14 @@ const TeamListSection = React.memo(
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
-                  Нет команд для отображения
+                  {t('common.noTeams')}
                 </Typography>
                 <Typography
                   variant="body"
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
-                  Попробуйте изменить лигу или команду
+                  {t('teamList.tryChangeLeagueOrTeam')}
                 </Typography>
               </View>
             )}

@@ -14,6 +14,7 @@ import { useMatchHistoryParams } from '../hooks/useMatchHistoryParams';
 import { uiDebugConfig } from 'src/shared/debug/ui-debug.config';
 import { formatDateTime } from 'src/shared/utils/dateFormat';
 import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 // TODO: заменить на реальные данные из API/контекста
 const mockMatch: MatchCardProps = {
@@ -50,21 +51,22 @@ export const MatchHistoryCardSection: React.FC<MatchHistoryCardSectionProps> = (
 {
   const { matchId, homeId: teamId, season, venue } = useMatchHistoryParams();
   const { data, isLoading, error: queryError } = useGetMatchDetailsQuery(matchId);
+  const { t } = useTranslation();
 
   if ( loading ) return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <Typography>Загрузка...</Typography>
+      <Typography>{t( 'common.loading' )}</Typography>
     </View>
   );
   if ( error ) return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <Typography>Ошибка загрузки</Typography>
+      <Typography>{t( 'common.loadingError' )}</Typography>
     </View>
   );
   if ( !match )
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-        <Typography>Нет данных</Typography>
+        <Typography>{t( 'common.noData' )}</Typography>
       </View>
     );
 

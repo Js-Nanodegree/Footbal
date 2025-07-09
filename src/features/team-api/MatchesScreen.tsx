@@ -4,10 +4,12 @@ import { useMatches } from './hooks/useMatches';
 import Loader from 'src/shared/ui/loader/Loader';
 import ErrorState from 'src/shared/ui/error-state/ErrorState';
 import MatchCard from 'src/shared/ui/match-card/MatchCard';
+import { useTranslation } from 'react-i18next';
 
 export default function MatchesScreen( { teamId }: { teamId: number } )
 {
     const { matches, loading, error } = useMatches( teamId );
+    const { t } = useTranslation();
 
     const safeMatches = Array.isArray( matches ) ? matches : [];
 
@@ -19,7 +21,7 @@ export default function MatchesScreen( { teamId }: { teamId: number } )
 
     if ( loading && safeMatches.length === 0 ) return <Loader />;
     if ( error && safeMatches.length === 0 ) return <ErrorState message={error} onRetry={refresh} />;
-    if ( safeMatches.length === 0 ) return <ErrorState message="Нет матчей" onRetry={refresh} />;
+    if ( safeMatches.length === 0 ) return <ErrorState message={t('common.noMatches')} onRetry={refresh} />;
 
     return (
         <FlatList

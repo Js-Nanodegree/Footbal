@@ -1,0 +1,29 @@
+{
+  "matchStats": {
+    "noScoreData": "No score data for this match",
+    "noData": "No data",
+    "noEvents": "No events",
+    "buySubscription": "Buy subscription",
+    "detailedStats": "Detailed statistics",
+    "notAvailableForMatch": "not available for this match",
+    "generalInfo": "General information",
+    "tournament": "Tournament",
+    "round": "Round",
+    "stage": "Stage",
+    "country": "Country",
+    "date": "Date",
+    "season": "Season",
+    "stageNames": {
+      "REGULAR_SEASON": "Regular season",
+      "GROUP_STAGE": "Group stage",
+      "PLAYOFFS": "Playoffs",
+      "FINAL": "Final",
+      "SEMI_FINALS": "Semi-finals",
+      "QUARTER_FINALS": "Quarter-finals",
+      "LAST_16": "Last 16",
+      "LAST_32": "Last 32",
+      "LAST_64": "Last 64",
+      "THIRD_PLACE": "Third place"
+    }
+  }
+} 
