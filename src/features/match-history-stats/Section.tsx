@@ -13,7 +13,7 @@ import { statsBarColorMap } from '../../shared/ui/stats-bar/colorMap';
 import MatchEventTimeline from '../../shared/ui/match-event-timeline/MatchEventTimeline';
 import { colors } from '../../shared/ui/theme/colors';
 import Button from '../../shared/ui/button/Button';
-import { durationMap, formatSeason, formatStage } from './mappings/matchStatsMappings';
+import { durationMap, formatSeason, formatStage, useMatchStatsMappings } from './mappings/matchStatsMappings';
 import Total from './by-feature/Total';
 import { useMatchHistoryParams } from '../match-history/hooks/useMatchHistoryParams';
 
@@ -47,13 +47,13 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
 {
 
   const [tab, setTab] = useState<'Stats' | 'Line-up' | 'Summary'>('Stats');
-
+  const { stageMap, durationMap } = useMatchStatsMappings();
   if ( !match ) return <View />;
   // Общая информация о матче
   const generalInfo: { label: string; value: string }[] = [
     match.competition?.name ? { label: 'Турнир', value: match.competition.name } : null,
     match.matchday ? { label: 'Тур', value: String( match.matchday ) } : null,
-    match.stage ? { label: 'Стадия', value: formatStage( match.stage ) } : null,
+    match.stage ? { label: 'Стадия', value: formatStage( match.stage, stageMap ) } : null,
     match.area?.name ? { label: 'Страна', value: match.area.name } : null,
     match.utcDate
       ? {
@@ -161,7 +161,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
 
   return (
     <>
-      <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+      <View style={{ marginHorizontal: 12, marginBottom: 8, marginTop: 22 }}>
         <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>Общая информация</Typography>
       </View>
     <View style={styles.section}>

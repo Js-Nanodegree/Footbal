@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { RefreshControl } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface UsePullToRefreshProps {
   onRefresh: () => Promise<void> | void;
@@ -17,10 +18,11 @@ interface UsePullToRefreshResult {
 export const usePullToRefresh = ({
   onRefresh,
   timeout = 1200,
-  title = 'Потяните для обновления',
+  title ,
   colors = ['#FF2D7A'],
 }: UsePullToRefreshProps): UsePullToRefreshResult => {
   const [refreshing, setRefreshing] = useState(false);
+  const { t } = useTranslation();
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -39,7 +41,7 @@ export const usePullToRefresh = ({
       onRefresh={handleRefresh}
       colors={colors}
       tintColor={colors[0]}
-      title={title}
+      title={title||t('pullToRefresh.title')}
       titleColor={colors[0]}
     />
   );

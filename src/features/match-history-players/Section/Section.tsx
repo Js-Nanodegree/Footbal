@@ -23,25 +23,36 @@ export interface MatchHistoryPlayersSectionProps {
   error?: any;
 }
 
-export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProps> = ({ match, loading, error }) => {
+export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProps> = ( {
+  match,
+  loading,
+  error,
+} ) =>
+{
   const { t } = useTranslation();
   // Все хуки до любых return!
-  const { data: homeTeamDetails, isLoading: isHomeLoading, error: homeError } = useGetTeamDetailsQuery(
-    match?.homeTeam?.id ? match.homeTeam.id : skipToken
-  );
-  const { data: awayTeamDetails, isLoading: isAwayLoading, error: awayError } = useGetTeamDetailsQuery(
-    match?.awayTeam?.id ? match.awayTeam.id : skipToken
-  );
+  const {
+    data: homeTeamDetails,
+    isLoading: isHomeLoading,
+    error: homeError,
+  } = useGetTeamDetailsQuery( match?.homeTeam?.id ? match.homeTeam.id : skipToken );
+  const {
+    data: awayTeamDetails,
+    isLoading: isAwayLoading,
+    error: awayError,
+  } = useGetTeamDetailsQuery( match?.awayTeam?.id ? match.awayTeam.id : skipToken );
 
-
-  if ( !match ) return (
-
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <Typography>{t( 'section.noData' )}</Typography>
-    </View> );
-  if ( isHomeLoading || isAwayLoading ) return <Typography>{t( 'section.loadingTeamComposition' )}</Typography>;
+  if ( !match )
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+        <Typography>{t( 'section.noData' )}</Typography>
+      </View>
+    );
+  if ( isHomeLoading || isAwayLoading )
+    return <Typography>{t( 'section.loadingTeamComposition' )}</Typography>;
   if ( homeError || awayError ) return <Typography>{t( 'section.errorTeamComposition' )}</Typography>;
-  if ( !homeTeamDetails || !awayTeamDetails ) return <Typography>{t( 'section.noTeamData' )}</Typography>;
+  if ( !homeTeamDetails || !awayTeamDetails )
+    return <Typography>{t( 'section.noTeamData' )}</Typography>;
 
   const homePlayers = homeTeamDetails.squad || [];
   const awayPlayers = awayTeamDetails.squad || [];
@@ -55,17 +66,32 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
   return (
     <View style={styles.container}>
       <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
-        <Typography variant="h2" weight="bold" numberOfLines={1} font="Oswald" style={[ styles.sectionTitle, { fontWeight: '800' } ]}>{t('section.teamComposition')}</Typography>
-        <Typography variant="body" weight="bold" style={styles.sectionTitle}>{homeTeam.name}</Typography>
+        <Typography
+          variant="h2"
+          weight="bold"
+          numberOfLines={1}
+          font="Oswald"
+          style={[ styles.sectionTitle, { fontWeight: '800' } ]}
+        >
+          {t( 'section.teamComposition' )}
+        </Typography>
+        <Typography variant="body" weight="bold" style={styles.sectionTitle}>
+          {homeTeam.name}
+        </Typography>
       </View>
       <FlatList
         data={homePlayers}
-        keyExtractor={item => String(item.id)}
+        keyExtractor={( item ) => String( item.id )}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={[ styles.list, { paddingHorizontal: CARD_MARGIN } ]}
         renderItem={({ item }) => (
-          <PlayerCard player={item} clubName={homeTeam.name || ''} clubLogo={homeTeam.logo || ''} variant="home" />
+          <PlayerCard
+            player={item}
+            clubName={homeTeam.name || ''}
+            clubLogo={homeTeam.logo || ''}
+            variant="home"
+          />
         )}
         ListEmptyComponent={<Typography variant="caption">{t('section.noPlayers')}</Typography>}
         pagingEnabled
@@ -73,19 +99,30 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
         snapToAlignment="start"
         decelerationRate="fast"
         disableIntervalMomentum
-        getItemLayout={( _, index ) => ( { length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index } )}
+        getItemLayout={( _, index ) => ( {
+          length: SNAP_INTERVAL,
+          offset: SNAP_INTERVAL * index,
+          index,
+        } )}
       />
       <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
-        <Typography variant="body" weight="bold" style={styles.sectionTitle}>{awayTeam.name}</Typography>
+        <Typography variant="body" weight="bold" style={styles.sectionTitle}>
+          {awayTeam.name}
+        </Typography>
       </View>
       <FlatList
         data={awayPlayers}
-        keyExtractor={item => String(item.id)}
+        keyExtractor={( item ) => String( item.id )}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={[ styles.list, { paddingHorizontal: CARD_MARGIN } ]}
         renderItem={({ item }) => (
-          <PlayerCard player={item} clubName={awayTeam.name || ''} clubLogo={awayTeam.logo || ''} variant="away" />
+          <PlayerCard
+            player={item}
+            clubName={awayTeam.name || ''}
+            clubLogo={awayTeam.logo || ''}
+            variant="away"
+          />
         )}
         ListEmptyComponent={<Typography variant="caption">{t('section.noPlayers')}</Typography>}
         pagingEnabled
@@ -93,8 +130,12 @@ export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProp
         snapToAlignment="start"
         decelerationRate="fast"
         disableIntervalMomentum
-        getItemLayout={( _, index ) => ( { length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index } )}
+        getItemLayout={( _, index ) => ( {
+          length: SNAP_INTERVAL,
+          offset: SNAP_INTERVAL * index,
+          index,
+        } )}
       />
     </View>
   );
-}; 
+};

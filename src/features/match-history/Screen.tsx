@@ -38,21 +38,6 @@ const MatchHistoryScreenContent: React.FC = () => {
   // Меморизация вычисления teamId и opponentId
   const { teamId, opponentId } = { teamId: homeId, opponentId: awayId };
 
-  // DEBUG: логируем параметры для диагностики
-  console.log(
-    'matchId:',
-    matchId,
-    'homeId:',
-    homeId,
-    'awayId:',
-    awayId,
-    'venue:',
-    venue,
-    'teamId:',
-    teamId,
-    'opponentId:',
-    opponentId,
-  );
 
   const { data: matches, refetch: refetchMatches } = useGetTeamMatchesQuery(
     teamId && opponentId ? { teamId, opponentId } : skipToken,
@@ -106,7 +91,7 @@ const MatchHistoryScreenContent: React.FC = () => {
       data: [{ matchId }], // теперь data зависит от matchId
       renderItem: () => (
         <>
-          <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+          <View style={{ marginHorizontal: 12, }}>
             <Header title="Назад" onBack={() => navigation.goBack()} />
           </View>
 

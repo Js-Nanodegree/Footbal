@@ -4,6 +4,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { Competition } from '../features/team-api/types/competition';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../roads/RootNavigator';
+import { useTranslation } from 'react-i18next';
 
 // Тип для параметров навигации
 export type CompetitionDetailsParams = {
@@ -11,6 +12,7 @@ export type CompetitionDetailsParams = {
 };
 
 export default function CompetitionDetailsScreen() {
+  const { t } = useTranslation();
   const route = useRoute<RouteProp<{ params: CompetitionDetailsParams }, 'params'>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { competition } = route.params;
@@ -22,15 +24,15 @@ export default function CompetitionDetailsScreen() {
       ) : null}
       <Text style={styles.title}>{competition.name}</Text>
       <Text style={styles.subtitle}>{competition.area.name}</Text>
-      <Text style={styles.info}>ID: {competition.id}</Text>
-      <Text style={styles.info}>Code: {competition.code}</Text>
-      {competition.type && <Text style={styles.info}>Type: {competition.type}</Text>}
+      <Text style={styles.info}>{t('competition.id', { id: competition.id })}</Text>
+      <Text style={styles.info}>{t('competition.code', { code: competition.code })}</Text>
+      {competition.type && <Text style={styles.info}>{t('competition.type', { type: competition.type })}</Text>}
       {competition.currentSeason && (
         <Text style={styles.info}>
-          Season: {competition.currentSeason.startDate} — {competition.currentSeason.endDate}
+          {t('competition.season', { start: competition.currentSeason.startDate, end: competition.currentSeason.endDate })}
         </Text>
       )}
-      <Button title="Турнирная таблица" onPress={() => navigation.navigate('Standings', { competitionId: competition.id })} />
+      <Button title={t('competition.tableButton')} onPress={() => navigation.navigate('Standings', { competitionId: competition.id })} />
     </View>
   );
 }

@@ -22,6 +22,7 @@ import { View } from 'react-native';
 import { shadows } from 'src/shared/ui/theme/shadows';
 import { colors } from 'src/shared/ui/theme/colors';
 import Loader from 'src/shared/ui/loader';
+import { useTranslation } from 'react-i18next';
 
 interface UseHomeScreenSectionsParams {
   competitions: Competition[];
@@ -39,6 +40,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
   const {  selectedTeamIds, refreshTeams } = useAppContext();
   const [localError] = useState<string | null>(null);
   const { competitions, teams, matches, loading, error } = useSelectMode();
+  const { t } = useTranslation();
 
   const [ loadingTeams, setLoadingTeams ] = useState( false );
 
@@ -99,7 +101,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
     () =>
       competitions.length === 0 ? (
         <Typography variant="body" font="Inter" style={{ marginLeft: 16, marginBottom: 8 }}>
-          Нет доступных лиг
+          {t( 'homeScreen.noLeagues' )}
         </Typography>
       ) : (
         <LeagueFilterBar leagues={competitions} />
@@ -179,7 +181,7 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
             ]}
           >
             <Typography variant="body" font="Inter" style={{ marginBottom: 8 }}>
-              Нет матчей
+              {t('homeScreen.noMatches')}
             </Typography>
           </View>
         ),

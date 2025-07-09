@@ -5,6 +5,7 @@ import Typography from 'src/shared/ui/typography/Typography';
 import { MatchCardProps } from './types';
 import useSvgDownload from './hooks/useSvgDownload';
 import { formatDateTime } from 'src/shared/utils/dateFormat';
+import { useTranslation } from 'react-i18next';
 
 interface CardProps extends MatchCardProps
 {
@@ -12,63 +13,6 @@ interface CardProps extends MatchCardProps
   currentIndex: number;
   onPress?: () => void;
 }
-
-// Определяет цвета градиента по статусу матча
-const getGradientByStatus = ( status: string ): string[] =>
-{
-  switch ( status )
-  {
-    case 'finished':
-      return [ '#8e2de2', '#4a00e0' ]; // Пурпурный → синий
-    case 'live':
-      return [ '#E32C2C', '#FF9800' ]; // Красный → оранжевый
-    case 'scheduled':
-      return [ '#757F9A', '#D7DDE8' ]; // Серый → голубой
-    case 'postponed':
-      return [ '#FFD600', '#757F9A' ]; // Желтый → серый
-    default:
-      return [ '#E32C2C', '#2C5DE3' ]; // Красный → синий (дефолт)
-  }
-};
-
-// --- ДОБАВЛЯЕМ: функция для заголовка и объяснения ---
-const getHeaderTitle = ( status?: string ) =>
-{
-  switch ( ( status || '' ).toUpperCase() )
-  {
-    case 'SCHEDULED':
-      return 'Запланирован';
-    case 'LIVE':
-    case 'IN_PLAY':
-      return 'Идёт матч';
-    case 'PAUSED':
-      return 'Перерыв';
-    case 'FINISHED':
-      return 'Матч завершён';
-    case 'POSTPONED':
-      return 'Перенесён';
-    case 'SUSPENDED':
-      return 'Остановлен';
-    case 'CANCELLED':
-      return 'Отменён';
-    default:
-      return 'Матч';
-  }
-};
-const getHeaderSubtitle = ( status?: string ) =>
-{
-  switch ( ( status || '' ).toUpperCase() )
-  {
-    case 'LIVE':
-      return 'Матч идёт прямо сейчас';
-    case 'FINISHED':
-      return 'Матч завершён';
-    case 'SCHEDULED':
-      return 'Матч ещё не начался';
-    default:
-      return '';
-  }
-};
 
 const TextComposer = ( {
   title,
@@ -102,6 +46,50 @@ const TextComposer = ( {
 const Card: React.FC<CardProps> = ( props ) =>
 {
   const { index, currentIndex, onPress, ...rest } = props;
+  const { t } = useTranslation();
+
+  // Определяет цвета градиента по статусу матча
+  const getGradientByStatus = ( status: string ): string[] =>
+  {
+    switch ( status )
+    {
+      case 'finished':
+        return [ '#8e2de2', '#4a00e0' ]; // Пурпурный → синий
+      case 'live':
+        return [ '#E32C2C', '#FF9800' ]; // Красный → оранжевый
+      case 'scheduled':
+        return [ '#757F9A', '#D7DDE8' ]; // Серый → голубой
+      case 'postponed':
+        return [ '#FFD600', '#757F9A' ]; // Желтый → серый
+      default:
+        return [ '#E32C2C', '#2C5DE3' ]; // Красный → синий (дефолт)
+    }
+  };
+
+    // --- ДОБАВЛЯЕМ: функция для заголовка и объяснения ---
+  const getHeaderTitle = ( status?: string, t?: any ) =>
+  {
+    switch ( ( status || '' ).toUpperCase() )
+    {
+      case 'SCHEDULED':
+          return t( 'matchSwiper.headerTitle.scheduled' );
+        case 'LIVE':
+        case 'IN_PLAY':
+          return t( 'matchSwiper.headerTitle.live' );
+        case 'PAUSED':
+          return t( 'matchSwiper.headerTitle.paused' );
+        case 'FINISHED':
+          return t( 'matchSwiper.headerTitle.finished' );
+        case 'POSTPONED':
+          return t( 'matchSwiper.headerTitle.postponed' );
+        case 'SUSPENDED':
+          return t( 'matchSwiper.headerTitle.suspended' );
+        case 'CANCELLED':
+          return t( 'matchSwiper.headerTitle.cancelled' );
+        default:
+          return t( 'matchSwiper.headerTitle.default' );
+      }
+    };
 
   const scaleAnim = useRef( new Animated.Value( index === currentIndex ? 1 : 0.8 ) ).current;
   useEffect( () =>
@@ -190,7 +178,7 @@ const Card: React.FC<CardProps> = ( props ) =>
             color="#fff"
             style={styles.liveText}
           >
-            {getHeaderTitle( rest.status )}
+            {getHeaderTitle( rest.status, t )}
           </Typography>
           <View style={styles.liveDot} />
         </View>

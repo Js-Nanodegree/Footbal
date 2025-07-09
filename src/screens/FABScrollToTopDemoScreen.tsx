@@ -1,14 +1,16 @@
 import React, { useRef, useState } from 'react';
 import { SectionList, View, Text } from 'react-native';
 import FABScrollToTop from '../shared/ui/FABScrollToTop/FABScrollToTop';
+import { useTranslation } from 'react-i18next';
 
-const sections = [
-    { title: 'Секция', data: Array.from( { length: 60 }, ( _, i ) => ( { id: i, name: `Item ${ i + 1 }` } ) ) },
-];
 const FABScrollToTopDemoScreen = () =>
 {
+    const { t } = useTranslation();
     const listRef = useRef<SectionList<any>>( null );
     const [ showFab, setShowFab ] = useState( false );
+    const sections = [
+        { title: t( 'fabDemo.section' ), data: Array.from( { length: 60 }, ( _, i ) => ( { id: i, name: t( 'fabDemo.item', { index: i + 1 } ) } ) ) },
+    ];
     return (
         <View style={{ flex: 1 }}>
             <SectionList
