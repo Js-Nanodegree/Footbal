@@ -9,8 +9,7 @@ import { Alert, SectionList, StyleSheet, TouchableOpacity, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { usePullToRefresh } from 'src/shared/hooks/usePullToRefresh';
-import
-{
+import {
   useGetMatchDetailsQuery,
   useGetTeamMatchesQuery,
   footballApi,
@@ -30,7 +29,9 @@ const MatchHistoryScreenContent: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'MatchHistory'>>();
   const { matchId, venue, homeId, awayId, season } = useMatchHistoryParams();
   const isValid = !!matchId && !!homeId && !!awayId;
-  const { data: match, refetch: refetchMatch } = useGetMatchDetailsQuery(isValid ? matchId : skipToken);
+  const { data: match, refetch: refetchMatch } = useGetMatchDetailsQuery(
+    isValid ? matchId : skipToken,
+  );
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
 
@@ -38,55 +39,71 @@ const MatchHistoryScreenContent: React.FC = () => {
   const { teamId, opponentId } = { teamId: homeId, opponentId: awayId };
 
   // DEBUG: логируем параметры для диагностики
-  console.log( 'matchId:', matchId, 'homeId:', homeId, 'awayId:', awayId, 'venue:', venue, 'teamId:', teamId, 'opponentId:', opponentId );
+  console.log(
+    'matchId:',
+    matchId,
+    'homeId:',
+    homeId,
+    'awayId:',
+    awayId,
+    'venue:',
+    venue,
+    'teamId:',
+    teamId,
+    'opponentId:',
+    opponentId,
+  );
 
   const { data: matches, refetch: refetchMatches } = useGetTeamMatchesQuery(
     teamId && opponentId ? { teamId, opponentId } : skipToken,
   );
 
   useFocusEffect(
-    useCallback( () =>
-    {
+    useCallback(() => {
       if (isValid && typeof refetchMatch === 'function') refetchMatch();
       if (teamId && opponentId) {
         dispatch(
-          footballApi.endpoints.getTeamMatches.initiate({ teamId, opponentId }, { forceRefetch: true })
+          footballApi.endpoints.getTeamMatches.initiate(
+            { teamId, opponentId },
+            { forceRefetch: true },
+          ),
         );
       }
-    }, [isValid, teamId, opponentId, refetchMatch])
+    }, [isValid, teamId, opponentId, refetchMatch]),
   );
 
-  const onRefresh = useCallback( () =>
-  {
+  const onRefresh = useCallback(() => {
     if (isValid && typeof refetchMatch === 'function') refetchMatch();
     if (teamId && opponentId) {
       dispatch(
-        footballApi.endpoints.getTeamMatches.initiate({ teamId, opponentId }, { forceRefetch: true })
+        footballApi.endpoints.getTeamMatches.initiate(
+          { teamId, opponentId },
+          { forceRefetch: true },
+        ),
       );
     }
   }, [dispatch, isValid, teamId, opponentId, refetchMatch]);
 
-  const { refreshControl } = usePullToRefresh( { onRefresh } );
+  const { refreshControl } = usePullToRefresh({ onRefresh });
 
   // Группируем матчи по сезону и сортируем по дате
   const matchesBySeason: Record<string, any[]> = {};
-  ( matches || [] ).forEach( ( m: any ) =>
-  {
-    const seasonKey = m.season?.startDate?.slice( 0, 4 ) + '/' + m.season?.endDate?.slice( 0, 4 );
-    if ( !matchesBySeason[ seasonKey ] ) matchesBySeason[ seasonKey ] = [];
-    matchesBySeason[ seasonKey ].push( m );
-  } );
+  (matches || []).forEach((m: any) => {
+    const seasonKey = m.season?.startDate?.slice(0, 4) + '/' + m.season?.endDate?.slice(0, 4);
+    if (!matchesBySeason[seasonKey]) matchesBySeason[seasonKey] = [];
+    matchesBySeason[seasonKey].push(m);
+  });
   // Полифиллы для Object.entries и Object.values (ручная реализация)
-  const objectEntries = ( obj: any ) => Object.keys( obj ).map( ( key ) => [ key, obj[ key ] ] );
-  const objectValues = ( obj: any ) => Object.keys( obj ).map( ( key ) => obj[ key ] );
-  ( objectValues( matchesBySeason ) as any[] ).forEach( ( arr: any[] ) =>
-    arr.sort( ( a: any, b: any ) => new Date( b.utcDate ).getTime() - new Date( a.utcDate ).getTime() ),
+  const objectEntries = (obj: any) => Object.keys(obj).map((key) => [key, obj[key]]);
+  const objectValues = (obj: any) => Object.keys(obj).map((key) => obj[key]);
+  (objectValues(matchesBySeason) as any[]).forEach((arr: any[]) =>
+    arr.sort((a: any, b: any) => new Date(b.utcDate).getTime() - new Date(a.utcDate).getTime()),
   );
 
   const sections = [
     {
       title: 'Карточка',
-      data: [ { matchId } ], // теперь data зависит от matchId
+      data: [{ matchId }], // теперь data зависит от matchId
       renderItem: () => (
         <>
           <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
@@ -94,17 +111,19 @@ const MatchHistoryScreenContent: React.FC = () => {
           </View>
 
           <MatchSwiperSection
-            matches={match ? adaptSeasonMatchesToMatch( [ match ] ) : []}
+            matches={match ? adaptSeasonMatchesToMatch([match]) : []}
             loading={!matches}
             error={null}
             selectedMatchId={matchId}
-            onMatchPress={( m ) => navigation.navigate( 'MatchHistory', {
-              matchId: m.id,
-              homeId: m.homeTeam?.id,
-              awayId: m.awayTeam?.id,
-              venue,
-              season,
-            } )}
+            onMatchPress={(m) =>
+              navigation.navigate('MatchHistory', {
+                matchId: m.id,
+                homeId: m.homeTeam?.id,
+                awayId: m.awayTeam?.id,
+                venue,
+                season,
+              })
+            }
             // initialMatchId нужен для автоскролла к текущему матчу
             initialMatchId={matchId}
           />
@@ -114,57 +133,59 @@ const MatchHistoryScreenContent: React.FC = () => {
     },
     {
       title: 'Статистика',
-      data: [ {} ],
+      data: [{}],
       renderItem: () => <MatchHistoryStatsSection match={match} loading={false} error={null} />,
     },
     {
       title: 'Игроки',
-      data: [ {} ],
+      data: [{}],
       renderItem: () => <MatchHistoryPlayersSection match={match} loading={false} error={null} />,
     },
     // Новая секция: все матчи сезона свайпером
     {
       title: 'Все матчи сезона',
-      data: objectEntries( matchesBySeason ) as [ string, MatchHistoryItem[] ][],
-      renderItem: ( { item }: { item: any } ) =>
-      {
-        const [ season, seasonMatches ] = item;
-        const index = seasonMatches.findIndex( ( m ) =>
-        {
-          if ( venue === 'home' )
-          {
+      data: objectEntries(matchesBySeason) as [string, MatchHistoryItem[]][],
+      renderItem: ({ item }: { item: any }) => {
+        const [season, seasonMatches] = item;
+        const index = seasonMatches.findIndex((m) => {
+          if (venue === 'home') {
             return m.homeTeam.id === teamId;
-          } else
-          {
+          } else {
             return m.awayTeam.id === opponentId;
           }
-        } );
-        const initialMatchId = index !== -1 ? seasonMatches[ index ].id : undefined;
+        });
+        const initialMatchId = index !== -1 ? seasonMatches[index].id : undefined;
         // Форматируем дату для каждого матча
-        const matchesWithFormattedDate = adaptSeasonMatchesToMatch( seasonMatches ).map( ( m ) => ( {
+        const matchesWithFormattedDate = adaptSeasonMatchesToMatch(seasonMatches).map((m) => ({
           ...m,
-          date: DateFormatAdapter.formatCompactDate( m.utcDate ),
-        } ) );
+          date: DateFormatAdapter.formatCompactDate(m.utcDate),
+        }));
         // Кастомный обработчик нажатия
-        const handleMatchPress = ( m: any ) =>
-        {
-          navigation.navigate( 'MatchHistory', {
+        const handleMatchPress = (m: any) => {
+          navigation.navigate('MatchHistory', {
             matchId: m.id,
             homeId: m.homeTeam?.id,
             awayId: m.awayTeam?.id,
             venue,
             season,
-          } );
+          });
         };
         return (
-          <MatchSwiperSection
-            matches={matchesWithFormattedDate}
-            loading={!matches}
-            error={null}
-            selectedMatchId={matchId}
-            onMatchPress={handleMatchPress}
-            initialMatchId={initialMatchId}
-          />
+          <>
+            <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
+              <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>
+                Ближайшие события
+              </Typography>
+            </View>
+            <MatchSwiperSection
+              matches={matchesWithFormattedDate}
+              loading={!matches}
+              error={null}
+              selectedMatchId={matchId}
+              onMatchPress={handleMatchPress}
+              initialMatchId={initialMatchId}
+            />
+          </>
         );
       },
     },
@@ -174,13 +195,12 @@ const MatchHistoryScreenContent: React.FC = () => {
     <View style={styles.container}>
       <SectionList
         sections={sections}
-        keyExtractor={( item, idx ) =>
-        {
+        keyExtractor={(item, idx) => {
           // Для секции 'Карточка' используем matchId, чтобы SectionList реагировал на смену матча
-          if ( item && typeof item === 'object' && 'matchId' in item ) return String( item.matchId );
-          return String( idx );
+          if (item && typeof item === 'object' && 'matchId' in item) return String(item.matchId);
+          return String(idx);
         }}
-        renderItem={( { section, item } ) => section.renderItem( { item } )}
+        renderItem={({ section, item }) => section.renderItem({ item })}
         renderSectionHeader={({ section }) => null}
         contentContainerStyle={[
           styles.list,
@@ -192,11 +212,8 @@ const MatchHistoryScreenContent: React.FC = () => {
   );
 };
 
-const MatchHistoryScreen: React.FC = () =>
-{
-  return (
-      <MatchHistoryScreenContent />
-  );
+const MatchHistoryScreen: React.FC = () => {
+  return <MatchHistoryScreenContent />;
 };
 
 const styles = StyleSheet.create({
