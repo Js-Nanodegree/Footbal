@@ -29,7 +29,8 @@ import { useMatchHistoryParams } from './hooks/useMatchHistoryParams';
 const MatchHistoryScreenContent: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'MatchHistory'>>();
   const { matchId, venue, homeId, awayId, season } = useMatchHistoryParams();
-  const { data: match, refetch: refetchMatch } = useGetMatchDetailsQuery( matchId );
+  const isValid = !!matchId && !!homeId && !!awayId;
+  const { data: match, refetch: refetchMatch } = useGetMatchDetailsQuery(isValid ? matchId : skipToken);
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
 
@@ -46,26 +47,24 @@ const MatchHistoryScreenContent: React.FC = () => {
   useFocusEffect(
     useCallback( () =>
     {
-      refetchMatch();
-      refetchMatches();
-    }, [ matchId, teamId, opponentId ] )
+      if (refetchMatch) refetchMatch();
+      if (teamId && opponentId) {
+        dispatch(
+          footballApi.endpoints.getTeamMatches.initiate({ teamId, opponentId }, { forceRefetch: true })
+        );
+      }
+    }, [matchId, teamId, opponentId, refetchMatch])
   );
 
   const onRefresh = useCallback( () =>
   {
-    if ( matchId )
-    {
+    if (refetchMatch) refetchMatch();
+    if (teamId && opponentId) {
       dispatch(
-        footballApi.endpoints.getMatchDetails.initiate( matchId, { forceRefetch: true } )
+        footballApi.endpoints.getTeamMatches.initiate({ teamId, opponentId }, { forceRefetch: true })
       );
     }
-    if ( teamId && opponentId )
-    {
-      dispatch(
-        footballApi.endpoints.getTeamMatches.initiate( { teamId, opponentId }, { forceRefetch: true } )
-      );
-    }
-  }, [ dispatch, matchId, teamId, opponentId ] );
+  }, [dispatch, matchId, teamId, opponentId, refetchMatch]);
 
   const { refreshControl } = usePullToRefresh( { onRefresh } );
 

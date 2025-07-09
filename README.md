@@ -208,7 +208,7 @@ dispatch(
 - Реализованы основные секции HomeScreen: MatchSwiper, TodayMatch, TeamList, AllMatches, LeagueFilterBar.
 - Внедрены skeleton, fade transition, ErrorState, адаптивность, тени, цвета из colors.ts, шрифты Oswald/Inter.
 - Проведён pixel-perfect аудит карточек, согласованы требования с дизайнером.
-- Интеграция с RTK Query, footballApi, типизация через zod/types, кэширование, MMKV.
+- Интеграция с RTK Query, footballApi, типизация через zod/types, кэширование, in-memory + AsyncStorage.
 - Реализован fallback на моки, enrichment данных, универсальный ErrorHandler.
 - Обновлены context.md, taskmd, частично README, ADR.
 - Покрытие тестами частично реализовано (unit для сервисов, e2e — в планах).

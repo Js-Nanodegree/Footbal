@@ -10,7 +10,7 @@
 **Архитектура (актуально):**
 - Все параметры состояния (`matchId`, `homeId`, `awayId`, `venue`, `season`) передаются и обновляются только через navigation params (`route.params` и `navigation.setParams`).
 - React Context для состояния не используется (DateSeasonContext и DateSeasonSwitcher удалены).
-- Любой компонент экрана читает параметры через хук `useMatchHistoryParams` (обёртка над useRoute + MMKV fallback).
+- Любой компонент экрана читает параметры через хук `useMatchHistoryParams` (обёртка над useRoute + in-memory + AsyncStorage fallback).
 - Это обеспечивает централизованное и прозрачное управление состоянием экрана, облегчает интеграцию с другими экранами и навигацию.
 
 **Пример использования:**

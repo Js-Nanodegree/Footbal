@@ -2,7 +2,7 @@
 
 ## Назначение
 
-Централизованный слой получения, enrichment и кэширования данных для HomeScreen (афишка, матчи, команды, лиги) с приоритетом MMKV Storage, fallback на моки, быстрым стартом и поддержкой оффлайн.
+Централизованный слой получения, enrichment и кэширования данных для HomeScreen (афишка, матчи, команды, лиги) с приоритетом in-memory + AsyncStorage Storage, fallback на моки, быстрым стартом и поддержкой оффлайн.
 
 ---
 
@@ -43,8 +43,8 @@
 1. HomeScreen (и все секции) получают данные из Redux (state.homeScreen)
 2. fetchHomeScreenData вызывает getHomeScreenData (dataProvider)
 3. dataProvider:
-   - Читает из MMKV (если не устарело)
-   - Иначе — ErrorHandler.handle(fetchApi, fetchMock): enrichment моков, запись в MMKV
+   - Читает из in-memory + AsyncStorage (если не устарело)
+   - Иначе — ErrorHandler.handle(fetchApi, fetchMock): enrichment моков, запись в in-memory + AsyncStorage
    - enrichment и адаптация через DataEnrichmentService
 4. UI всегда мгновенно показывает валидные enriched данные (даже без сети)
 
@@ -52,7 +52,7 @@
 
 ## Преимущества
 - Модульность (folder by feature)
-- Мгновенный старт (MMKV)
+- Мгновенный старт (in-memory + AsyncStorage)
 - Оффлайн-режим и кэширование
 - Нет дублей, все поля заполнены (enrichment)
 - Лёгкая поддержка и расширение (сервисы, тесты)

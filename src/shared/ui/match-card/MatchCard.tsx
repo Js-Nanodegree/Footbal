@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { MatchCardProps, MatchCardVariant } from './types';
 import { colors } from '../theme/colors';
+import Typography from '../typography/Typography';
 import Badge from './Badge';
 import ScoreBlock from './ScoreBlock';
-import Typography from '../typography/Typography';
 import { matchCardColorMap } from './colorMap';
+import { MatchCardProps } from './types';
 
 const CARD_WIDTH = Math.min( Dimensions.get( 'window' ).width - 32, 360 );
 const CARD_HEIGHT = 148;

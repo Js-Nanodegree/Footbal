@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useCallback, ReactNode, useState, useRef, useEffect } from 'react';
-import { useRoute } from '@react-navigation/native';
+import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 /**
  * AppContext хранит состояние фильтров, выбранной лиги, выбранных команд, лоадеров для HomeScreen.
- * selectedLeagueId и selectedTeamIds теперь НЕ персистятся через MMKV.
+ * selectedLeagueId и selectedTeamIds теперь НЕ персистятся через in-memory + AsyncStorage.
  */
 interface AppContextValue
 {

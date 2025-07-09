@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useMMKVNetworkStatus } from '../../memory-bank/mmkvMemoryBank';
+import { useMMKVNetworkStatus } from '../../memory-bank/localMemoryBank';
 
 const NetworkStatusBar: React.FC = () => {
     const isConnected = useMMKVNetworkStatus();

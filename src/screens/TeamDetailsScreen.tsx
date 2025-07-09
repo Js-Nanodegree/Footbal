@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { useMMKVNetworkStatus } from '../shared/memory-bank/mmkvMemoryBank';
+import { useMMKVNetworkStatus } from '../shared/memory-bank/localMemoryBank';
 import ScreenWrapper from '../shared/ui/ScreenWrapper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';

@@ -1,14 +1,13 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import RootNavigator from './src/roads/RootNavigator';
-import { Provider } from 'react-redux';
-import { store } from './src/shared/api/store';
-import { NotifierWrapper } from 'react-native-notifier';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import NetInfo from '@react-native-community/netinfo';
-import { setCache, NETWORK_STATUS_KEY } from './src/shared/memory-bank/mmkvMemoryBank';
-import { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NotifierWrapper } from 'react-native-notifier';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+import RootNavigator from './src/roads/RootNavigator';
+import { store } from './src/shared/api/store';
+import { NETWORK_STATUS_KEY, setCache } from './src/shared/memory-bank/mmkvMemoryBank';
 import { OverlayProvider } from './src/shared/ui/OverlayContext';
 
 const NetworkStatusSync: React.FC = () =>

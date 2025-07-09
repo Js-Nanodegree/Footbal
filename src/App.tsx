@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from 'react';
 import ErrorState from 'src/shared/ui/error-state/ErrorState';
+import { useMemoryBankHydrated } from 'src/shared/memory-bank/localMemoryBank';
 import App from './App';
 import { I18nextProvider } from 'react-i18next';
 import { i18n } from 'src/shared/i18n';
@@ -52,12 +53,18 @@ class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBound
 export default function AppWrapper()
 {
     const [ lang, setLang ] = useState( 'ru' );
+    const hydrated = useMemoryBankHydrated();
 
     const handleLangChange = ( lng: 'ru' | 'en' ) =>
     {
         i18n.changeLanguage( lng );
         setLang( lng );
     };
+
+    if ( !hydrated )
+    {
+        return <ErrorState message="Загрузка локального хранилища..." description="Пожалуйста, подождите" />;
+    }
 
     return (
         <I18nextProvider i18n={i18n}>

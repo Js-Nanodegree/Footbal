@@ -1,6 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MMKV } from 'react-native-mmkv';
-import React from 'react';
+import { useCallback, useState } from 'react';
 const MAX_SELECTION = 6;
 
 export function useTeamListSelection( allTeamIds: string[], initialSelectedIds: string[] = [] )

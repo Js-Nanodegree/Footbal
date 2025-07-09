@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from 'src/roads/RootNavigator';
-import { getCache, setCache } from 'src/shared/memory-bank/mmkvMemoryBank';
+import { getCache, setCache } from 'src/shared/memory-bank/localMemoryBank';
 
 const MATCH_HISTORY_PARAMS_KEY = 'match_history_params';
 
@@ -16,7 +16,7 @@ export function useMatchHistoryParams() {
     season,
   } = route.params ?? {};
 
-  // 2. Если нет — берём из MMKV
+  // 2. Если нет — берём из in-memory + AsyncStorage
   if (!matchId || !homeId || !awayId) {
     const cached = getCache<{
       matchId?: number;
