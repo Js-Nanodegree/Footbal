@@ -10,6 +10,7 @@ import Spacer from 'src/shared/ui/Spacer';
 import { colors } from 'src/shared/ui/theme/colors';
 import { shadows } from 'src/shared/ui/theme/shadows';
 // import { t } from '@lingui/macro'; // TODO: подключить lingui.js
+import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
 
 const SECTION_SPACING = 20;
 
@@ -29,10 +30,11 @@ const MatchSwiperSection = React.memo(
         const loadingStyle = useFadeTransition( !!loading );
         const errorStyle = useFadeTransition( !!error || !matches || matches.length === 0 );
         const contentStyle = useFadeTransition( !loading && !error && matches && matches.length > 0 );
+        const isAndroidNoAnim = useDisableAnimationsForAndroid();
 
-        return (
-            <>
-                <View style={[ styles.root, shadows.section ]} testID="match-swiper-section">
+        if (isAndroidNoAnim) {
+            return (
+                <View style={[ styles.root, shadows.section ]}>
                     {/* LOADING */}
                     <Animated.View style={[ StyleSheet.absoluteFill, loadingStyle ]} pointerEvents={loading ? 'auto' : 'none'}>
                         {loading && (
@@ -46,7 +48,7 @@ const MatchSwiperSection = React.memo(
                         )}
                     </Animated.View>
                     {/* CONTENT */}
-                    <Animated.View style={[ StyleSheet.absoluteFill, contentStyle ]} pointerEvents={!loading && !error && matches && matches.length > 0 ? 'auto' : 'none'}>
+                    <View style={[ StyleSheet.absoluteFill, contentStyle ]} pointerEvents={!loading && !error && matches && matches.length > 0 ? 'auto' : 'none'}>
                         {!loading && !error && matches && matches.length > 0 && (
                             <MatchSwiper
                                 matches={matches}
@@ -55,10 +57,38 @@ const MatchSwiperSection = React.memo(
                                 initialMatchId={initialMatchId}
                             />
                         )}
-                    </Animated.View>
+                    </View>
+                    <Spacer size={SECTION_SPACING} />
                 </View>
+            );
+        }
+        return (
+            <Animated.View style={[ styles.root, shadows.section ]}>
+                {/* LOADING */}
+                <Animated.View style={[ StyleSheet.absoluteFill, loadingStyle ]} pointerEvents={loading ? 'auto' : 'none'}>
+                    {loading && (
+                        <SkeletonSwiper msg={/* TODO: {t`Загрузка live-матчей...`} */ 'Загрузка live-матчей...'} />
+                    )}
+                </Animated.View>
+                {/* ERROR/EMPTY */}
+                <Animated.View style={[ StyleSheet.absoluteFill, errorStyle ]} pointerEvents={error || !matches || matches.length === 0 ? 'auto' : 'none'}>
+                    {( error || !matches || matches.length === 0 ) && (
+                        <SkeletonSwiper msg={/* TODO: {t`На текущий момент live-матчей нет.`} */ 'На текущий момент\nlive-матчей нет.'} />
+                    )}
+                </Animated.View>
+                {/* CONTENT */}
+                <Animated.View style={[ StyleSheet.absoluteFill, contentStyle ]} pointerEvents={!loading && !error && matches && matches.length > 0 ? 'auto' : 'none'}>
+                    {!loading && !error && matches && matches.length > 0 && (
+                        <MatchSwiper
+                            matches={matches}
+                            selectedMatchId={selectedMatchId}
+                            onMatchPress={onMatchPress}
+                            initialMatchId={initialMatchId}
+                        />
+                    )}
+                </Animated.View>
                 <Spacer size={SECTION_SPACING} />
-            </>
+            </Animated.View>
         );
     }
 );

@@ -124,10 +124,12 @@ export function useHomeScreenSections({ onRefresh, onPaginate }: UseHomeScreenSe
       const adaptedMatch = {
         ...match,
         homeTeam: {
+          id: match.homeTeam?.id,
           name: match.homeTeam?.name,
           crest: (match.homeTeam as any)?.crest || (match.homeTeam as any)?.logo || '',
         },
         awayTeam: {
+          id: match.awayTeam?.id,
           name: match.awayTeam?.name,
           crest: (match.awayTeam as any)?.crest || (match.awayTeam as any)?.logo || '',
         },

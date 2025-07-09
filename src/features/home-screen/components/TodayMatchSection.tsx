@@ -44,14 +44,14 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
 
   const todayMatches: {
     id: number;
-    homeTeam: { name: string; logo: string };
-    awayTeam: { name: string; logo: string };
+    homeTeam: { id?: number; name: string; logo: string };
+    awayTeam: { id?: number; name: string; logo: string };
     time: string;
     date: string;
   }[] = ( matches ).map( ( m ) => ( {
     id: m.id,
-    homeTeam: { name: m.homeTeam?.name, logo: m.homeTeam?.crest || '' },
-    awayTeam: { name: m.awayTeam?.name, logo: m.awayTeam?.crest || '' },
+    homeTeam: { id: m.homeTeam?.id, name: m.homeTeam?.name, logo: m.homeTeam?.crest || '' },
+    awayTeam: { id: m.awayTeam?.id, name: m.awayTeam?.name, logo: m.awayTeam?.crest || '' },
     time: m.utcDate ? m.utcDate.split( 'T' )[ 1 ]?.slice( 0, 5 ) : '',
     date: DateFormatAdapter.formatCompactDate( m.utcDate ),
   } ) );

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { Animated, Text, View } from 'react-native';
+import { Animated, Text, View, SectionList } from 'react-native';
 import CollapsibleHeader from '../shared/ui/CollapsibleHeader/CollapsibleHeader';
+import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
 
 const team = {
     name: 'Chelsea',
@@ -15,6 +16,7 @@ const sections = [
 
 const CollapsibleHeaderDemoScreen = () =>
 {
+    const isAndroidNoAnim = useDisableAnimationsForAndroid();
     const scrollY = useRef( new Animated.Value( 0 ) ).current;
     const headerHeight = scrollY.interpolate( {
         inputRange: [ 0, 120 ],
@@ -24,23 +26,40 @@ const CollapsibleHeaderDemoScreen = () =>
     return (
         <View style={{ flex: 1 }}>
             <CollapsibleHeader team={team} headerHeight={headerHeight as any} />
-            <Animated.SectionList
-                sections={sections}
-                keyExtractor={item => item.id.toString()}
-                renderSectionHeader={( { section: { title } } ) => (
-                    <Text style={{ fontWeight: 'bold', fontSize: 18, marginTop: 16 }}>{title}</Text>
-                )}
-                renderItem={( { item } ) => (
-                    <View style={{ padding: 12 }}>
-                        <Text>{item.name}</Text>
-                    </View>
-                )}
-                contentContainerStyle={{ paddingTop: 130 }}
-                onScroll={Animated.event(
-                    [ { nativeEvent: { contentOffset: { y: scrollY } } } ],
-                    { useNativeDriver: false }
-                )}
-            />
+            {isAndroidNoAnim ? (
+                <SectionList
+                    sections={sections}
+                    keyExtractor={item => item.id.toString()}
+                    renderSectionHeader={( { section: { title } } ) => (
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginTop: 16 }}>{title}</Text>
+                    )}
+                    renderItem={( { item } ) => (
+                        <View style={{ padding: 12 }}>
+                            <Text>{item.name}</Text>
+                        </View>
+                    )}
+                    contentContainerStyle={{ paddingTop: 130 }}
+                    onScroll={() => {}}
+                />
+            ) : (
+                <Animated.SectionList
+                    sections={sections}
+                    keyExtractor={item => item.id.toString()}
+                    renderSectionHeader={( { section: { title } } ) => (
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginTop: 16 }}>{title}</Text>
+                    )}
+                    renderItem={( { item } ) => (
+                        <View style={{ padding: 12 }}>
+                            <Text>{item.name}</Text>
+                        </View>
+                    )}
+                    contentContainerStyle={{ paddingTop: 130 }}
+                    onScroll={Animated.event(
+                        [ { nativeEvent: { contentOffset: { y: scrollY } } } ],
+                        { useNativeDriver: false }
+                    )}
+                />
+            )}
         </View>
     );
 };

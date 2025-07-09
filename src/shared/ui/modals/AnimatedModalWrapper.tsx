@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, ViewStyle } from 'react-native';
+import { Animated, View, ViewStyle } from 'react-native';
+import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
 
 type AnimatedModalWrapperProps = {
     visible: boolean;
@@ -15,10 +16,12 @@ const AnimatedModalWrapper: React.FC<AnimatedModalWrapperProps> = ( {
     children,
 } ) =>
 {
+    const isAndroidNoAnim = useDisableAnimationsForAndroid();
     const opacity = useRef( new Animated.Value( 0 ) ).current;
 
     useEffect( () =>
     {
+        if (isAndroidNoAnim) return;
         if ( visible )
         {
             Animated.timing( opacity, {
@@ -37,7 +40,11 @@ const AnimatedModalWrapper: React.FC<AnimatedModalWrapperProps> = ( {
                 if ( finished && onFadeOutEnd ) onFadeOutEnd();
             } );
         }
-    }, [ visible, onFadeOutEnd, opacity ] );
+    }, [ visible, onFadeOutEnd, opacity, isAndroidNoAnim ] );
+
+    if (isAndroidNoAnim) {
+        return <View style={[{ opacity: 1 }, style]}>{children}</View>;
+    }
 
     return (
         <Animated.View style={[ { opacity }, style ]}>

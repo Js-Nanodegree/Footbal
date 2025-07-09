@@ -6,8 +6,9 @@ import Typography from 'src/shared/ui/typography/Typography';
 import { colors } from '../theme/colors';
 
 interface Team {
+  id?: number;
   name: string;
-  crestUrl: string; // URL из Football-Data.org
+  crest?: string;
 }
 
 interface TodayMatchCardProps {
@@ -189,6 +190,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     fontWeight: '500',
+  },
+  teamId: {
+    fontSize: 10,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 1,
+    marginBottom: 2,
   },
 });
 
