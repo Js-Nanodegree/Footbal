@@ -1,24 +1,15 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import CompetitionsScreen from '../screens/CompetitionsScreen';
-import CompetitionDetailsScreen from '../screens/CompetitionDetailsScreen';
-import StandingsScreen from '../screens/StandingsScreen';
-import TeamListScreen from '../screens/TeamListScreen';
-import TeamDetailsScreen from '../screens/TeamDetailsScreen';
-import StyleguideScreen from '../screens/StyleguideScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
 import { Text } from 'react-native';
-import ActionListDemoScreen from '../screens/ActionListDemoScreen';
-import CollapsibleHeaderDemoScreen from '../screens/CollapsibleHeaderDemoScreen';
-import ErrorStateDemoScreen from '../screens/ErrorStateDemoScreen';
-import FABScrollToTopDemoScreen from '../screens/FABScrollToTopDemoScreen';
-import TeamPastMatchesScreen from '../screens/TeamPastMatchesScreen';
-import { Competition } from '../features/team-api/types/competition';
-import NetworkStatusBar from '../shared/ui/tab-bar/NetworkStatusBar';
-import HomeScreen from 'src/screens/HomeScreen';
 import FinishedMatchesScreen from 'src/features/home-screen/components/FinishedMatchesScreen';
 import { footballApi } from 'src/features/team-api/services/footballApi';
+import HomeScreen from 'src/screens/HomeScreen';
 import MatchHistoryScreen from '../features/match-history/Screen';
+import { Competition } from '../features/team-api/types/competition';
+import StyleguideScreen from '../screens/StyleguideScreen';
+import TeamListScreen from '../screens/TeamListScreen';
+import NetworkStatusBar from '../shared/ui/tab-bar/NetworkStatusBar';
 
 export type RootStackParamList = {
     MainTabs: undefined;
@@ -45,63 +36,6 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-const MainTabs = () => (
-    <>
-        <Tab.Navigator
-            screenOptions={( { route } ) => ( {
-                headerShown: false,
-                tabBarLabel: ( { focused } ) =>
-                {
-                    let label = '';
-                    if ( route.name === 'Competitions' ) label = 'Турниры';
-                    if ( route.name === 'Teams' ) label = 'Команды';
-                    if ( route.name === 'Styleguide' ) label = 'Стайлгайд';
-                    return (
-                        <Text
-                            style={{
-                                color: focused ? '#E94057' : '#B0B0B0',
-                                fontWeight: focused ? 'bold' : 'normal',
-                                fontSize: 12,
-                            }}
-                        >
-                            {label}
-                        </Text>
-                    );
-                },
-                tabBarIcon: ( { focused } ) =>
-                {
-                    let icon = '';
-                    if ( route.name === 'Competitions' ) icon = '🏆';
-                    if ( route.name === 'Teams' ) icon = '👥';
-                    if ( route.name === 'Styleguide' ) icon = '🎨';
-                    return (
-                        <Text style={{ fontSize: 20, color: focused ? '#E94057' : '#B0B0B0' }}>{icon}</Text>
-                    );
-                },
-                tabBarStyle: {
-                    borderTopLeftRadius: 24,
-                    borderTopRightRadius: 24,
-                    height: 64,
-                    backgroundColor: '#fff',
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    shadowColor: '#000',
-                    shadowOpacity: 0.06,
-                    shadowOffset: { width: 0, height: -2 },
-                    shadowRadius: 8,
-                    elevation: 8,
-                },
-            } )}
-        >
-            <Tab.Screen name="Competitions" component={HomeScreen} />
-            <Tab.Screen name="Teams" component={TeamListScreen} />
-            <Tab.Screen name="Styleguide" component={StyleguideScreen} />
-        </Tab.Navigator>
-        <NetworkStatusBar />
-    </>
-);
 
 const RootNavigator = () =>
 {
@@ -111,7 +45,7 @@ const RootNavigator = () =>
         <Stack.Navigator initialRouteName="MainTabs">
             <Stack.Screen
                 name="MainTabs"
-                component={MainTabs}
+                component={HomeScreen}
                 options={{ headerShown: false }}
                 initialParams={{
                   competitions: competitions?.[ 0 ] || {},

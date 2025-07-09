@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { usePullToRefresh } from 'src/shared/hooks/usePullToRefresh';
 import
-  {
+{
   useGetMatchDetailsQuery,
   useGetTeamMatchesQuery,
   footballApi,
@@ -196,7 +196,7 @@ const MatchHistoryScreenContent: React.FC = () => {
 const MatchHistoryScreen: React.FC = () =>
 {
   return (
-    <MatchHistoryScreenContent />
+      <MatchHistoryScreenContent />
   );
 };
 

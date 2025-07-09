@@ -1,1 +1,0 @@
-export const FOOTBALL_API_KEY = 'test_key'; 

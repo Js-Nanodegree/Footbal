@@ -31,6 +31,45 @@ const getGradientByStatus = ( status: string ): string[] =>
   }
 };
 
+// --- ДОБАВЛЯЕМ: функция для заголовка и объяснения ---
+const getHeaderTitle = ( status?: string ) =>
+{
+  switch ( ( status || '' ).toUpperCase() )
+  {
+    case 'SCHEDULED':
+      return 'Запланирован';
+    case 'LIVE':
+    case 'IN_PLAY':
+      return 'Идёт матч';
+    case 'PAUSED':
+      return 'Перерыв';
+    case 'FINISHED':
+      return 'Матч завершён';
+    case 'POSTPONED':
+      return 'Перенесён';
+    case 'SUSPENDED':
+      return 'Остановлен';
+    case 'CANCELLED':
+      return 'Отменён';
+    default:
+      return 'Матч';
+  }
+};
+const getHeaderSubtitle = ( status?: string ) =>
+{
+  switch ( ( status || '' ).toUpperCase() )
+  {
+    case 'LIVE':
+      return 'Матч идёт прямо сейчас';
+    case 'FINISHED':
+      return 'Матч завершён';
+    case 'SCHEDULED':
+      return 'Матч ещё не начался';
+    default:
+      return '';
+  }
+};
+
 const Card: React.FC<CardProps> = ( props ) =>
 {
   const { index, currentIndex, onPress, ...rest } = props;
@@ -46,15 +85,18 @@ const Card: React.FC<CardProps> = ( props ) =>
   }, [ currentIndex, index ] );
 
   return (
+
     <Pressable style={styles.cardPressable} onPress={onPress}>
+
       <Animated.View style={[ styles.card, { transform: [ { scale: scaleAnim } ] } ]}>
-        {/* Градиент теперь зависит от статуса матча */}
+        {/* Градиент: фирменные цвета приложения (красный/синий) — динамика, спорт, live-акцент */}
         <LinearGradient
           colors={getGradientByStatus( rest.status ?? 'default' )}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFillObject}
         />
+
         {rest.homeTeam.logo && (
           <Image
             source={{ uri: rest.homeTeam.logo }}
@@ -102,7 +144,7 @@ const Card: React.FC<CardProps> = ( props ) =>
             </Typography>
           )}
         </View>
-        {rest.isLive && (
+
           <View style={styles.liveBlock}>
             <Typography
               variant="caption"
@@ -111,11 +153,10 @@ const Card: React.FC<CardProps> = ( props ) =>
               color="#fff"
               style={styles.liveText}
             >
-              LIVE
+            {getHeaderTitle( rest.status )}
             </Typography>
             <View style={styles.liveDot} />
-          </View>
-        )}
+        </View>
         <View style={[ styles.scoreRow, { position: 'absolute', bottom: 80, left: 0, right: 0 } ]}>
           <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={styles.score}>
             {rest.score.fullTime.home || '0'}
@@ -307,6 +348,24 @@ const styles = StyleSheet.create( {
     paddingHorizontal: Math.round( Dimensions.get( 'window' ).width * 0.055 ),
     justifyContent: 'space-between',
   },
+  headerBlock: {
+    top: Math.round( Dimensions.get( 'window' ).width * 0.06 ),
+    left: Math.round( Dimensions.get( 'window' ).width * 0.055 ),
+    zIndex: 20,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  headerSubtitle: {
+    color: '#fff',
+    fontSize: 12,
+    opacity: 0.8,
+    marginTop: 2,
+  },
   leagueBlock: {
     position: 'absolute',
     top: Math.round( Dimensions.get( 'window' ).width * 0.06 ),
@@ -341,6 +400,7 @@ const styles = StyleSheet.create( {
     right: Math.round( Dimensions.get( 'window' ).width * 0.055 ),
     flexDirection: 'row',
     alignItems: 'center',
+    maxWidth: 110,
     backgroundColor: 'rgba(255,255,255,0.08)',
     borderRadius: 16,
     paddingHorizontal: 12,
@@ -349,6 +409,7 @@ const styles = StyleSheet.create( {
   },
   liveText: {
     marginRight: 6,
+    textAlign: 'right',
     fontSize: 12,
   },
   liveDot: {
