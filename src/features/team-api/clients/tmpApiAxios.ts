@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, CancelTokenSource, AxiosResponse, AxiosError, AxiosProgressEvent } from 'axios';
+import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, CancelTokenSource } from 'axios';
 import axiosRetry from 'axios-retry';
 import reactotron from 'reactotron-react-native';
 // import * as Sentry from '@sentry/react-native'; // если используется Sentry
