@@ -70,6 +70,35 @@ const getHeaderSubtitle = ( status?: string ) =>
   }
 };
 
+const TextComposer = ( {
+  title,
+  score,
+  reverse,
+}: {
+  title: string;
+  score: string;
+  reverse: boolean;
+} ) =>
+{
+  if ( typeof score === 'string' && /\d/.test( score ) )
+  {
+    if ( reverse )
+    {
+      return (
+        <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={{ fontSize: 12 }}>
+          {score} :{title}
+        </Typography>
+      );
+    }
+    return (
+      <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={{ fontSize: 12 }}>
+        {title}: {score}
+      </Typography>
+    );
+  }
+  return <View />;
+};
+
 const Card: React.FC<CardProps> = ( props ) =>
 {
   const { index, currentIndex, onPress, ...rest } = props;
@@ -84,10 +113,18 @@ const Card: React.FC<CardProps> = ( props ) =>
     } ).start();
   }, [ currentIndex, index ] );
 
+  const isCheckNumberExtra = [ rest.score.extraTime?.home, rest.score.extraTime?.away ].every(
+    ( item ) => typeof item === 'number',
+  );
+  const isCheckNumberHalf = [ rest.score.halfTime?.home, rest.score.halfTime?.away ].every(
+    ( item ) => typeof item === 'number',
+  );
+  const isCheckNumberPenalty = [ rest.score.penalties?.home, rest.score.penalties?.away ].every(
+    ( item ) => typeof item === 'number',
+  );
+
   return (
-
     <Pressable style={styles.cardPressable} onPress={onPress}>
-
       <Animated.View style={[ styles.card, { transform: [ { scale: scaleAnim } ] } ]}>
         {/* Градиент: фирменные цвета приложения (красный/синий) — динамика, спорт, live-акцент */}
         <LinearGradient
@@ -145,17 +182,17 @@ const Card: React.FC<CardProps> = ( props ) =>
           )}
         </View>
 
-          <View style={styles.liveBlock}>
-            <Typography
-              variant="caption"
-              weight="bold"
-              font="Oswald"
-              color="#fff"
-              style={styles.liveText}
-            >
+        <View style={styles.liveBlock}>
+          <Typography
+            variant="caption"
+            weight="bold"
+            font="Oswald"
+            color="#fff"
+            style={styles.liveText}
+          >
             {getHeaderTitle( rest.status )}
-            </Typography>
-            <View style={styles.liveDot} />
+          </Typography>
+          <View style={styles.liveDot} />
         </View>
         <View style={[ styles.scoreRow, { position: 'absolute', bottom: 80, left: 0, right: 0 } ]}>
           <Typography variant="h1" weight="bold" font="Oswald" color="#fff" style={styles.score}>
@@ -195,7 +232,7 @@ const Card: React.FC<CardProps> = ( props ) =>
             weight="bold"
             font="Oswald"
             color="#fff"
-            style={[ styles.teamName, { textAlign: 'right', marginLeft: 8 } ]}
+            style={[ styles.teamName, { textAlign: 'right', marginLeft: 8, flex: 1 } ]}
             numberOfLines={1}
           >
             {rest.homeTeam?.name}
@@ -237,35 +274,15 @@ const Card: React.FC<CardProps> = ( props ) =>
               }}
             >
               <View>
-                {rest.score.extraTime?.home && rest.score.extraTime?.away && (
-                  <Typography
-                    variant="h1"
-                    weight="bold"
-                    font="Oswald"
-                    color="#fff"
-                    style={{ fontSize: 12 }}
-                  >
-                    {rest.score.extraTime?.home || '-'} :EXTRA
-                  </Typography>
+                {isCheckNumberExtra && (
+                  <TextComposer title="EXTRA" score={rest?.score?.extraTime?.away || '0'} reverse />
                 )}
-                {rest.score.halfTime?.home && rest.score.halfTime?.away && ( <Typography
-                  variant="h1"
-                  weight="bold"
-                  font="Oswald"
-                  color="#fff"
-                  style={{ fontSize: 12 }}
-                >
-                  {rest.score.halfTime?.home || '-'} :HALF
-                </Typography> )}
-                {rest.score.penalties?.home && rest.score.penalties?.away && ( <Typography
-                  variant="h1"
-                  weight="bold"
-                  font="Oswald"
-                  color="#fff"
-                  style={{ fontSize: 12 }}
-                >
-                  {rest.score.penalties?.home || '-'} :PEN
-                </Typography> )}
+                {isCheckNumberHalf && (
+                  <TextComposer title="HALF" score={rest.score.halfTime?.away || '0'} reverse />
+                )}
+                {isCheckNumberPenalty && (
+                  <TextComposer title="PEN" score={rest?.score?.penalties?.away || '0'} reverse />
+                )}
               </View>
               <View style={styles.badge}>
                 <Typography
@@ -275,37 +292,19 @@ const Card: React.FC<CardProps> = ( props ) =>
                   color="#1ED760"
                   style={styles.badgeText}
                 >
-                  {rest.badgeText}
+                  {rest?.badgeText}
                 </Typography>
               </View>
               <View>
-                {rest.score.extraTime?.home && rest.score.extraTime?.away && <Typography
-                  variant="h1"
-                  weight="bold"
-                  font="Oswald"
-                  color="#fff"
-                  style={{ fontSize: 12 }}
-                >
-                  EXTRA:{rest.score.extraTime?.away || '-'}
-                </Typography>}
-                {rest.score.halfTime?.home && rest.score.halfTime?.away && <Typography
-                  variant="h1"
-                  weight="bold"
-                  font="Oswald"
-                  color="#fff"
-                  style={{ fontSize: 12 }}
-                >
-                  HALF:{rest.score.halfTime?.away || '-'}
-                </Typography>}
-                {rest.score.penalties?.home && rest.score.penalties?.away && <Typography
-                  variant="h1"
-                  weight="bold"
-                  font="Oswald"
-                  color="#fff"
-                  style={{ fontSize: 12 }}
-                >
-                  PEN:{rest.score.penalties?.away || '-'}
-                </Typography>}
+                {isCheckNumberExtra && (
+                  <TextComposer title="EXTRA" score={rest.score.extraTime?.away || '0'} />
+                )}
+                {isCheckNumberHalf && (
+                  <TextComposer title="HALF" score={rest.score.halfTime?.away || '0'} />
+                )}
+                {isCheckNumberPenalty && (
+                  <TextComposer title="PEN" score={rest.score.penalties?.away || '0'} />
+                )}
               </View>
             </View>
           )}

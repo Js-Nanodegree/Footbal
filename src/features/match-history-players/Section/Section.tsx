@@ -7,6 +7,7 @@ import { useTranslation } from 'src/shared/i18n';
 import Typography from 'src/shared/ui/typography/Typography';
 import { PlayerCard } from '../PlayerCard';
 import styles from './Section.styles';
+import { skipToken } from '@reduxjs/toolkit/query';
 
 // Типизация пропсов для AnimatedPlayerCard
 interface AnimatedPlayerCardProps {
@@ -25,8 +26,12 @@ export interface MatchHistoryPlayersSectionProps {
 export const MatchHistoryPlayersSection: React.FC<MatchHistoryPlayersSectionProps> = ({ match, loading, error }) => {
   const { t } = useTranslation();
   // Все хуки до любых return!
-  const { data: homeTeamDetails, isLoading: isHomeLoading, error: homeError } = useGetTeamDetailsQuery( match?.homeTeam?.id );
-  const { data: awayTeamDetails, isLoading: isAwayLoading, error: awayError } = useGetTeamDetailsQuery( match?.awayTeam?.id );
+  const { data: homeTeamDetails, isLoading: isHomeLoading, error: homeError } = useGetTeamDetailsQuery(
+    match?.homeTeam?.id ? match.homeTeam.id : skipToken
+  );
+  const { data: awayTeamDetails, isLoading: isAwayLoading, error: awayError } = useGetTeamDetailsQuery(
+    match?.awayTeam?.id ? match.awayTeam.id : skipToken
+  );
 
 
   if ( !match ) return (
