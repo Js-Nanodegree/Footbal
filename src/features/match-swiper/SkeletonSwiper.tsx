@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Typography from 'src/shared/ui/typography/Typography';
 import AnimatedShimmer from 'src/shared/ui/shimmer/AnimatedShimmer';
+import { colors } from 'src/shared/ui/theme/colors';
 
 const SkeletonSwiper = ({ msg }: { msg?: string }) => (
   <View style={styles.container}>
@@ -10,7 +11,7 @@ const SkeletonSwiper = ({ msg }: { msg?: string }) => (
         <AnimatedShimmer style={StyleSheet.absoluteFill} borderRadius={28} />
         {msg && (
           <View style={styles.msgContainer}>
-            <Typography variant="caption" color="white" style={styles.msgText}>
+            <Typography variant="caption" color={colors.primary} style={styles.msgText}>
               {msg}
             </Typography>
           </View>

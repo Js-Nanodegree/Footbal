@@ -77,7 +77,7 @@ const TodayMatchCard: React.FC<TodayMatchCardProps> = ({
 } ) =>
 {
   return (
-    <View style={styles.cardShadow}>
+    <View style={{borderWidth:1,borderColor:colors.grayLight,borderRadius:24,marginVertical:6}}>
       <Swipeable
         renderLeftActions={renderLeftActions}
         renderRightActions={renderRightActions}
@@ -123,7 +123,7 @@ const TodayMatchCard: React.FC<TodayMatchCardProps> = ({
             {awayTeam.name}
           </Typography>
         </Pressable>
-      </Swipeable>
+    </Swipeable>
     </View>
   );
 };

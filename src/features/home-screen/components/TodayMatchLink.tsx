@@ -33,14 +33,13 @@ const TodayMatchLink: React.FC<TodayMatchLinkProps> = ( { onPress, todayMatches,
 {
     const count = todayMatches.length;
     return (
-        <View style={[ styles.row, shadows.card ]} testID={testID} accessibilityLabel={accessibilityLabel}>
+        <View style={[ styles.row ]} testID={testID} accessibilityLabel={accessibilityLabel}>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', flex: 1 }}>
                 <Typography variant="h2" weight="bold" font="Oswald" style={[ styles.text, { fontWeight: '700' } ]}>
-                    {/* TODO: {t`Актуальные матчи`} */}
                     Актуальные матчи
                 </Typography>
                 <Typography variant="caption" font="Inter" style={[ styles.count, { color: colors.primary } ]}>
-                    {count > 0 ? `${ count } ${ pluralizeGame( count ) }` : /* TODO: {t`Нет матчей`} */ 'Нет матчей'}
+                    {count > 0 ? `${ count } ${ pluralizeGame( count ) }` :'Нет матчей'}
                 </Typography>
             </View>
             <Pressable onPress={onPress} testID="today-match-link-pressable" accessibilityLabel="today-match-link-pressable">
@@ -49,7 +48,6 @@ const TodayMatchLink: React.FC<TodayMatchLinkProps> = ( { onPress, todayMatches,
                     fontWeight: '700',
                     color: colors.primary,
                 } ]}>
-                    {/* TODO: {t`Все`} */}
                     Все
                 </Typography>
             </Pressable>

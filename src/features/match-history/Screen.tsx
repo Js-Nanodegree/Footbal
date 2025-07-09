@@ -47,24 +47,24 @@ const MatchHistoryScreenContent: React.FC = () => {
   useFocusEffect(
     useCallback( () =>
     {
-      if (refetchMatch) refetchMatch();
+      if (isValid && typeof refetchMatch === 'function') refetchMatch();
       if (teamId && opponentId) {
         dispatch(
           footballApi.endpoints.getTeamMatches.initiate({ teamId, opponentId }, { forceRefetch: true })
         );
       }
-    }, [matchId, teamId, opponentId, refetchMatch])
+    }, [isValid, teamId, opponentId, refetchMatch])
   );
 
   const onRefresh = useCallback( () =>
   {
-    if (refetchMatch) refetchMatch();
+    if (isValid && typeof refetchMatch === 'function') refetchMatch();
     if (teamId && opponentId) {
       dispatch(
         footballApi.endpoints.getTeamMatches.initiate({ teamId, opponentId }, { forceRefetch: true })
       );
     }
-  }, [dispatch, matchId, teamId, opponentId, refetchMatch]);
+  }, [dispatch, isValid, teamId, opponentId, refetchMatch]);
 
   const { refreshControl } = usePullToRefresh( { onRefresh } );
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
+import { colors } from '../theme/colors';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent( LinearGradient );
 
@@ -31,16 +32,16 @@ const AnimatedShimmer: React.FC<AnimatedShimmerProps> = ( { style, borderRadius 
         transform: [ { translateX: translateX.value } ],
     } ) );
 
-    const gradientColors = shimmerColors || [ '#E32C2C', '#2C5DE3', '#E32C2C', '#2C5DE3' ];
+    const gradientColors = shimmerColors || [ colors.grayLight, colors.grayMedium, colors.grayLight, '#f8f8fa' ]
 
     return (
-        <View style={[ styles.container, style, { borderRadius } ]}>
+        <View style={[ styles.container, style, { borderRadius }, {borderWidth:1,borderColor:colors.grayMedium,backgroundColor:colors.grayLight} ]}>
             <AnimatedLinearGradient
                 colors={gradientColors}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={[ StyleSheet.absoluteFill, animatedStyle, { borderRadius } ]}
-                locations={[ 0, 0.5, 0.75, 0.25 ]}
+                locations={[ 0.05, 0.15,0.25, 0.15 ]}
             />
         </View>
     );
@@ -49,7 +50,7 @@ const AnimatedShimmer: React.FC<AnimatedShimmerProps> = ( { style, borderRadius 
 const styles = StyleSheet.create( {
     container: {
         overflow: 'hidden',
-        backgroundColor: '#E32C2C',
+        backgroundColor: colors.white,
     },
 } );
 
