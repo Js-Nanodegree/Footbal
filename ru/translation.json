@@ -1,0 +1,29 @@
+{
+  "matchStats": {
+    "noScoreData": "Нет данных по счёту для этого матча",
+    "noData": "Нет данных",
+    "noEvents": "Нет событий",
+    "buySubscription": "Купить подписку",
+    "detailedStats": "Детальная статистика",
+    "notAvailableForMatch": "недоступна для этого матча",
+    "generalInfo": "Общая информация",
+    "tournament": "Турнир",
+    "round": "Тур",
+    "stage": "Стадия",
+    "country": "Страна",
+    "date": "Дата",
+    "season": "Сезон",
+    "stageNames": {
+      "REGULAR_SEASON": "Регулярный сезон",
+      "GROUP_STAGE": "Групповой этап",
+      "PLAYOFFS": "Плей-офф",
+      "FINAL": "Финал",
+      "SEMI_FINALS": "1/2 финала",
+      "QUARTER_FINALS": "1/4 финала",
+      "LAST_16": "1/8 финала",
+      "LAST_32": "1/16 финала",
+      "LAST_64": "1/32 финала",
+      "THIRD_PLACE": "Матч за 3 место"
+    }
+  }
+} 

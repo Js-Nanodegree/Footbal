@@ -3,28 +3,29 @@ import { SectionList, View, Text, TouchableOpacity } from 'react-native';
 import Animated from 'react-native-reanimated';
 import ListItem from '../shared/ui/list-item/ListItem';
 import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
-
-const sections = [
-    {
-        title: 'Секция 1',
-        data: [
-            { id: 1, title: 'Action 1' },
-            { id: 2, title: 'Action 2' },
-        ],
-    },
-    {
-        title: 'Секция 2',
-        data: [
-            { id: 3, title: 'Action 3' },
-            { id: 4, title: 'Action 4' },
-        ],
-    },
-];
+import { useTranslation } from 'react-i18next';
 
 const ActionListDemoScreen = () =>
 {
+    const { t } = useTranslation();
     const [ selected, setSelected ] = useState<number | null>( null );
     const isAndroidNoAnim = useDisableAnimationsForAndroid();
+    const sections = [
+        {
+            title: t( 'actionList.section1' ),
+            data: [
+                { id: 1, title: t( 'actionList.action1' ) },
+                { id: 2, title: t( 'actionList.action2' ) },
+            ],
+        },
+        {
+            title: t( 'actionList.section2' ),
+            data: [
+                { id: 3, title: t( 'actionList.action3' ) },
+                { id: 4, title: t( 'actionList.action4' ) },
+            ],
+        },
+    ];
     return (
         <SectionList
             sections={sections}

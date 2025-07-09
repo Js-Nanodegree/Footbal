@@ -1,12 +1,20 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { View, StyleSheet, ViewStyle, StyleProp, TextStyle } from 'react-native';
 import Typography from '../typography/Typography';
 import { colors } from '../theme/colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Pressable } from 'react-native-gesture-handler';
 
-interface Props {
+interface ErrorNotificationProps
+{
+  style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
+  descriptionStyle?: StyleProp<TextStyle>;
+  timeStyle?: StyleProp<TextStyle>;
+  primaryButtonStyle?: StyleProp<ViewStyle>;
+  secondaryButtonStyle?: StyleProp<ViewStyle>;
+  primaryButtonTextStyle?: StyleProp<TextStyle>;
+  secondaryButtonTextStyle?: StyleProp<TextStyle>;
   title?: string;
   description?: string;
   errorType?: '400' | '403' | '404' | '429' | 'system';
@@ -25,7 +33,7 @@ const errorConfig = {
   system: { color: colors.text, title: 'Ошибка' },
 };
 
-const ErrorNotification: React.FC<Props> = ({
+const ErrorNotification: React.FC<ErrorNotificationProps> = ( {
   title,
   description,
   errorType = 'system',
@@ -38,13 +46,18 @@ const ErrorNotification: React.FC<Props> = ({
   const config = errorConfig[errorType];
   const insets = useSafeAreaInsets();
   return (
-    <BlurView
-      style={[styles.blurContainer, { marginTop: insets.top }]}
-      blurType="light"
-      blurAmount={18}
-      reducedTransparencyFallbackColor="rgba(191, 205, 251, 0.12)"
+    <View
+      style={[
+        styles.container,
+        {
+          marginTop: insets.top,
+          backgroundColor: colors.grayLight,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: colors.grayMedium,
+        },
+      ]}
     >
-      <View style={styles.overlay} />
       <View>
         <View
           style={[
@@ -103,23 +116,24 @@ const ErrorNotification: React.FC<Props> = ({
           </View>
         )}
       </View>
-    </BlurView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  blurContainer: {
-    borderRadius: 28,
+  container: {
+    // borderRadius: 28, // убираем скругление
     overflow: 'hidden',
     margin: 8,
     shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
     minWidth: 320,
-    borderWidth: 2,
-    borderColor: colors.border,
+    borderWidth: 1,
+    borderColor: colors.grayLight,
+    backgroundColor: colors.grayLight,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

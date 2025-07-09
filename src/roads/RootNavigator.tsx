@@ -6,6 +6,7 @@ import { footballApi } from 'src/features/team-api/services/footballApi';
 import HomeScreen from 'src/screens/HomeScreen';
 import MatchHistoryScreen from '../features/match-history/Screen';
 import { Competition } from '../features/team-api/types/competition';
+import { useTranslation } from 'react-i18next';
 
 export type RootStackParamList = {
     MainTabs: undefined;
@@ -35,6 +36,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const RootNavigator = () =>
 {
     const { data: competitions } = footballApi.endpoints.getLeagues.useQuery( {} );
+    const { t } = useTranslation();
 
     return (
         <Stack.Navigator initialRouteName="MainTabs">
@@ -49,13 +51,13 @@ const RootNavigator = () =>
           <Stack.Screen
               name="MatchHistory"
               component={MatchHistoryScreen}
-              options={{ title: 'История матчей', headerShown: false }}
+              options={{ title: t('matchHistory.title'), headerShown: false }}
               getId={( props ) => props.params?.matchId?.toString() || ''}
           />
           <Stack.Screen
               name="FinishedMatches"
               component={FinishedMatchesScreen}
-              options={{ title: 'Завершённые матчи', headerShown: false }}
+              options={{ title: t('finishedMatches.title'), headerShown: false }}
             />
     </Stack.Navigator>
   );

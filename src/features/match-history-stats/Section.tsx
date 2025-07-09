@@ -13,9 +13,11 @@ import { statsBarColorMap } from '../../shared/ui/stats-bar/colorMap';
 import MatchEventTimeline from '../../shared/ui/match-event-timeline/MatchEventTimeline';
 import { colors } from '../../shared/ui/theme/colors';
 import Button from '../../shared/ui/button/Button';
-import { durationMap, formatSeason, formatStage } from './mappings/matchStatsMappings';
+import { formatSeason, formatStage, useMatchStatsMappings } from './mappings/matchStatsMappings';
 import Total from './by-feature/Total';
 import { useMatchHistoryParams } from '../match-history/hooks/useMatchHistoryParams';
+import { useTranslation } from 'react-i18next';
+import type { MatchDetails } from '../../team-api/types/match';
 
 const TABS = [ 'Stats', 'Line-up', 'Summary' ];
 
@@ -34,30 +36,30 @@ const PINK = '#E94057';
 const BG = '#F7F7F9';
 
 export interface MatchHistoryStatsSectionProps {
-  match?: any;
+  match?: MatchDetails;
   loading?: boolean;
-  error?: any;
+  error?: string | null;
 }
 
 export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> = ( {
   match,
   loading,
   error,
-} ) =>
+}: MatchHistoryStatsSectionProps ) =>
 {
-
+  const { t } = useTranslation();
   const [tab, setTab] = useState<'Stats' | 'Line-up' | 'Summary'>('Stats');
-
+  const { stageMap, durationMap } = useMatchStatsMappings();
   if ( !match ) return <View />;
   // Общая информация о матче
   const generalInfo: { label: string; value: string }[] = [
-    match.competition?.name ? { label: 'Турнир', value: match.competition.name } : null,
-    match.matchday ? { label: 'Тур', value: String( match.matchday ) } : null,
-    match.stage ? { label: 'Стадия', value: formatStage( match.stage ) } : null,
-    match.area?.name ? { label: 'Страна', value: match.area.name } : null,
+    match.competition?.name ? { label: t( 'matchStats.tournament' ), value: match.competition.name } : null,
+    match.matchday ? { label: t( 'matchStats.round' ), value: String( match.matchday ) } : null,
+    match.stage ? { label: t( 'matchStats.stage' ), value: t( 'matchStats.stageNames.' + match.stage ) } : null,
+    match.area?.name ? { label: t( 'matchStats.country' ), value: match.area.name } : null,
     match.utcDate
       ? {
-        label: 'Дата',
+        label: t( 'matchStats.date' ),
         value: new Date( match.utcDate ).toLocaleString( 'ru-RU', {
           day: '2-digit',
           month: '2-digit',
@@ -68,10 +70,10 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
       }
       : null,
     match.season?.startDate && match.season?.endDate
-      ? { label: 'Сезон', value: formatSeason( match.season.startDate, match.season.endDate ) }
+      ? { label: t( 'matchStats.season' ), value: formatSeason( match.season.startDate, match.season.endDate ) }
       : null,
     Array.isArray( match.referees ) && match.referees.length > 0
-      ? { label: 'Судьи', value: match.referees.map( ( r: any ) => r.name ).join( ', ' ) }
+      ? { label: t( 'matchStats.referees' ), value: match.referees.map( ( r: any ) => r.name ).join( ', ' ) }
       : null,
   ].filter( Boolean ) as { label: string; value: string }[];
 
@@ -80,7 +82,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
     match.score?.fullTime &&
       ( typeof match.score.fullTime.home === 'number' || typeof match.score.fullTime.away === 'number' )
       ? {
-        label: 'Счёт (Full Time)',
+        label: t( 'matchStats.fullTimeScore' ),
         home: match.score.fullTime.home ?? '—',
         away: match.score.fullTime.away ?? '—',
         disabled: false,
@@ -89,7 +91,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
     match.score?.halfTime &&
       ( typeof match.score.halfTime.home === 'number' || typeof match.score.halfTime.away === 'number' )
       ? {
-        label: 'Счёт (1-й тайм)',
+        label: t( 'matchStats.halfTimeScore' ),
         home: match.score.halfTime.home ?? '—',
         away: match.score.halfTime.away ?? '—',
         disabled: false,
@@ -99,7 +101,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
       ( typeof match.score.extraTime.home === 'number' ||
         typeof match.score.extraTime.away === 'number' )
       ? {
-        label: 'Счёт (Extra Time)',
+        label: t( 'matchStats.extraTimeScore' ),
         home: match.score.extraTime.home ?? '—',
         away: match.score.extraTime.away ?? '—',
         disabled: false,
@@ -109,7 +111,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
       ( typeof match.score.penalties.home === 'number' ||
         typeof match.score.penalties.away === 'number' )
       ? {
-        label: 'Счёт (Пенальти)',
+        label: t( 'matchStats.penaltiesScore' ),
         home: match.score.penalties.home ?? '—',
         away: match.score.penalties.away ?? '—',
         disabled: false,
@@ -117,7 +119,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
       : null,
     match.score?.winner
       ? {
-        label: 'Победитель',
+        label: t( 'matchStats.winner' ),
         home: match.score.winner === 'HOME_TEAM' ? '🏆' : '',
         away: match.score.winner === 'AWAY_TEAM' ? '🏆' : '',
         disabled: false,
@@ -125,7 +127,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
       : null,
     match.score?.duration
       ? {
-        label: 'Тип матча',
+        label: t( 'matchStats.type' ),
         home: durationMap[ match.score.duration ] || match.score.duration,
         away: durationMap[ match.score.duration ] || match.score.duration,
         disabled: false,
@@ -133,22 +135,22 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
       : null,
     match.status
       ? {
-        label: 'Статус',
+        label: t( 'matchStats.status' ),
         home: match.status,
         away: match.status,
         disabled: false,
       }
       : null,
     // Моковые метрики (дизейбл)
-    { label: 'Угловые', home: '—', away: '—', disabled: true },
-    { label: 'Пенальти (удары)', home: '—', away: '—', disabled: true },
-    { label: 'Касания к воротам', home: '—', away: '—', disabled: true },
-    { label: 'Удары по воротам', home: '—', away: '—', disabled: true },
-    { label: 'Владение мячом', home: '—', away: '—', disabled: true },
-    { label: 'xG', home: '—', away: '—', disabled: true },
-    { label: 'Фолы', home: '—', away: '—', disabled: true },
-    { label: 'Жёлтые карточки', home: '—', away: '—', disabled: true },
-    { label: 'Красные карточки', home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.corners' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.penalties' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.touchesInBox' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.shotsOnTarget' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.possession' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.xg' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.fouls' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.yellowCards' ), home: '—', away: '—', disabled: true },
+    { label: t( 'matchStats.redCards' ), home: '—', away: '—', disabled: true },
   ].filter( Boolean );
 
   const homeLineup = match.homeTeam?.lineup || [];
@@ -161,8 +163,8 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
 
   return (
     <>
-      <View style={{ marginHorizontal: 12, marginBottom: 8 }}>
-        <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>Общая информация</Typography>
+      <View style={{ marginHorizontal: 12, marginBottom: 8, marginTop: 22 }}>
+        <Typography variant="h2" style={{ marginTop: 12, fontWeight: '700' }}>{t( 'matchStats.generalInfo' )}</Typography>
       </View>
     <View style={styles.section}>
       {/* Общая информация */}
@@ -203,7 +205,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
           ) : (
               <View style={{ marginTop: 12, alignItems: 'center' }}>
                 <Typography style={{ marginTop: 12, textAlign: 'center', color: '#aaa' }}>
-                  Нет данных по счёту для этого матча
+                    {t( 'matchStats.noScoreData' )}
                 </Typography>
               </View>
           )}
@@ -228,7 +230,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
                   </Typography>
                 ) )
               ) : (
-                <Typography variant="caption">Нет данных</Typography>
+                    <Typography variant="caption">{t( 'matchStats.noData' )}</Typography>
               )}
             </View>
             <View style={styles.lineupCol}>
@@ -239,7 +241,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
                   </Typography>
                 ) )
               ) : (
-                <Typography variant="caption">Нет данных</Typography>
+                    <Typography variant="caption">{t( 'matchStats.noData' )}</Typography>
               )}
             </View>
           </View>
@@ -251,7 +253,7 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
             <MatchEventTimeline events={summaryEvents} />
           ) : (
             <Typography variant="caption" style={{ textAlign: 'center' }}>
-              Нет событий
+                  {t( 'matchStats.noEvents' )}
             </Typography>
           )}
         </View>
@@ -259,15 +261,15 @@ export const MatchHistoryStatsSection: React.FC<MatchHistoryStatsSectionProps> =
 
       <View style={{ marginTop: 12, alignItems: 'center',marginHorizontal:12 }}>
         <Button
-          title="Купить подписку"
+            title={t( 'matchStats.buySubscription' )}
           onPress={() => { }}
           style={{ marginTop: 12, width: '100%' }}
         />
         <Typography style={{ marginTop: 12, textAlign: 'center', color: colors.grayMedium }}>
-          Детальная статистика
+            {t( 'matchStats.detailedStats' )}
         </Typography>
         <Typography style={{ marginBottom: 12, textAlign: 'center', color: colors.grayMedium }}>
-          недоступна для этого матча
+            {t( 'matchStats.notAvailableForMatch' )}
         </Typography>
       </View>
     </View>

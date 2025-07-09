@@ -73,3 +73,5 @@
 [2025-07-04] refactor: Полностью удалён DateSeasonContext, DateSeasonSwitcher и все остатки контекста из feature match-history. Все параметры состояния теперь только через navigation params и useMatchHistoryParams. Обновлены комментарии, context.md и структура секций. (MatchHistory) 
 
 [2024-06-19] feat: Добавлен хук useDisableAnimationsForAndroid для отключения анимаций на Android (аудит анимаций). 
+
+[2024-06-19] docs: Завершён аудит строк в роутере (RootNavigator.tsx) — все строки вынесены в i18n, хардкода не найдено. (i18n-audit-router) 

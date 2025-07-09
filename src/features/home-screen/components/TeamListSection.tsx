@@ -11,6 +11,7 @@ import { shadows } from 'src/shared/ui/theme/shadows';
 import Typography from 'src/shared/ui/typography/Typography';
 import { useAppContext } from '../context';
 import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
+import { useTranslation } from 'react-i18next';
 
 const SECTION_SPACING = 20;
 
@@ -36,6 +37,7 @@ const TeamListSection = React.memo(
     loading?: boolean;
     error?: string | null;
   }) => {
+    const { t } = useTranslation();
     const teamsSafe = Array.isArray(teams) ? teams : [];
     const { selectedTeamIds, setSelectedTeamIds } = useAppContext();
 
@@ -128,14 +130,14 @@ const TeamListSection = React.memo(
                     font="Oswald"
                     style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                   >
-                    Нет команд для отображения
+                    {t('teamList.noTeams')}
                   </Typography>
                   <Typography
                     variant="body"
                     font="Oswald"
                     style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                   >
-                    Попробуйте изменить лигу или команду
+                    {t('teamList.tryChangeLeagueOrTeam')}
                   </Typography>
                 </View>
               )}
@@ -155,13 +157,13 @@ const TeamListSection = React.memo(
                   font="Oswald"
                   style={{ marginLeft: 16, fontSize: 24, color: colors.text, fontWeight: '600' }}
                 >
-                  Выбор команды
+                  {t('teamList.selectTeam')}
                 </Typography>
                 <TeamList
                   teams={teamsWithLogo}
                   initialSelectedIds={selectedTeamIds}
                   onTeamSelect={handleTeamSelect}
-                  onTvPress={() => Alert.alert('Переход к ТВ-матчам или трансляциям')}
+                  onTvPress={() => Alert.alert(t('teamList.tvAlert'))}
                   testID="team-list"
                   accessibilityLabel="team-list"
                 />
@@ -174,7 +176,7 @@ const TeamListSection = React.memo(
 
     return (
       <Animated.View
-        style={[styles.root, animatedRootStyle, shadows.section]}
+        style={[ styles.root, animatedRootStyle ]}
         testID="team-list-section"
       >
         {/* LOADING */}
@@ -227,14 +229,14 @@ const TeamListSection = React.memo(
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
-                  Нет команд для отображения
+                  {t('common.noTeams')}
                 </Typography>
                 <Typography
                   variant="body"
                   font="Oswald"
                   style={{ marginLeft: 16, marginBottom: 8, color: colors.live }}
                 >
-                  Попробуйте изменить лигу или команду
+                  {t('teamList.tryChangeLeagueOrTeam')}
                 </Typography>
               </View>
             )}
@@ -254,13 +256,13 @@ const TeamListSection = React.memo(
                 font="Oswald"
                 style={{ marginLeft: 16, fontSize: 24, color: colors.text, fontWeight: '600' }}
               >
-                Выбор команды
+                {t('teamList.selectTeam')}
               </Typography>
               <TeamList
                 teams={teamsWithLogo}
                 initialSelectedIds={selectedTeamIds}
                 onTeamSelect={handleTeamSelect}
-                onTvPress={() => Alert.alert('Переход к ТВ-матчам или трансляциям')}
+                onTvPress={() => Alert.alert(t('teamList.tvAlert'))}
                 testID="team-list"
                 accessibilityLabel="team-list"
               />
@@ -276,6 +278,7 @@ const styles = StyleSheet.create({
   root: {
     position: 'relative',
     backgroundColor: colors.transparent,
+    marginTop: 24
   },
 });
 

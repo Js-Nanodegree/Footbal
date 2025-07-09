@@ -9,7 +9,6 @@ import { colors } from 'src/shared/ui/theme/colors';
 import { shadows } from 'src/shared/ui/theme/shadows';
 import TodayMatchCard from 'src/shared/ui/today-match-card/TodayMatchCard';
 import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
-// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 const SECTION_SPACING = 20;
 

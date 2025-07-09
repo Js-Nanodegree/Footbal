@@ -1,15 +1,138 @@
 {
-  "section.home": "Домашние",
-  "section.away": "Гостевые",
-  "section.noPlayers": "Нет игроков",
-  "section.loading": "Загрузка...",
-  "section.error": "Ошибка загрузки",
-  "section.noData": "Нет данных",
-  "section.loadingTeamComposition": "Загрузка состава команд...",
-  "section.errorTeamComposition": "Ошибка загрузки состава",
-  "section.noTeamData": "Нет данных по командам",
-  "section.teamComposition": "Состав команды",
-  "player.position": "Позиция",
-  "player.number": "Номер",
-  "player.club": "Клуб"
+  "matchStats": {
+    "generalInfo": "Общая информация",
+    "tournament": "Турнир",
+    "round": "Тур",
+    "stage": "Стадия",
+    "country": "Страна",
+    "date": "Дата",
+    "season": "Сезон",
+    "noScoreData": "Нет данных по счёту для этого матча",
+    "noData": "Нет данных",
+    "noEvents": "Нет событий",
+    "buySubscription": "Купить подписку",
+    "detailedStats": "Детальная статистика",
+    "notAvailableForMatch": "недоступна для этого матча",
+    "fullTimeScore": "Счёт (Full Time)",
+    "halfTimeScore": "Счёт (1-й тайм)",
+    "extraTimeScore": "Счёт (Extra Time)",
+    "penaltiesScore": "Счёт (Пенальти)",
+    "winner": "Победитель",
+    "type": "Тип матча",
+    "status": "Статус",
+    "corners": "Угловые",
+    "penalties": "Пенальти (удары)",
+    "touchesInBox": "Касания к воротам",
+    "shotsOnTarget": "Удары по воротам",
+    "possession": "Владение мячом",
+    "xg": "xG",
+    "fouls": "Фолы",
+    "yellowCards": "Жёлтые карточки",
+    "redCards": "Красные карточки",
+    "referees": "Судьи",
+    "duration": {
+      "REGULAR": "Основное время",
+      "EXTRA_TIME": "Доп. время",
+      "PENALTY_SHOOTOUT": "Пенальти"
+    },
+    "stageNames": {
+      "REGULAR_SEASON": "Регулярный сезон",
+      "GROUP_STAGE": "Групповой этап",
+      "PLAYOFFS": "Плей-офф",
+      "FINAL": "Финал",
+      "SEMI_FINALS": "1/2 финала",
+      "QUARTER_FINALS": "1/4 финала",
+      "LAST_16": "1/8 финала",
+      "LAST_32": "1/16 финала",
+      "LAST_64": "1/32 финала",
+      "THIRD_PLACE": "Матч за 3 место"
+    }
+  },
+  "section": {
+    "teamComposition": "Состав команды",
+    "noPlayers": "Нет игроков",
+    "noData": "Нет данных"
+  },
+  "matchSwiper": {
+    "headerTitle": {
+      "scheduled": "Запланирован",
+      "live": "Идёт",
+      "paused": "Перерыв",
+      "finished": "Завершён",
+      "postponed": "Перенесён",
+      "suspended": "Остановлен",
+      "cancelled": "Отменён",
+      "default": "Матч"
+    }
+  },
+  "teamList": {
+    "selectTeam": "Выберите команду",
+    "tvAlert": "Перейти к ТВ-матчам или трансляциям"
+  },
+  "header": {
+    "back": "Назад",
+    "liveScore": "LiveScore"
+  },
+  "finishedMatches": {
+    "title": "Завершённые матчи"
+  },
+  "pullToRefresh": {
+    "title": "Потяните для обновления"
+  },
+  "homeScreen": {
+    "upcomingEvents": "Ближайшие события",
+    "actualMatches": "Актуальные матчи",
+    "all": "Все",
+    "teams": "Команды",
+    "noLeagues": "Нет доступных лиг",
+    "noMatches": "Нет доступных матчей"
+  },
+  "actionList": {
+    "section1": "Секция 1"
+  },
+  "fabDemo": {
+    "section": "Секция"
+  },
+  "styleguide": {
+    "input": { "title": "Инпут" },
+    "button": { "title": "Кнопка" }
+  },
+  "player": {
+    "position": "Позиция"
+  },
+  "competition": {
+    "listTitle": "Список турниров"
+  },
+  "teamDetails": {
+    "screenStub": "Экран деталей команды (заглушка)",
+    "pastMatches": "Смотреть прошедшие матчи"
+  },
+  "matchHistory": {
+    "title": "История матчей"
+  },
+  "common": {
+    "all": "Все",
+    "gamesCount_one": "{{count}} игра",
+    "gamesCount_few": "{{count}} игры",
+    "gamesCount_many": "{{count}} игр",
+    "gamesCount_other": "{{count}} игр",
+    "empty": "Нет данных",
+    "loading": "Загрузка...",
+    "noData": "Нет данных",
+    "noEvents": "Нет событий",
+    "noTeams": "Нет команд",
+    "noMatches": "Нет матчей",
+    "noCurrentMatches": "На текущий момент нет матчей",
+    "noCurrentLiveMatches": "На текущий момент live-матчей нет.",
+    "loadingError": "Ошибка загрузки",
+    "error400": "Некорректный запрос (400)",
+    "error403": "Доступ запрещён (403)",
+    "error404": "Не найдено (404)",
+    "error429": "Слишком много запросов (429)",
+    "errorSystem": "Неизвестная ошибка",
+    "showError": "Показать ошибку: {{type}}",
+    "retry": "Повторить",
+    "details": "Подробнее",
+    "errorTitle": "Ошибка {{type}}"
+  }
 } 

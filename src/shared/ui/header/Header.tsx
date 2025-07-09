@@ -3,6 +3,7 @@ import { Platform, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-n
 import BackIcon from '../icons/BackIcon';
 import { colors } from '../theme/colors';
 import Typography from '../typography/Typography';
+import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
   title: string;
@@ -10,23 +11,27 @@ interface HeaderProps {
   style?: ViewStyle;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, onBack, style }: HeaderProps) => (
-  <View style={[styles.root, style]}>
-    {onBack && (
-      <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel="Назад">
-        <BackIcon color={colors.text} width={28} height={28} />
-        <Typography
-          variant="h1"
-          weight="bold"
-          font="Oswald"
-          style={[ styles.title, Platform.OS === 'android' && { fontSize: 20 } ]}
-        >
-          {title}
-        </Typography>
-      </TouchableOpacity>
-    )}
-  </View>
-);
+const Header: React.FC<HeaderProps> = ( { title, onBack, style }: HeaderProps ) =>
+{
+  const { t } = useTranslation();
+  return (
+    <View style={[ styles.root, style ]}>
+      {onBack && (
+        <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel={t( 'header.back' )}>
+          <BackIcon color={colors.text} width={28} height={28} />
+          <Typography
+            variant="h1"
+            weight="bold"
+            font="Oswald"
+            style={[ styles.title, Platform.OS === 'android' && { fontSize: 20 } ]}
+          >
+            {title}
+          </Typography>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   root: {

@@ -4,6 +4,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import TodayMatchLink from 'src/features/home-screen/components/TodayMatchLink';
+import { DateFormatAdapter } from 'src/features/match-history/adapters';
 import { Match } from 'src/features/team-api/types/match';
 import { useFadeTransition } from 'src/shared/hooks/useFadeTransition';
 import Spacer from 'src/shared/ui/Spacer';
@@ -13,9 +14,6 @@ import { shadows } from 'src/shared/ui/theme/shadows';
 import TodayMatchCardSkeleton from 'src/shared/ui/today-match-card/TodayMatchCardSkeleton';
 import Typography from 'src/shared/ui/typography/Typography';
 import { useAppContext } from '../context';
-import { DateFormatAdapter } from 'src/features/match-history/adapters';
-import { uiDebugConfig } from 'src/shared/debug/ui-debug.config';
-// import { t } from '@lingui/macro'; // TODO: подключить lingui.js и заменить строки на t()
 
 function formatCompactDate( dateStr: string )
 {
@@ -79,16 +77,14 @@ const TodayMatchSection = React.memo( ( { matches = [], error }: { matches: Matc
             <TodayMatchLink todayMatches={todayMatches} onPress={handleAllPress} testID="today-match-link-empty" accessibilityLabel="today-match-link-empty" />
             <View style={styles.emptyBox}>
               <Typography variant="body" font="Inter" style={{ color: colors.primary, marginBottom: 16 }}>
-                {/* TODO: {t`На текущий момент нет матчей`} */}
-                На текущий момент нет матчей
+                {t( 'common.noMatches' )}
               </Typography>
               <Typography
                 variant="body"
                 font="Inter"
                 style={{ color: colors.textSecondary, marginBottom: 16, textAlign: 'center' }}
               >
-                {/* TODO: {t`Попробуйте изменить лигу или команду`} */}
-                Попробуйте изменить лигу или команду
+                {t( 'teamList.tryChangeLeagueOrTeam' )}
               </Typography>
             </View>
           </View>

@@ -6,7 +6,6 @@ import { shadows } from 'src/shared/ui/theme/shadows';
 import Typography from 'src/shared/ui/typography/Typography';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedLeagueId, selectSelectedLeagueId } from '../leagueSlice';
-// import { t } from '@lingui/macro'; // TODO: подключить lingui.js
 
 export interface League
 {

@@ -99,7 +99,7 @@ const FinishedMatchesScreenInner = () => {
   if (isLoading) {
     return (
       <View style={[styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
+        <Header title={t( 'finishedMatches.title' )} onBack={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Typography variant="h2" font="Oswald">
             {t('Загрузка...')}
@@ -112,10 +112,10 @@ const FinishedMatchesScreenInner = () => {
   if (isError) {
     return (
       <View style={[styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
+        <Header title={t( 'finishedMatches.title' )} onBack={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Typography variant="h2" font="Oswald" style={{ color: 'red' }}>
-            {t('Ошибка загрузки матчей')}
+            {t( 'common.loading' )}
           </Typography>
         </View>
       </View>
@@ -125,10 +125,10 @@ const FinishedMatchesScreenInner = () => {
   if (!filteredMatches || filteredMatches.length === 0) {
     return (
       <View style={[styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
+        <Header title={t( 'finishedMatches.title' )} onBack={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Typography variant="h2" font="Oswald">
-            {t('Нет доступных матчей')}
+            {t( 'common.noMatches' )}
           </Typography>
         </View>
       </View>
@@ -148,7 +148,7 @@ const FinishedMatchesScreenInner = () => {
       }}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <Header title={t('Завершённые матчи')} onBack={() => navigation.goBack()} />
+        <Header title={t( 'finishedMatches.title' )} onBack={() => navigation.goBack()} />
       }
       refreshControl={refreshControl}
     />
