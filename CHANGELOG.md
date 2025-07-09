@@ -71,3 +71,5 @@
 [2024-06-19] feat: Унификация MatchSwiperSection для истории матчей, добавлен initialMatchId для автоскролла, исправлен импорт MatchSwiper, добавлены полифиллы Object.entries/values. 
 
 [2025-07-04] refactor: Полностью удалён DateSeasonContext, DateSeasonSwitcher и все остатки контекста из feature match-history. Все параметры состояния теперь только через navigation params и useMatchHistoryParams. Обновлены комментарии, context.md и структура секций. (MatchHistory) 
+
+[2024-06-19] feat: Добавлен хук useDisableAnimationsForAndroid для отключения анимаций на Android (аудит анимаций). 

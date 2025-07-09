@@ -118,7 +118,7 @@ const TeamListItem: React.FC<{
         />
         <Image source={{ uri: item.logo }} style={{ width: 48, height: 48 }} />
       </Animated.View>
-      <Animated.View style={{ opacity }}>
+      <Animated.View style={{ opacity, width: '100%' }}>
         <Typography
           font="Oswald"
           weight={isActive ? 'bold' : 'regular'}
@@ -261,10 +261,11 @@ const TeamList: React.FC<TeamListProps> = ({
 
 const styles = StyleSheet.create({
   item: {
-    marginRight: 6,
+    marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
     opacity: 1,
+
   },
   selectedItem: {},
   disabledItem: {

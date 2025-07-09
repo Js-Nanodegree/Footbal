@@ -3,6 +3,7 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors } from '../theme/colors';
+import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent( LinearGradient );
 
@@ -17,22 +18,30 @@ const SHIMMER_WIDTH = 150;
 
 const AnimatedShimmer: React.FC<AnimatedShimmerProps> = ( { style, borderRadius = 0, colors: shimmerColors } ) =>
 {
+    const isAndroidNoAnim = useDisableAnimationsForAndroid();
     const translateX = useSharedValue( -SHIMMER_WIDTH );
 
     React.useEffect( () =>
     {
+        if (isAndroidNoAnim) return;
         translateX.value = withRepeat(
             withTiming( SHIMMER_WIDTH * 2, { duration: 4200 } ),
             -1,
             false
         );
-    }, [] );
+    }, [isAndroidNoAnim] );
 
     const animatedStyle = useAnimatedStyle( () => ( {
-        transform: [ { translateX: translateX.value } ],
+        transform: [ { translateX: isAndroidNoAnim ? 0 : translateX.value } ],
     } ) );
 
     const gradientColors = shimmerColors || [ colors.grayLight, colors.grayMedium, colors.grayLight, '#f8f8fa' ]
+
+    if (isAndroidNoAnim) {
+        return (
+            <View style={[ styles.container, style, { borderRadius }, {borderWidth:1,borderColor:colors.grayMedium,backgroundColor:colors.grayLight} ]} />
+        );
+    }
 
     return (
         <View style={[ styles.container, style, { borderRadius }, {borderWidth:1,borderColor:colors.grayMedium,backgroundColor:colors.grayLight} ]}>

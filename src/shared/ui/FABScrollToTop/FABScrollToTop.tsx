@@ -1,15 +1,16 @@
 import React, { useRef } from 'react';
-import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Easing } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
+import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
 
-const SoccerBallAnimation = () =>
-{
+const SoccerBallAnimation = () => {
+  const isAndroidNoAnim = useDisableAnimationsForAndroid();
   const spinValue = new Animated.Value( 0 );
   const glowValue = new Animated.Value( 0 );
 
-  React.useEffect( () =>
-  {
+  React.useEffect( () => {
+    if (isAndroidNoAnim) return;
     Animated.loop(
       Animated.parallel( [
         Animated.timing( spinValue, {
@@ -26,17 +27,30 @@ const SoccerBallAnimation = () =>
         } ),
       ] )
     ).start();
-  }, [] );
+  }, [isAndroidNoAnim] );
 
-  const spin = spinValue.interpolate( {
-    inputRange: [ 0, 1 ],
-    outputRange: [ '0deg', '360deg' ],
-  } );
+  const spin = isAndroidNoAnim
+    ? '0deg'
+    : spinValue.interpolate( {
+        inputRange: [ 0, 1 ],
+        outputRange: [ '0deg', '360deg' ],
+      } );
 
-  const glow = glowValue.interpolate( {
-    inputRange: [ 0, 0.5, 1 ],
-    outputRange: [ '5', '15', '5' ],
-  } );
+  // glow не используется, оставляем как есть
+
+  if (isAndroidNoAnim) {
+    return (
+      <View>
+        <Svg width={100} height={100} viewBox="0 0 100 100">
+          <Circle cx="50" cy="50" r="40" fill="#fff" stroke="#000" strokeWidth="3" />
+          <Path
+            d="M50 20L60 40H40L50 20ZM50 80L60 60H40L50 80ZM20 50L40 60V40L20 50ZM80 50L60 40V60L80 50Z"
+            fill="#000"
+          />
+        </Svg>
+      </View>
+    );
+  }
 
   return (
     <Animated.View style={{ transform: [ { rotate: spin } ] }}>
@@ -46,15 +60,6 @@ const SoccerBallAnimation = () =>
           d="M50 20L60 40H40L50 20ZM50 80L60 60H40L50 80ZM20 50L40 60V40L20 50ZM80 50L60 40V60L80 50Z"
           fill="#000"
         />
-        {/* <Animated.Circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="none"
-          stroke="#ff0"
-          strokeWidth={glow}
-          opacity="0.5"
-        /> */}
       </Svg>
     </Animated.View>
   );
@@ -66,9 +71,14 @@ interface FABScrollToTopProps {
 
 
 const FABScrollToTop: React.FC<FABScrollToTopProps> = ({ onPress }) => {
+  const isAndroidNoAnim = useDisableAnimationsForAndroid();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePress = () => {
+    if (isAndroidNoAnim) {
+      onPress();
+      return;
+    }
     Animated.sequence([
       Animated.timing(scaleAnim, { toValue: 1.5, duration: 120, useNativeDriver: true }),
       Animated.timing(scaleAnim, { toValue: 0, duration: 120, useNativeDriver: true }),
@@ -78,16 +88,20 @@ const FABScrollToTop: React.FC<FABScrollToTopProps> = ({ onPress }) => {
     });
   };
 
+  if (isAndroidNoAnim) {
+    return (
+      <View style={[styles.fab, { transform: [{ scale: 1 }] }]}> 
+        <TouchableOpacity onPress={handlePress} activeOpacity={0.8} style={styles.touchable}>
+          <SoccerBallAnimation />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <Animated.View style={[styles.fab, { transform: [{ scale: scaleAnim }] }]}> 
       <TouchableOpacity onPress={handlePress} activeOpacity={0.8} style={styles.touchable}>
         <SoccerBallAnimation />
-        {/* <LottieView
-          source={require('../../../assets/lottie/football-spin.json')}
-          autoPlay
-          loop
-          style={{ width: 35, height: 35 }}
-        /> */}
       </TouchableOpacity>
     </Animated.View>
   );

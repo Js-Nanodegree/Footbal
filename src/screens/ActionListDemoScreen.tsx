@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { SectionList, View, Text, TouchableOpacity, Animated } from 'react-native';
+import { SectionList, View, Text, TouchableOpacity } from 'react-native';
+import Animated from 'react-native-reanimated';
 import ListItem from '../shared/ui/list-item/ListItem';
+import { useDisableAnimationsForAndroid } from 'src/shared/hooks/useDisableAnimationsForAndroid';
 
 const sections = [
     {
@@ -22,6 +24,7 @@ const sections = [
 const ActionListDemoScreen = () =>
 {
     const [ selected, setSelected ] = useState<number | null>( null );
+    const isAndroidNoAnim = useDisableAnimationsForAndroid();
     return (
         <SectionList
             sections={sections}
@@ -30,11 +33,19 @@ const ActionListDemoScreen = () =>
                 <Text style={{ fontWeight: 'bold', fontSize: 18, marginTop: 16 }}>{title}</Text>
             )}
             renderItem={( { item } ) => (
-                <Animated.View style={{ opacity: 1 }}>
-                    <TouchableOpacity onPress={() => setSelected( item.id )}>
-                        <ListItem title={item.title} selected={selected === item.id} />
-                    </TouchableOpacity>
-                </Animated.View>
+                isAndroidNoAnim ? (
+                    <View style={{ opacity: 1 }}>
+                        <TouchableOpacity onPress={() => setSelected( item.id )}>
+                            <ListItem title={item.title} selected={selected === item.id} />
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <Animated.View style={{ opacity: 1 }}>
+                        <TouchableOpacity onPress={() => setSelected( item.id )}>
+                            <ListItem title={item.title} selected={selected === item.id} />
+                        </TouchableOpacity>
+                    </Animated.View>
+                )
             )}
             contentContainerStyle={{ padding: 16 }}
         />
