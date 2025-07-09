@@ -1,11 +1,20 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ViewStyle, StyleProp, TextStyle } from 'react-native';
 import Typography from '../typography/Typography';
 import { colors } from '../theme/colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Pressable } from 'react-native-gesture-handler';
 
-interface Props {
+interface ErrorNotificationProps
+{
+  style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
+  descriptionStyle?: StyleProp<TextStyle>;
+  timeStyle?: StyleProp<TextStyle>;
+  primaryButtonStyle?: StyleProp<ViewStyle>;
+  secondaryButtonStyle?: StyleProp<ViewStyle>;
+  primaryButtonTextStyle?: StyleProp<TextStyle>;
+  secondaryButtonTextStyle?: StyleProp<TextStyle>;
   title?: string;
   description?: string;
   errorType?: '400' | '403' | '404' | '429' | 'system';
@@ -24,7 +33,7 @@ const errorConfig = {
   system: { color: colors.text, title: 'Ошибка' },
 };
 
-const ErrorNotification: React.FC<Props> = ({
+const ErrorNotification: React.FC<ErrorNotificationProps> = ( {
   title,
   description,
   errorType = 'system',

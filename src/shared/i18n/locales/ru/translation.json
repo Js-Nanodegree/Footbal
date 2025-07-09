@@ -83,7 +83,9 @@
     "upcomingEvents": "Ближайшие события",
     "actualMatches": "Актуальные матчи",
     "all": "Все",
-    "teams": "Команды"
+    "teams": "Команды",
+    "noLeagues": "Нет доступных лиг",
+    "noMatches": "Нет доступных матчей"
   },
   "actionList": {
     "section1": "Секция 1"

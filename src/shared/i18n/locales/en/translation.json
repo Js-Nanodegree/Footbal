@@ -83,7 +83,9 @@
     "upcomingEvents": "Upcoming events",
     "actualMatches": "Actual matches",
     "all": "All",
-    "teams": "Teams"
+    "teams": "Teams",
+    "noLeagues": "No leagues available",
+    "noMatches": "No matches available"
   },
   "actionList": {
     "section1": "Section 1"
