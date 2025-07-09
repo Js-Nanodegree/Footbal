@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import BackIcon from '../icons/BackIcon';
 import { colors } from '../theme/colors';
+import Typography from '../typography/Typography';
 
 interface HeaderProps {
   title: string;
@@ -9,12 +10,19 @@ interface HeaderProps {
   style?: ViewStyle;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, onBack, style }) => (
+const Header: React.FC<HeaderProps> = ({ title, onBack, style }: HeaderProps) => (
   <View style={[styles.root, style]}>
     {onBack && (
       <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel="Назад">
         <BackIcon color={colors.text} width={28} height={28} />
-        <Text style={styles.title} numberOfLines={1}>{title}</Text>
+        <Typography
+          variant="h1"
+          weight="bold"
+          font="Oswald"
+          style={[ styles.title, Platform.OS === 'android' && { fontSize: 20 } ]}
+        >
+          {title}
+        </Typography>
       </TouchableOpacity>
     )}
   </View>
@@ -26,8 +34,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     paddingBottom: 12,
-    // paddingHorizontal: 16,
-    // backgroundColor: colors.background || '#fff',
     minHeight: 56,
   },
   backBtn: {
@@ -47,4 +53,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Header; 
+export default Header;
